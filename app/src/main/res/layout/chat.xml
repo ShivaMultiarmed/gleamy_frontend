@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ChatActivity"
+    android:orientation="vertical"
+    tools:layout_editor_absoluteX="1dp"
+    tools:layout_editor_absoluteY="1dp">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@color/primary">
+
+    </FrameLayout>
+
+    <ScrollView
+        android:id="@+id/chatScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/chatContent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
+            <!--
+            <TextView
+                android:layout_gravity="left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/received_msg"
+                android:maxWidth="300dp"
+                android:padding="10dp"
+                android:text="Hello, People. Lorem ipsum is simply dummy text"
+                android:textColor="@color/white">
+
+            </TextView>
+            <TextView
+                android:layout_gravity="right"
+                android:maxWidth="300dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/sent_msg"
+                android:text="Here is a response "
+                android:textColor="@color/primary"
+                android:padding="10dp"
+                android:textAlignment="viewEnd">
+
+            </TextView>
+            <TextView
+                android:layout_gravity="right"
+                android:maxWidth="300dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/sent_msg"
+                android:text="Here is a response "
+                android:textColor="@color/primary"
+                android:padding="10dp"
+                android:textAlignment="viewEnd">
+
+            </TextView>
+            <TextView
+                android:layout_gravity="left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/received_msg"
+                android:maxWidth="300dp"
+                android:padding="10dp"
+                android:text="Hello, People. Lorem ipsum is simply dummy text"
+                android:textColor="@color/white">
+
+            </TextView>
+            <TextView
+                android:layout_gravity="left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/received_msg"
+                android:maxWidth="300dp"
+                android:padding="10dp"
+                android:text="Hello, People. Lorem ipsum is simply dummy text"
+                android:textColor="@color/white">
+
+            </TextView>-->
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/bordertop"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/chatTextArea"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/input_bg"
+            android:hint="Сообщение"
+            android:inputType="textMultiLine"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="16dp">
+
+        </EditText>
+
+        <ImageView
+            android:id="@+id/sendBtn"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@android:drawable/ic_menu_send"/>
+
+            <!---->
+    </LinearLayout>
+</LinearLayout>

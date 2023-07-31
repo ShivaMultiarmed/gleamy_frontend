@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mikhail.shell.gleamy.models.Message xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="right"
+    android:layout_marginTop="20dp">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/sent_msg"
+        android:padding='10dp'
+        android:layout_marginRight="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Some text"
+
+            android:textColor="@color/white"
+
+            android:id="@+id/msgText"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/img_bg" />
+</mikhail.shell.gleamy.models.Message>

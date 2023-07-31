@@ -1,0 +1,59 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'mikhail.shell.gleamy'
+    compileSdk 33
+
+    viewBinding
+    {
+        enabled = true
+    }
+
+    defaultConfig {
+        applicationId "mikhail.shell.gleamy"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    packagingOptions
+    {
+        exclude("META-INF/DEPENDENCIES")
+    }
+    buildToolsVersion '33.0.2'
+}
+
+dependencies {
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.28'
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    //implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    /*configurations.all {
+        resolutionStrategy.force 'org.apache.httpcomponents:httpclient:4.5.13'
+    }*/
+    // https://mvnrepository.com/artifact/tangrammer/java-net-http-client
+    // https://mvnrepository.com/artifact/tangrammer/java-net-http-client
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+}
