@@ -9,10 +9,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.api.AuthAPIClient;
+import retrofit2.http.Query;
 //import java.net.http.HttpClient;
 
 public class SignUp extends AppCompatActivity {
 
+    private AuthAPIClient authAPIClient;
     private EditText userName, password, email;
     private TextView msgView;
     private Button btn;
@@ -28,8 +31,12 @@ public class SignUp extends AppCompatActivity {
     protected void onStart()
     {
         super.onStart();
-
+        initHttp();
         initViews();
+    }
+    private void initHttp()
+    {
+        authAPIClient = AuthAPIClient.getClient();
     }
     private void initViews()
     {
@@ -48,11 +55,7 @@ public class SignUp extends AppCompatActivity {
                 email.getText().toString().equals(""))
             return "EMPTY";
         else
-            return serverValidate();
-    }
-    private String serverValidate()
-    {
-        return "OK";
+            return authAPIClient.signup(userName.getText().toString(), password.getText().toString(), email.getText().toString());
     }
     private void displayMessage(String code)
     {

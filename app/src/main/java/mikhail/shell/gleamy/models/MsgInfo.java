@@ -19,4 +19,44 @@ public class MsgInfo {
         this.text = text;
         this.datetime = datetime;
     }
+
+    public long getMsgid() {
+        return msgid;
+    }
+
+    public void setMsgid(long msgid) {
+        this.msgid = msgid;
+    }
+
+    public long getUserid() {
+        return userid;
+    }
+
+    public void setUserid(long userid) {
+        this.userid = userid;
+    }
+
+    public boolean isMine() {
+        return isMine;
+    }
+
+    public void setMine(boolean mine) {
+        isMine = mine;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Date getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(Date datetime) {
+        this.datetime = datetime;
+    }
 }

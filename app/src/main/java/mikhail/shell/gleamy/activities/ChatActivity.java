@@ -30,7 +30,6 @@ import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.dao.MessageDAO;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.models.MsgInfo;
-import mikhail.shell.gleamy.dao.AppHttpCLient;
 //import java.net.http.HttpClient
 public class ChatActivity extends AppCompatActivity {
 

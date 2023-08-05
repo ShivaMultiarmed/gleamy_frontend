@@ -2,7 +2,6 @@ package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,11 +13,14 @@ import java.util.Objects;
 //import java.net.http.HttpClient;
 
 import mikhail.shell.gleamy.R;
-import mikhail.shell.gleamy.models.User;
+import mikhail.shell.gleamy.api.AppHttpClient;
+import mikhail.shell.gleamy.api.AuthAPIClient;
+import mikhail.shell.gleamy.models.UserInfo;
 public class LogIn extends AppCompatActivity {
 
 
-    //private HttpClient httpClient;
+    private AppHttpClient httpClient;
+    private AuthAPIClient authAPIClient;
     private enum Status {
         OK, NOTFOUND, PASSINCORRECT, EMPTY
     }
@@ -26,28 +28,30 @@ public class LogIn extends AppCompatActivity {
     private EditText login, password;
     private Button btn;
     private TextView msgView;
-    private List<User> users;
+    private List<UserInfo> users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.log_in);
         users = new ArrayList<>();
-        users.add(new User("James","witch"));
-        users.add(new User("Ashley","dog"));
-        users.add(new User("Mark","car"));
-        for (User u:users)
+        users.add(new UserInfo("James","witch"));
+        users.add(new UserInfo("Ashley","dog"));
+        users.add(new UserInfo("Mark","car"));
+        for (UserInfo u:users)
             System.out.println(u.login);
-        initHttpBuilder();
+        initHttp();
         init();
         initBtn();
     }
-    private void initHttpBuilder()
+    private void initHttp()
     {
-        //httpClient  = HttpClient.newBuilder().version(Version.HTTP_1_1).build();
+        httpClient = AppHttpClient.getClient();
+        authAPIClient = AuthAPIClient.getClient();
     }
     private void init()
     {
+
         login = findViewById(R.id.logInName);
         password = findViewById(R.id.logInPassword);
         msgView = findViewById(R.id.logInMessage);
@@ -60,7 +64,8 @@ public class LogIn extends AppCompatActivity {
     {
         btn = findViewById(R.id.logInBtn);
         btn.setOnClickListener(e->{
-            new LogInAsync().execute();
+            String status = validate(login.getText().toString(), password.getText().toString());
+            displayMessage(status);
         });
     }
     private String validate(String login, String password)
@@ -68,23 +73,13 @@ public class LogIn extends AppCompatActivity {
         if (login.equals("") || password.equals(""))
             return "EMPTY";
         else
-            return serverValidate( login,  password);
+            return authAPIClient.login(login, password);
     }
-    private String serverValidate(String login, String password)
-    {
 
-        if (getUser(login) == null)
-            return "NOTFOUND";
-        else if (!getUser(login).password.equals(password))
-            return "PASSINCORRECT";
-        else {
-            return "OK";
-        }
-    }
-    private User getUser(String login)
+    private UserInfo getUser(String login)
     {
-        User user = null;
-        for (User u:users)
+        UserInfo user = null;
+        for (UserInfo u:users)
             if (Objects.equals(u.login, login))
                 user = u;
         return user;
@@ -105,37 +100,5 @@ public class LogIn extends AppCompatActivity {
         }
         msgView.setText(msg);
     }
-    private class LogInAsync extends AsyncTask<Void, Void, String>
-    {
 
-        @Override
-        protected String doInBackground(Void... voids) {
-            String url = "", status = validate(login.getText().toString(), password.getText().toString());
-            /*httpClient = HttpClients.createDefault(); HttpClient
-                    .newBuilder().
-                    version(HttpClient.Version.HTTP_2).
-                    connectTimeout(10000).build();
-            //HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("https://google.com")).build();
-            HttpGet getRequest = new HttpGet("https://google.com");
-            HttpResponse response = null;
-            HttpEntity entity = response.getEntity();
-            try {
-                if (entity != null) {
-                    // Read the content as a string
-                    String responseBody = EntityUtils.toString(entity);
-                    return responseBody;
-                }
-
-                response = httpClient.execute(getRequest);
-            } catch (IOException ex) {
-                ex.printStackTrace(System.err);
-            }*/
-            return status;
-        }
-        @Override
-        protected void onPostExecute(String result)
-        {
-            displayMessage(result);
-        }
-    }
 }
