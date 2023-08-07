@@ -64,8 +64,10 @@ public class LogIn extends AppCompatActivity {
     {
         btn = findViewById(R.id.logInBtn);
         btn.setOnClickListener(e->{
+            msgView.setText(authAPIClient.test());
+            /*
             String status = validate(login.getText().toString(), password.getText().toString());
-            displayMessage(status);
+            displayMessage(status);*/
         });
     }
     private String validate(String login, String password)
