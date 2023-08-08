@@ -8,16 +8,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MsgInfo {
-    public long msgid, userid;
+    public long msgid, userid, chatid;
     public boolean isMine;
     public String text;
     public Date datetime;
-    public MsgInfo(long userid, long msgid, boolean isMine,String text, Date datetime)
+    public MsgInfo(long userid, long chatid, long msgid, boolean isMine,String text, Date datetime)
     {
         this.userid = userid;
         this.msgid = msgid;
         this.text = text;
         this.datetime = datetime;
+        this.chatid = chatid;
     }
 
     public long getMsgid() {

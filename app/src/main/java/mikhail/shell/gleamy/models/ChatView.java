@@ -34,7 +34,7 @@ public class ChatView extends LinearLayout {
     public void setInfo(ChatInfo info) {
         this.info = info;
         chatTitle.setText(info.getTitle());
-        lastMsg.setText(info.getLast().getText());
+        //lastMsg.setText(info.getLast().getText());
     }
     public void init()
     {

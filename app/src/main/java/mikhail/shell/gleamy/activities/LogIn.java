@@ -21,9 +21,6 @@ public class LogIn extends AppCompatActivity {
 
     private AppHttpClient httpClient;
     private AuthAPIClient authAPIClient;
-    private enum Status {
-        OK, NOTFOUND, PASSINCORRECT, EMPTY
-    }
 
     private EditText login, password;
     private Button btn;
@@ -34,12 +31,6 @@ public class LogIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.log_in);
-        users = new ArrayList<>();
-        users.add(new UserInfo("James","witch"));
-        users.add(new UserInfo("Ashley","dog"));
-        users.add(new UserInfo("Mark","car"));
-        for (UserInfo u:users)
-            System.out.println(u.login);
         initHttp();
         init();
         initBtn();
@@ -48,6 +39,7 @@ public class LogIn extends AppCompatActivity {
     {
         httpClient = AppHttpClient.getClient();
         authAPIClient = AuthAPIClient.getClient();
+        authAPIClient.addActivity("LogIn", this);
     }
     private void init()
     {
@@ -64,10 +56,11 @@ public class LogIn extends AppCompatActivity {
     {
         btn = findViewById(R.id.logInBtn);
         btn.setOnClickListener(e->{
-            msgView.setText(authAPIClient.test());
-            /*
-            String status = validate(login.getText().toString(), password.getText().toString());
-            displayMessage(status);*/
+            String code = validate(login.getText().toString(), password.getText().toString());
+            if (!code.equals("LOCALOK"))
+                displayMessage(code);
+            else
+                authAPIClient.login(login.getText().toString(), password.getText().toString());
         });
     }
     private String validate(String login, String password)
@@ -75,7 +68,8 @@ public class LogIn extends AppCompatActivity {
         if (login.equals("") || password.equals(""))
             return "EMPTY";
         else
-            return authAPIClient.login(login, password);
+            return "LOCALOK";
+
     }
 
     private UserInfo getUser(String login)
@@ -86,7 +80,7 @@ public class LogIn extends AppCompatActivity {
                 user = u;
         return user;
     }
-    private void displayMessage(String status)
+    public void displayMessage(String status)
     {
         String msg = null;
         switch (status)

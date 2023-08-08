@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.api.ChatAPIClient;
@@ -18,8 +20,8 @@ import mikhail.shell.gleamy.models.ChatView;
 public class ChatsList extends AppCompatActivity {
 
     private long userid;
-    private List<ChatInfo> chatInfos;
-    private List<ChatView> chats;
+    private Map<Long,ChatInfo> chatInfos;
+    private Map<Long,ChatView> chats;
     private ChatAPIClient chatsClient;
     private LinearLayout chatsList;
     private ChatApi chatApi;
@@ -28,27 +30,34 @@ public class ChatsList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chats_list);
+        retrieveBundle();
         init();
         initViews();
-        displayAllChats();
+        chatsClient.getAllChats(userid);
+    }
+    private void retrieveBundle()
+    {
+        Bundle b = getIntent().getExtras();
+        userid = b.getLong("userid");
     }
     private void init()
     {
+
         chatsClient  = ChatAPIClient.getClient();
-        chatInfos = new ArrayList<>();
-        chatInfos = chatsClient.getAllChats(userid);
-        chats = new ArrayList<>();
+        chatsClient.addActivity("ChatsList", this);
+        chats = new HashMap<>();
+
     }
     private void initViews()
     {
         chatsList = findViewById(R.id.chatsListContent);
     }
-    private void displayAllChats()
+    public void displayAllChats(Map<Long, ChatInfo> chatInfos)
     {
-        for (ChatInfo chatInfo : chatInfos)
+        for (ChatInfo chatInfo : chatInfos.values())
         {
             ChatView chatView = createChatView(chatInfo);
-            chats.add(chatView);
+            chats.put(chatInfo.getId(), chatView);
             displayChat(chatView);
         }
     }

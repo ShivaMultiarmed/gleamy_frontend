@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 
 public class ChatInfo {
+
     private long id;
     @Setter(AccessLevel.NONE)
     private List<UserInfo> users;
@@ -25,6 +26,9 @@ public class ChatInfo {
         this.id = id;
         this.title = title;
         this.last = last;
+    }
+    public long getId() {
+        return id;
     }
     public void setId(long id)
     {

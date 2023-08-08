@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.api.MsgAPIClient;
 import mikhail.shell.gleamy.dao.MessageDAO;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.models.MsgInfo;
@@ -38,15 +39,22 @@ public class ChatActivity extends AppCompatActivity {
 
     private long chatid, userid;
     private Map<Long,MsgInfo> msgInfos;
+
+
+
     private Map<Long, Message> msgs;
 
     private LinearLayout chatContent;
+
+
+
     private EditText chatTextArea;
     private ImageView sendBtn;
 
     private Message targetMessage;
 
     private View.OnClickListener sendListener, updListener;
+    private MsgAPIClient msgClient;
 
 
     @Override
@@ -55,16 +63,19 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat);
 
-
+        getBundle();
 
         msgDAO = MessageDAO.getInstance();
 
         chatContent = findViewById(R.id.chatContent);
         userid = 1;
-
+        chatid = 1;
 
         msgs = new HashMap<>();
-        viewAllMessages();
+        msgClient = MsgAPIClient.getClient();
+        msgClient.addActivities("ChatActivity", this);
+
+        msgClient.getChatMessages(chatid);
 
         initSendListener();
         initUpdateListener();
@@ -81,30 +92,34 @@ public class ChatActivity extends AppCompatActivity {
         super.onStart();
 
     }
-    private void viewAllMessages()
+    private void getBundle()
+    {
+        Bundle b = getIntent().getExtras();
+
+    }
+    public void viewAllMessages(Map<Long, MsgInfo> msgInfos)
     {
         Message msg;
         int i = 0;
-        for (Map.Entry<Long,MsgInfo> info : msgDAO.getAllMessages().entrySet())
+        for (Map.Entry<Long,MsgInfo> info : msgInfos.entrySet())
         {
             msgs.put(info.getKey(), createMessage(info.getValue()));
             displayMessage(getMessage(info.getKey()));
         }
     }
 
-    private Message getMessage(long msgid)
+    public Message getMessage(long msgid)
     {
         return msgs.get(msgid);
     }
-    private long sendMessage(String text)
+    private void sendMessage(String text)
     {
-        MsgInfo msgInfo = new MsgInfo(userid,0,true,text, new Date());
-        long msgid = msgDAO.addMessage(msgInfo);
-        msgs.put(msgid,createMessage(msgInfo));
-        chatTextArea.setText("");
-        return msgid;
+        MsgInfo msgInfo = new MsgInfo(userid,chatid,0,true,text, new Date());
+        msgClient.sendMessage(msgInfo);
+
+
     }
-    private Message createMessage(MsgInfo msgInfo)
+    public Message createMessage(MsgInfo msgInfo)
     {
         int viewId;
         msgInfo.isMine = msgInfo.userid == userid;
@@ -127,7 +142,7 @@ public class ChatActivity extends AppCompatActivity {
         return msg;
     }
 
-    private void displayMessage(Message msg)
+    public void displayMessage(Message msg)
     {
         chatContent.addView(msg);
     }
@@ -181,8 +196,8 @@ public class ChatActivity extends AppCompatActivity {
                 String text = chatTextArea.getText().toString();
                 if (!text.equals(""))
                 {
-                    long msgid = sendMessage(text);
-                    displayMessage(getMessage(msgid));
+                    sendMessage(text);
+
                 }
             }
         };
@@ -201,4 +216,11 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
     }
+    public Map<Long, Message> getMsgs() {
+        return msgs;
+    }
+    public EditText getChatTextArea() {
+        return chatTextArea;
+    }
+
 }

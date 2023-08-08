@@ -15,7 +15,7 @@ public class MessageDAO {
     {
         for (int i=0;i<5;i++)
         {
-            infos.put((long)(i+1),new MsgInfo(i%2+1, i+1, i%2+1==1,"Brand new text", new Date()));
+            infos.put((long)(i+1),new MsgInfo(i%2+1, 1,i+1, i%2+1==1,"Brand new text", new Date()));
         }
     }
     public static MessageDAO getInstance()
