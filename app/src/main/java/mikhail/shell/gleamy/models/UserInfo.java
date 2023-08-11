@@ -1,11 +1,13 @@
 package mikhail.shell.gleamy.models;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 //import java.net.http.HttpClient;
 
 @Getter @Setter
-public class UserInfo {
+public class UserInfo implements Serializable {
     public long id;
     public String login, password;
     public UserInfo(String login, String password)

@@ -1,7 +1,10 @@
 package mikhail.shell.gleamy.api;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +13,7 @@ import java.util.Map;
 
 import lombok.Getter;
 import mikhail.shell.gleamy.activities.ChatsList;
+import mikhail.shell.gleamy.activities.CreateChatActivity;
 import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.MsgInfo;
 import retrofit2.Call;
@@ -55,11 +59,28 @@ public class ChatAPIClient extends AbstractAPI {
                 chats = null;
             }
         });
-        /*
-        chats = new ArrayList<>();
-        for (int i = 1; i<=10; i++)
-            chats.add(new ChatInfo(userid,
-                    "Chat number " + i,
-                    new MsgInfo(this.userid,1000, true, "Some text", new Date())));*/
+    }
+    public void addChat(ChatInfo chatInfo)
+    {
+        CreateChatActivity createChatActivity = (CreateChatActivity)activities.get("CreateChatActivity");
+        Call<Map<String, String>> call = chatApi.addChat(chatInfo);
+        call.enqueue(new Callback<>(){
+            @Override
+            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response)
+            {
+                chatInfo.setId(Long.parseLong(response.body().get("chatid")));
+                Intent backToChats = new Intent();
+                Bundle b = new Bundle();
+                b.putSerializable("chatinfo", (Serializable) chatInfo);
+                backToChats.putExtras(b);
+
+                createChatActivity.setResult(-1, backToChats);
+                createChatActivity.finish();
+            }
+            @Override
+            public void onFailure(Call<Map<String, String>> call, Throwable t){
+
+            }
+        });
     }
 }

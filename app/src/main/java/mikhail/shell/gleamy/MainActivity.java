@@ -5,11 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import mikhail.shell.gleamy.activities.ChatActivity;
-import mikhail.shell.gleamy.activities.ChatsList;
-import mikhail.shell.gleamy.activities.CreateChat;
 import mikhail.shell.gleamy.activities.LogIn;
-import mikhail.shell.gleamy.activities.SignUp;
 
 public class MainActivity extends AppCompatActivity {
 

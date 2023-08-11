@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import lombok.Getter;
@@ -7,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MsgInfo {
+public class MsgInfo implements Serializable {
     public long msgid, userid, chatid;
     public boolean isMine;
     public String text;

@@ -1,7 +1,8 @@
 package mikhail.shell.gleamy.models;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,22 +11,25 @@ import lombok.Setter;
 @Getter
 @Setter
 
-public class ChatInfo {
+public class ChatInfo implements Serializable {
 
     private long id;
-    @Setter(AccessLevel.NONE)
-    private List<UserInfo> users;
+    @Setter(AccessLevel.PRIVATE)
+    private final Map<Long, UserInfo> users;
     private String title;
     private MsgInfo last;
     public ChatInfo()
     {
-        users = new ArrayList<>();
+        users = new HashMap<>();
     }
     public ChatInfo(long id, String title, MsgInfo last)
     {
+
         this.id = id;
+        users = new HashMap<>();
         this.title = title;
         this.last = last;
+
     }
     public long getId() {
         return id;
@@ -35,10 +39,14 @@ public class ChatInfo {
         if (this.id == 0)
             this.id = id;
     }
+    public void addMember(long userid)
+    {
+            users.put(userid, new UserInfo("", ""));
+    }
     public void addMember(UserInfo user)
     {
         if (users != null)
-            users.add(user);
+            users.put(user.getId(), user);
     }
     public void removeMember(UserInfo user)
     {

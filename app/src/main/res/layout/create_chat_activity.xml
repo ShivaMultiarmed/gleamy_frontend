@@ -17,6 +17,37 @@
 
     </FrameLayout>
     <LinearLayout
+        android:id="@+id/chatTitleBar"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <EditText
+            android:id="@+id/chatTitleInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/input_bg"
+            android:hint="Введите название чата"
+
+            android:padding="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="16dp" />
+
+        <ImageView
+            android:id="@+id/createChatBtn"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            tools:srcCompat="@android:drawable/ic_menu_send" />
+    </LinearLayout>
+    <LinearLayout
         android:id="@+id/searchUsersBar"
         android:orientation="horizontal"
         android:layout_width="match_parent"

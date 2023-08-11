@@ -68,12 +68,10 @@ public class ChatActivity extends AppCompatActivity {
         msgDAO = MessageDAO.getInstance();
 
         chatContent = findViewById(R.id.chatContent);
-        userid = 1;
-        chatid = 1;
 
         msgs = new HashMap<>();
         msgClient = MsgAPIClient.getClient();
-        msgClient.addActivities("ChatActivity", this);
+        msgClient.addActivity("ChatActivity", this);
 
         msgClient.getChatMessages(chatid);
 
@@ -94,8 +92,9 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void getBundle()
     {
-        Bundle b = getIntent().getExtras();
-
+        Bundle info = getIntent().getExtras();
+        userid = info.getLong("userid");
+        chatid = info.getLong("chatid");
     }
     public void viewAllMessages(Map<Long, MsgInfo> msgInfos)
     {

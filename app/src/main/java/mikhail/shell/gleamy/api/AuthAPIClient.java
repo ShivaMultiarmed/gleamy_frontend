@@ -9,6 +9,7 @@ import java.util.Map;
 
 import mikhail.shell.gleamy.activities.ChatsList;
 import mikhail.shell.gleamy.activities.LogIn;
+import mikhail.shell.gleamy.activities.SignUp;
 import mikhail.shell.gleamy.models.UserInfo;
 import okhttp3.Headers;
 import retrofit2.Call;
@@ -20,22 +21,16 @@ public class AuthAPIClient extends  AbstractAPI{
     private static AuthAPIClient client;
     private AuthApi authApi;
     private String code;
-    private final Map<String, Activity> activities;
-    protected AuthAPIClient()
+    private AuthAPIClient()
     {
-
         authApi = httpClient.retrofit.create(AuthApi.class);
-        activities = new HashMap<>();
     }
     public static AuthAPIClient getClient() {
         if (client == null)
             client = new AuthAPIClient();
         return client;
     }
-    public void addActivity(String name, Activity activity)
-    {
-        activities.put(name, activity);
-    }
+
     public void login(String login, String password)
     {
         LogIn loginActivity = (LogIn)activities.get("LogIn");
@@ -68,27 +63,36 @@ public class AuthAPIClient extends  AbstractAPI{
             }
         });
     }
-    public String signup( String login, String password, String email)
+    public void signup( String login, String password, String email)
     {
-        Call<String> call = authApi.signup( login,  password, email);
+        SignUp signUpActivity = (SignUp) activities.get("SignUp");
+        Call<Map<String, Object>> call = authApi.signup( login,  password, email);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                System.out.println("HERE IS a RESPONSE" + response.toString());
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                 if (response.isSuccessful())
-                    code  = response.body();
+                    code  = (String)response.body().get("code");
                 else
                     code = "ERROR";
+
+                signUpActivity.displayMessage(code);
+
+                if (code.equals("OK"))
+                {
+                    Intent redirect = new Intent(signUpActivity, ChatsList.class);
+                    Bundle b = new Bundle();
+
+                    b.putLong("userid", Long.parseLong((response.body().get("userid").toString())));
+                    redirect.putExtras(b);
+                    signUpActivity.startActivity(redirect);
+                }
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                System.out.println("HERE IS an ERROR" + call.toString() + " | " +t.getMessage());
-
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
                 code = "ERROR";
             }
         });
-        return code;
     }
 
 }

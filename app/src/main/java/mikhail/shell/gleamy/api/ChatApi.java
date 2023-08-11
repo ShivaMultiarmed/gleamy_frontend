@@ -5,11 +5,15 @@ import java.util.Map;
 
 import mikhail.shell.gleamy.models.ChatInfo;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ChatApi {
     @GET("/gleamy/chats/users/{userid}")
     Call<Map<Long,ChatInfo>> getAllChats(@Path("userid") long userid);
+    @POST("/gleamy/chats/add")
+    Call<Map<String, String>> addChat(@Body ChatInfo chat);
 }

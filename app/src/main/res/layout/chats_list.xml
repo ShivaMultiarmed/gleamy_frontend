@@ -15,23 +15,34 @@
         android:background="@color/primary">
 
     </FrameLayout>
-
-    <ScrollView
-        android:id="@+id/chatsListScrollView"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-
-        <LinearLayout
-            android:id="@+id/chatsListContent"
+        <ScrollView
+            android:id="@+id/chatsListScrollView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
-        </LinearLayout>
+            android:layout_height="match_parent"
+            >
 
-    </ScrollView>
+            <LinearLayout
+                android:id="@+id/chatsListContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+            </LinearLayout>
+
+        </ScrollView>
+        <ImageView
+            android:id="@+id/addChatBtn"
+            android:layout_height="50dp"
+            android:layout_width="50dp"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="30dp"
+            app:srcCompat="@android:drawable/ic_menu_add"
+            android:background="@drawable/dark_circle"/>
+    </FrameLayout>
 
 </LinearLayout>

@@ -37,6 +37,7 @@ public class SignUp extends AppCompatActivity {
     private void initHttp()
     {
         authAPIClient = AuthAPIClient.getClient();
+        authAPIClient.addActivity("SignUp", this);
     }
     private void initViews()
     {
@@ -45,19 +46,24 @@ public class SignUp extends AppCompatActivity {
         email = findViewById(R.id.signUpEmail);
         btn  = findViewById(R.id.signUpBtn);
         btn.setOnClickListener(e->{
-            new SignUpAsync().execute();
+            String code = validateLocal();
+            if (!code.equals("LOCALOK"))
+                displayMessage(code);
+            else
+                authAPIClient.signup(userName.getText().toString(), password.getText().toString(), email.getText().toString());
         });
         msgView = findViewById(R.id.signUpMsg);
     }
-    private String validate()
+    private String validateLocal()
     {
         if (userName.getText().toString().equals("") || password.getText().toString().equals("") ||
                 email.getText().toString().equals(""))
             return "EMPTY";
         else
-            return authAPIClient.signup(userName.getText().toString(), password.getText().toString(), email.getText().toString());
+            return "LOCALOK";
+                    //authAPIClient.signup(userName.getText().toString(), password.getText().toString(), email.getText().toString());
     }
-    private void displayMessage(String code)
+    public void displayMessage(String code)
     {
         String msg;
         switch (code)
@@ -74,18 +80,5 @@ public class SignUp extends AppCompatActivity {
                 break;
         }
         msgView.setText(msg);
-    }
-    private class SignUpAsync extends AsyncTask<Void, Void, String>
-    {
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            return validate();
-        }
-        @Override
-        protected void onPostExecute(String code)
-        {
-            displayMessage(code);
-        }
     }
 }

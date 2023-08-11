@@ -15,14 +15,12 @@ public class MsgAPIClient extends AbstractAPI{
     private final AppHttpClient httpClient;
     private static MsgAPIClient client;
     private final MsgApi msgApi;
-    private final Map<String, Activity> activities;
     private MsgInfo curMsg;
 
     private MsgAPIClient()
     {
         httpClient = AppHttpClient.getClient();
         msgApi = httpClient.retrofit.create(MsgApi.class);
-        activities = new HashMap<>();
     }
     public static MsgAPIClient getClient()
     {
@@ -30,10 +28,7 @@ public class MsgAPIClient extends AbstractAPI{
             client = new MsgAPIClient();
         return client;
     }
-    public void addActivities(String name, Activity activity)
-    {
-        activities.put(name, activity);
-    }
+
     public void getChatMessages(long chatid)
     {
         ChatActivity chatActivity = (ChatActivity) activities.get("ChatActivity");

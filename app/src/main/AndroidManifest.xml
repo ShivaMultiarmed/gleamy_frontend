@@ -16,7 +16,7 @@
         android:theme="@style/Theme.Gleamy"
         tools:targetApi="31">
         <activity
-            android:name=".activities.CreateChat"
+            android:name=".activities.CreateChatActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ChatsList"

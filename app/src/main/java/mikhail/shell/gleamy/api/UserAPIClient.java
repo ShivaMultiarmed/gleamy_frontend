@@ -1,25 +1,30 @@
 package mikhail.shell.gleamy.api;
 
+import android.app.Activity;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import mikhail.shell.gleamy.activities.CreateChatActivity;
 import mikhail.shell.gleamy.models.User;
 import mikhail.shell.gleamy.models.UserInfo;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserAPIClient extends AbstractAPI{
     private static UserAPIClient client;
     private UserApi userApi;
     private List<UserInfo> uinfos;
 
+
     private UserAPIClient()
     {
-        uinfos = new ArrayList<>();
-        uinfos.add(new UserInfo("George", "123"));
-        uinfos.add(new UserInfo("Gean", "qwerty"));
-        uinfos.add(new UserInfo("Sam", "123"));
-        uinfos.add(new UserInfo("Sarah", "123"));
+        userApi = httpClient.retrofit.create(UserApi.class);
     }
     public static UserAPIClient getClient()
     {
@@ -27,19 +32,24 @@ public class UserAPIClient extends AbstractAPI{
             client = new UserAPIClient();
         return client;
     }
-    public List<UserInfo> getUsersByLogin(String login)
+
+    public void getUsersByLogin(String login)
     {
-        List<UserInfo> response = new ArrayList<>();
-        Pattern pattern = Pattern.compile(login+".+?");
-        Matcher matcher;
-        for (UserInfo info : uinfos)
-        {
-            matcher = pattern.matcher(info.getLogin());
-            if(matcher.find())
-                response.add(info);
-        }
+        CreateChatActivity curActivity = (CreateChatActivity) activities.get("CreateChatActivity");
+        Call<Map<Long, UserInfo>> call = userApi.getUsersByLogin(login);
+        call.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<Map<Long, UserInfo>> call, Response<Map<Long, UserInfo>> response) {
+                Map<Long, UserInfo> userInfos = response.body();
+                curActivity.createUsers(userInfos);
+                curActivity.displayUsers();
+                curActivity.setChooseListener();
+            }
 
+            @Override
+            public void onFailure(Call<Map<Long, UserInfo>> call, Throwable t) {
 
-        return response;
+            }
+        });
     }
 }

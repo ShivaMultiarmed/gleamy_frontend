@@ -2,7 +2,9 @@ package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -34,6 +36,7 @@ public class LogIn extends AppCompatActivity {
         initHttp();
         init();
         initBtn();
+        initLinkToSignUp();
     }
     private void initHttp()
     {
@@ -61,6 +64,18 @@ public class LogIn extends AppCompatActivity {
                 displayMessage(code);
             else
                 authAPIClient.login(login.getText().toString(), password.getText().toString());
+        });
+    }
+    private void initLinkToSignUp()
+    {
+        LogIn thisActivity = this;
+        TextView linkToSignUp = findViewById(R.id.linkToSignUp);
+        linkToSignUp.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(thisActivity, SignUp.class ));
+            }
         });
     }
     private String validate(String login, String password)
