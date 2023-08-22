@@ -79,10 +79,13 @@ public class AuthAPIClient extends  AbstractAPI{
 
                 if (code.equals("OK"))
                 {
+                    long userid = Long.parseLong((response.body().get("userid").toString()));
+
+                    getHttpClient().subscribe(userid);
                     Intent redirect = new Intent(signUpActivity, ChatsList.class);
                     Bundle b = new Bundle();
 
-                    b.putLong("userid", Long.parseLong((response.body().get("userid").toString())));
+                    b.putLong("userid", userid);
                     redirect.putExtras(b);
                     signUpActivity.startActivity(redirect);
                 }

@@ -120,6 +120,8 @@ public class ChatsList extends AppCompatActivity {
         openChat.putExtras(info);
         startActivity(openChat);
     }
+
+
     private class OpenChatListener implements View.OnClickListener
     {
         @Override

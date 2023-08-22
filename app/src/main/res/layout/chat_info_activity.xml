@@ -14,9 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:background="@color/primary">
-
         <TextView
-            android:id="@+id/chatTitle"
+            android:id="@+id/chatInfoTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -27,13 +26,12 @@
     </FrameLayout>
 
     <ScrollView
-        android:id="@+id/chatScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
         <LinearLayout
-            android:id="@+id/chatContent"
+            android:id="@+id/chatInfoContent"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -44,38 +42,4 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/bordertop"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/chatTextArea"
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/input_bg"
-            android:hint="Сообщение"
-            android:inputType="textMultiLine"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:textSize="16dp">
-
-        </EditText>
-
-        <ImageView
-            android:id="@+id/sendBtn"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@android:drawable/ic_menu_send"/>
-
-            <!---->
-    </LinearLayout>
 </LinearLayout>

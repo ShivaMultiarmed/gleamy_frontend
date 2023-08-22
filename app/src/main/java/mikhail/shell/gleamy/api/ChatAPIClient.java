@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
+import mikhail.shell.gleamy.activities.ChatInfoActivity;
 import mikhail.shell.gleamy.activities.ChatsList;
 import mikhail.shell.gleamy.activities.CreateChatActivity;
 import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.MsgInfo;
+import mikhail.shell.gleamy.models.UserInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,6 +45,36 @@ public class ChatAPIClient extends AbstractAPI {
     {
         activities.put(name, activity);
     }
+    private void subscribe(long chatid)
+    {
+        String topic = "/topics/chats/"+chatid;
+        getHttpClient().getSocket().send("{\"subscribe\": \""+topic+"\"}");
+    }
+    private void subscribeToAll(List<ChatInfo> chats)
+    {
+        for (ChatInfo chat : chats)
+            subscribe(chat.getId());
+    }
+    public void getChatMembers(long chatid)
+    {
+        ChatInfoActivity chatInfo = (ChatInfoActivity) activities.get("ChatInfoActivity");
+        Call<List<UserInfo>> call  = chatApi.getChatMembers(chatid);
+        call.enqueue(new Callback<>()
+            {
+                @Override
+                public void onResponse(Call<List<UserInfo>> call,  Response<List<UserInfo>> response)
+                {
+                    List<UserInfo> users = response.body();
+                    chatInfo.addAllUsers(users);
+                }
+                @Override
+                public void onFailure(Call<List<UserInfo>> call, Throwable t)
+                {
+
+                }
+            }
+        );
+    }
     public void getAllChats(long userid)
     {
         ChatsList chatsList = (ChatsList)activities.get("ChatsList");
@@ -51,6 +83,7 @@ public class ChatAPIClient extends AbstractAPI {
             @Override
             public void onResponse(Call<Map<Long, ChatInfo>> call, Response<Map<Long, ChatInfo>> response) {
                 chats = response.body();
+                //subscribeToAll(new ArrayList<>(chats.values()));
                 chatsList.displayAllChats(chats);
             }
 

@@ -17,4 +17,8 @@ public abstract class AbstractAPI {
     {
         activities.put(name, activity);
     }
+    public AppHttpClient getHttpClient()
+    {
+        return  httpClient;
+    }
 }
