@@ -46,6 +46,8 @@ public class AuthAPIClient extends  AbstractAPI{
                 loginActivity.displayMessage(code);
                 if (code.equals("OK"))
                 {
+                    long userid = Long.parseLong((response.body().get("userid").toString()));
+                    getHttpClient().subscribe(userid);
                     Intent toChatsList = new Intent(loginActivity, ChatsList.class);
                     Bundle b = new Bundle();
                     b.putLong("userid", Long.parseLong(response.body().get("userid")));

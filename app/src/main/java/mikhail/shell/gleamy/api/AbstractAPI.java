@@ -16,6 +16,7 @@ public abstract class AbstractAPI {
     public void addActivity(String name, Activity activity)
     {
         activities.put(name, activity);
+        getHttpClient().currentActivity = activity;
     }
     public AppHttpClient getHttpClient()
     {

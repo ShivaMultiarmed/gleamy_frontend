@@ -45,7 +45,7 @@ public class ChatAPIClient extends AbstractAPI {
     {
         activities.put(name, activity);
     }
-    private void subscribe(long chatid)
+    /*private void subscribe(long chatid)
     {
         String topic = "/topics/chats/"+chatid;
         getHttpClient().getSocket().send("{\"subscribe\": \""+topic+"\"}");
@@ -54,7 +54,7 @@ public class ChatAPIClient extends AbstractAPI {
     {
         for (ChatInfo chat : chats)
             subscribe(chat.getId());
-    }
+    }*/
     public void getChatMembers(long chatid)
     {
         ChatInfoActivity chatInfo = (ChatInfoActivity) activities.get("ChatInfoActivity");

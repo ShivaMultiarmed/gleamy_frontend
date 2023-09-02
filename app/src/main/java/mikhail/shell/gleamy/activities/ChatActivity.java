@@ -111,7 +111,7 @@ public class ChatActivity extends AppCompatActivity {
     {
         return msgs.get(msgid);
     }
-    private void sendMessage(String text)
+    public void sendMessage(String text)
     {
         MsgInfo msgInfo = new MsgInfo(userid,chatid,0,true,text, new Date());
         msgClient.sendMessage(msgInfo);
