@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ChatActivity"
+    android:background="#FFFFFF"
     android:orientation="vertical"
+    tools:context=".activities.ChatActivity"
     tools:layout_editor_absoluteX="1dp"
     tools:layout_editor_absoluteY="1dp">
 
@@ -20,17 +21,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:gravity="center_vertical"
             android:text=""
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"/>
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </FrameLayout>
 
     <ScrollView
         android:id="@+id/chatScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="#FFFFFF">
 
         <LinearLayout
             android:id="@+id/chatContent"
@@ -41,6 +46,17 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="580dp">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center_vertical"
+                    android:text="Напишите первое сообщение" />
+            </FrameLayout>
         </LinearLayout>
     </ScrollView>
 
@@ -53,11 +69,12 @@
 
         <EditText
             android:id="@+id/chatTextArea"
-            android:layout_width="300dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
+            android:layout_weight="1"
             android:background="@drawable/input_bg"
             android:hint="Сообщение"
             android:inputType="textMultiLine"
@@ -73,9 +90,10 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
             android:layout_marginBottom="15dp"
-            android:background="@android:drawable/ic_menu_send"/>
+            android:background="@android:drawable/ic_menu_send" />
 
-            <!---->
+        <!---->
     </LinearLayout>
 </LinearLayout>

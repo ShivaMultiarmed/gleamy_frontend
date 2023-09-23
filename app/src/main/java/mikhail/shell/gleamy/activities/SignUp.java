@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.AuthAPIClient;
 import retrofit2.http.Query;
 //import java.net.http.HttpClient;
@@ -37,7 +38,7 @@ public class SignUp extends AppCompatActivity {
     private void initHttp()
     {
         authAPIClient = AuthAPIClient.getClient();
-        authAPIClient.addActivity("SignUp", this);
+        AbstractAPI.addActivity("SignUp", this);
     }
     private void initViews()
     {

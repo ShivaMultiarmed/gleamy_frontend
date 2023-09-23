@@ -15,6 +15,7 @@ import java.util.Objects;
 //import java.net.http.HttpClient;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.AppHttpClient;
 import mikhail.shell.gleamy.api.AuthAPIClient;
 import mikhail.shell.gleamy.models.UserInfo;
@@ -42,7 +43,7 @@ public class LogIn extends AppCompatActivity {
     {
         httpClient = AppHttpClient.getClient();
         authAPIClient = AuthAPIClient.getClient();
-        authAPIClient.addActivity("LogIn", this);
+        AbstractAPI.addActivity("LogIn", this);
     }
     private void init()
     {

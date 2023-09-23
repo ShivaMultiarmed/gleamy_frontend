@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ChatActivity"
+    android:background="#FFFFFF"
     android:orientation="vertical"
+    tools:context=".activities.ChatActivity"
     tools:layout_editor_absoluteX="1dp"
     tools:layout_editor_absoluteY="1dp">
 
@@ -14,16 +15,29 @@
         android:layout_height="70dp"
         android:background="@color/primary">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:gravity="center_vertical"
+            android:text="Чаты"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </FrameLayout>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
+
         <ScrollView
             android:id="@+id/chatsListScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            >
+            android:background="#FFFFFF">
 
             <LinearLayout
                 android:id="@+id/chatsListContent"
@@ -32,17 +46,20 @@
                 android:orientation="vertical"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp">
+
+
             </LinearLayout>
 
         </ScrollView>
+
         <ImageView
             android:id="@+id/addChatBtn"
-            android:layout_height="50dp"
             android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="bottom|right"
             android:layout_margin="30dp"
-            app:srcCompat="@android:drawable/ic_menu_add"
-            android:background="@drawable/dark_circle"/>
+            android:background="@drawable/dark_circle"
+            app:srcCompat="@android:drawable/ic_menu_add" />
     </FrameLayout>
 
 </LinearLayout>

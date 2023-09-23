@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
 //import org.apache.http.client.HttpClient;
@@ -25,10 +26,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.MsgAPIClient;
 import mikhail.shell.gleamy.dao.MessageDAO;
+import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.models.MsgInfo;
 //import java.net.http.HttpClient
@@ -36,6 +40,8 @@ public class ChatActivity extends AppCompatActivity {
 
     //private HttpClient httpClient;
     private MessageDAO msgDAO;
+
+    private ChatInfo chatInfo;
 
     private long chatid, userid;
     private Map<Long,MsgInfo> msgInfos;
@@ -50,6 +56,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private EditText chatTextArea;
     private ImageView sendBtn;
+    private TextView chatTitle;
 
     private Message targetMessage;
 
@@ -69,9 +76,9 @@ public class ChatActivity extends AppCompatActivity {
 
         chatContent = findViewById(R.id.chatContent);
 
-        msgs = new HashMap<>();
+        msgs = new TreeMap<>();
         msgClient = MsgAPIClient.getClient();
-        msgClient.addActivity("ChatActivity", this);
+        AbstractAPI.addActivity("ChatActivity", this);
 
         msgClient.getChatMessages(chatid);
 
@@ -82,7 +89,8 @@ public class ChatActivity extends AppCompatActivity {
         chatTextArea = findViewById(R.id.chatTextArea);
         sendBtn = findViewById(R.id.sendBtn);
         sendBtn.setOnClickListener(sendListener);
-
+        chatTitle = findViewById(R.id.chatTitle);
+        chatTitle.setText(chatInfo.getTitle());
     }
     @Override
     protected void onStart()
@@ -92,19 +100,31 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void getBundle()
     {
-        Bundle info = getIntent().getExtras();
-        userid = info.getLong("userid");
-        chatid = info.getLong("chatid");
+        Bundle b = getIntent().getExtras();
+        chatInfo = (ChatInfo) b.getSerializable("chatInfo");
+        userid = b.getLong("userid", 0);
+        chatid = chatInfo.getId();
+
     }
-    public void viewAllMessages(Map<Long, MsgInfo> msgInfos)
+    public long getChatid() {
+        return chatid;
+    }
+
+    public long getUserid() {
+        return userid;
+    }
+    public void viewAllMessages(List<MsgInfo> msgInfos)
     {
-        Message msg;
-        int i = 0;
-        for (Map.Entry<Long,MsgInfo> info : msgInfos.entrySet())
+        if (!msgInfos.isEmpty())
         {
-            msgs.put(info.getKey(), createMessage(info.getValue()));
-            displayMessage(getMessage(info.getKey()));
+            clear();
+            for (MsgInfo info : msgInfos)
+            {
+                msgs.put(info.getMsgid(), createMessage(info));
+                displayMessage(getMessage(info.getMsgid()));
+            }
         }
+
     }
 
     public Message getMessage(long msgid)
@@ -221,5 +241,8 @@ public class ChatActivity extends AppCompatActivity {
     public EditText getChatTextArea() {
         return chatTextArea;
     }
-
+    public void clear()
+    {
+        chatContent.removeAllViews();
+    }
 }

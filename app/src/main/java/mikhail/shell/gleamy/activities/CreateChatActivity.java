@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.ChatAPIClient;
 import mikhail.shell.gleamy.api.UserAPIClient;
 import mikhail.shell.gleamy.models.ChatInfo;
@@ -24,7 +25,7 @@ public class CreateChatActivity extends AppCompatActivity {
     private long userid;
     private LinearLayout layout;
 
-    private Map<Long,User> users, chosen;
+    private Map<Long,User> users;
     private EditText chatNameInput, searchInput;
     private ImageView createChatBtn, searchBtn;
 
@@ -51,11 +52,11 @@ public class CreateChatActivity extends AppCompatActivity {
         chatInfo = new ChatInfo();
         chatInfo.addMember(userid);
 
+        AbstractAPI.addActivity("CreateChatActivity", this);
+
         userClient = UserAPIClient.getClient();
-        userClient.addActivity("CreateChatActivity", this);
 
         chatClient = ChatAPIClient.getClient();
-        chatClient.addActivity("CreateChatActivity", this);
 
         layout = findViewById(R.id.addUsersToChat);
 
@@ -86,9 +87,10 @@ public class CreateChatActivity extends AppCompatActivity {
     }
     public void displayUsers()
     {
-        layout.removeAllViews();
+        clear();
         for (User user : users.values())
         {
+
             displayUser(user);
         }
     }
@@ -101,15 +103,30 @@ public class CreateChatActivity extends AppCompatActivity {
     }
     public void displayUser(User user)
     {
+
         layout.addView(user);
+    }
+    public void clear()
+    {
+        layout.removeAllViews();
     }
     public void setChooseListener()
     {
         for (User user : users.values())
             user.setOnClickListener(view->{
                 User curUser = (User) view;
-                curUser.setBackgroundColor(getResources().getColor(R.color.input_background));
-                chatInfo.addMember(curUser.getUser().getId());
+                long userid = curUser.getUser().getId();
+                if (!chatInfo.hasMember(userid))
+                {
+                    chatInfo.addMember(userid);
+                    curUser.setBackgroundColor(getResources().getColor(R.color.input_background));
+                }
+                else
+                {
+                    chatInfo.removeMember(userid);
+                    curUser.setBackgroundColor(getResources().getColor(R.color.white));
+                }
+
             });
     }
 }

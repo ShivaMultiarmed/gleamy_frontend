@@ -6,17 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractAPI {
-    protected AppHttpClient httpClient;
-    protected final Map<String, Activity> activities;
+    private AppHttpClient httpClient;
+    protected final static Map<String, Activity> activities = new HashMap<>();
     public AbstractAPI()
     {
         httpClient = AppHttpClient.getClient();
-        activities = new HashMap<>();
     }
-    public void addActivity(String name, Activity activity)
+    public static void addActivity(String name, Activity activity)
     {
         activities.put(name, activity);
-        getHttpClient().currentActivity = activity;
+        AppHttpClient.currentActivity = activity;
+    }
+    public static Activity getActivity(String name)
+    {
+        return activities.get(name);
     }
     public AppHttpClient getHttpClient()
     {

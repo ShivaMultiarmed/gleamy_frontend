@@ -15,6 +15,10 @@ public class UserInfo implements Serializable {
         this.login = login;
         this.password = password;
     }
+    public UserInfo(long id)
+    {
+        setId(id);
+    }
 
     public long getId() {
         return id;

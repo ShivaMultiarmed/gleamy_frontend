@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MsgInfo implements Serializable {
-    public long msgid, userid, chatid;
+    public long msgid,userid,chatid;
     public boolean isMine;
     public String text;
     public Date datetime;
@@ -60,5 +60,12 @@ public class MsgInfo implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
+    }
+    public long getChatid() {
+        return chatid;
+    }
+
+    public void setChatid(long chatid) {
+        this.chatid = chatid;
     }
 }

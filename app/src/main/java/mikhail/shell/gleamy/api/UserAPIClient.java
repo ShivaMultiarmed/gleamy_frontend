@@ -24,7 +24,7 @@ public class UserAPIClient extends AbstractAPI{
 
     private UserAPIClient()
     {
-        userApi = httpClient.retrofit.create(UserApi.class);
+        userApi = getHttpClient().retrofit.create(UserApi.class);
     }
     public static UserAPIClient getClient()
     {

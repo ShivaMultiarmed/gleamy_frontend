@@ -29,15 +29,14 @@
 
             android:id="@+id/chatTitle"
             />
+
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Название чата"
-
-            android:textColor="@color/secondary"
-
             android:id="@+id/lastMsg"
-            />
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+
+            android:textColor="@color/secondary" />
 
     </LinearLayout>
 

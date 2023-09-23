@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.ChatAPIClient;
 import mikhail.shell.gleamy.models.User;
 import mikhail.shell.gleamy.models.UserInfo;
@@ -41,7 +42,7 @@ public class ChatInfoActivity extends AppCompatActivity {
     private void initHttp()
     {
         client = ChatAPIClient.getClient();
-        client.addActivity("ChatInfoActivity", this);
+        AbstractAPI.addActivity("ChatInfoActivity", this);
         client.getChatMembers(chatid);
     }
     private void initLayout()

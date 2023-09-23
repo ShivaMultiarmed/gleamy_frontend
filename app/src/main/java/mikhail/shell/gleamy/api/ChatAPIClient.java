@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.CompletableTransformer;
 import lombok.Getter;
 import mikhail.shell.gleamy.activities.ChatInfoActivity;
 import mikhail.shell.gleamy.activities.ChatsList;
@@ -28,11 +29,9 @@ public class ChatAPIClient extends AbstractAPI {
     private static  ChatAPIClient client;
     private ChatApi chatApi;
     private Map<Long,ChatInfo> chats;
-    private Map<String, Activity> activities;
     private ChatAPIClient()
     {
-        chatApi = httpClient.retrofit.create(ChatApi.class);
-        activities = new HashMap<>();
+        chatApi = getHttpClient().retrofit.create(ChatApi.class);
     }
 
     public static ChatAPIClient getClient()
@@ -41,10 +40,7 @@ public class ChatAPIClient extends AbstractAPI {
             client = new ChatAPIClient();
         return client;
     }
-    public void addActivity(String name, Activity activity)
-    {
-        activities.put(name, activity);
-    }
+
     /*private void subscribe(long chatid)
     {
         String topic = "/topics/chats/"+chatid;
@@ -79,6 +75,7 @@ public class ChatAPIClient extends AbstractAPI {
     {
         ChatsList chatsList = (ChatsList)activities.get("ChatsList");
         Call<Map<Long, ChatInfo>> call = chatApi.getAllChats(userid);
+
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Map<Long, ChatInfo>> call, Response<Map<Long, ChatInfo>> response) {
@@ -101,13 +98,22 @@ public class ChatAPIClient extends AbstractAPI {
             @Override
             public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response)
             {
-                chatInfo.setId(Long.parseLong(response.body().get("chatid")));
+                long chatid = Long.parseLong(response.body().get("chatid"));
+                chatInfo.setId(chatid);
+
+                for (Map.Entry<Long, UserInfo> entry : chatInfo.getUsers().entrySet())
+                {
+                    long curUser = entry.getKey();
+                    notifyNewMember(curUser, chatInfo);
+                }
+
                 Intent backToChats = new Intent();
                 Bundle b = new Bundle();
                 b.putSerializable("chatinfo", (Serializable) chatInfo);
                 backToChats.putExtras(b);
 
-                createChatActivity.setResult(-1, backToChats);
+
+                createChatActivity.setResult(Activity.RESULT_OK, backToChats);
                 createChatActivity.finish();
             }
             @Override
@@ -116,4 +122,11 @@ public class ChatAPIClient extends AbstractAPI {
             }
         });
     }
+    public void notifyNewMember(long userid, ChatInfo chatInfo)
+    {
+        //StompWrapper stompWrapper = new StompWrapper("NEWCHAT", chatInfo);
+        String stomp = getHttpClient().getGson().toJson(chatInfo, Serializable.class);
+        getHttpClient().getStompClient().send("/topic/users/"+userid, stomp).subscribe();
+    }
+
 }

@@ -48,10 +48,10 @@ public class ChatInfo implements Serializable {
         if (users != null)
             users.put(user.getId(), user);
     }
-    public void removeMember(UserInfo user)
+    public void removeMember(long userid)
     {
         if (users != null)
-            users.remove(user);
+            users.remove(users.get(userid));
     }
 
     public String getTitle() {
@@ -68,5 +68,15 @@ public class ChatInfo implements Serializable {
 
     public void setLast(MsgInfo last) {
         this.last = last;
+
+    }
+    public boolean hasMember(long userid)
+    {
+        return users.containsKey(userid);
+    }
+
+    public Map<Long, UserInfo> getUsers()
+    {
+        return users;
     }
 }

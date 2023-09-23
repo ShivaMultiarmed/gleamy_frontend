@@ -13,7 +13,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface AuthApi {
-    @GET("/gleamy/auth/login")
+    @POST("/gleamy/auth/login")
     Call<Map<String, String>> login(@Query("login") String login, @Query("password") String password);
     @POST("/gleamy/auth/signup")
     Call<Map<String, Object>> signup(@Query("login") String login, @Query("password") String password, @Query("email") String email);

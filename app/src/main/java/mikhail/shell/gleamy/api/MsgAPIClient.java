@@ -3,6 +3,7 @@ package mikhail.shell.gleamy.api;
 import android.app.Activity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import mikhail.shell.gleamy.activities.ChatActivity;
@@ -32,16 +33,16 @@ public class MsgAPIClient extends AbstractAPI{
     public void getChatMessages(long chatid)
     {
         ChatActivity chatActivity = (ChatActivity) activities.get("ChatActivity");
-        Call<Map<Long, MsgInfo>> call = msgApi.getChatMsgs(chatid);
+        Call<List<MsgInfo>> call = msgApi.getChatMsgs(chatid);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<Map<Long, MsgInfo>> call, Response<Map<Long, MsgInfo>> response) {
-                Map<Long, MsgInfo> msgs = response.body();
+            public void onResponse(Call<List<MsgInfo>> call, Response<List<MsgInfo>> response) {
+                List<MsgInfo> msgs = response.body();
                 chatActivity.viewAllMessages(msgs);
             }
 
             @Override
-            public void onFailure(Call<Map<Long, MsgInfo>> call, Throwable t) {
+            public void onFailure(Call<List<MsgInfo>> call, Throwable t) {
 
             }
         });

@@ -9,12 +9,28 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+import org.reactivestreams.Subscriber;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.function.Consumer;
 
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import mikhail.shell.gleamy.activities.ChatActivity;
+import mikhail.shell.gleamy.activities.ChatsList;
+import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.MsgInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
@@ -36,12 +52,15 @@ public class AppHttpClient{
     private static final String host = "158.160.22.54";
 
     protected final StompClient stompClient;
-    protected Activity currentActivity;
+    protected static Activity currentActivity;
     protected long userid;
+    private final GsonBuilder gsonBuilder;
     private final Gson gson;
     private AppHttpClient()
     {
-        gson = new GsonBuilder().create();
+        gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Serializable.class,new InterfaceAdapter<Serializable>());
+        gson = gsonBuilder.create();
 
         OkHttpClient.Builder okbuilder = new OkHttpClient.Builder();
 
@@ -103,7 +122,16 @@ public class AppHttpClient{
         getSocket().send(stomp);
     }*/
 
-    public void subscribe(long userid)
+    public StompClient getStompClient()
+    {
+        return stompClient;
+    }
+    public Gson getGson() {
+        return gson;
+    }
+
+
+    public void connect(long userid)
     {
 
         System.out.println("Trying to connect");
@@ -119,14 +147,43 @@ public class AppHttpClient{
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(msg -> {
-                                if (currentActivity instanceof ChatActivity)
+                                Serializable receivedObject = gson.fromJson(msg.getPayload(), Serializable.class);
+
+                                //String msgType = stompWrapper.getMsgType();
+                                //Serializable receivedObject = stompWrapper.getPayload();
+                                ChatsList list = (ChatsList) AbstractAPI.getActivity("ChatsList");
+                                switch (receivedObject.getClass().getName())
                                 {
-                                    ChatActivity chat = (ChatActivity) currentActivity;
-                                    MsgInfo msgInfo = gson.fromJson(msg.getPayload(), MsgInfo.class);
-                                    chat.getMsgs().put(msgInfo.msgid,chat.createMessage(msgInfo));
-                                    chat.displayMessage(chat.getMessage(msgInfo.msgid));
+                                    case "mikhail.shell.gleamy.models.MsgInfo":
+                                        MsgInfo msgInfo = (MsgInfo) receivedObject;
+                                        if (currentActivity instanceof ChatActivity)
+                                        {
+                                            ChatActivity chat = (ChatActivity) currentActivity;
+                                            if (chat.getChatid() == msgInfo.chatid)
+                                            {
+                                                if (chat.getMsgs().isEmpty())
+                                                    chat.clear();
+                                                chat.getMsgs().put(msgInfo.msgid,chat.createMessage(msgInfo));
+                                                chat.displayMessage(chat.getMessage(msgInfo.msgid));
+                                            }
+                                        }
+
+                                        list.elevateChat(msgInfo.getChatid(), msgInfo);
+
+                                        break;
+                                    case "mikhail.shell.gleamy.models.ChatInfo":
+                                        ChatInfo chatInfo = (ChatInfo) receivedObject;
+
+                                        if (list.isEmpty())
+                                            list.clear();
+                                        list.addChat(chatInfo);
+
+                                        stompClient.topic("/topic/chat/"+chatInfo.getId()).subscribe();
+
+                                        break;
+                                    default:
+                                        break;
                                 }
-                                System.out.println(msg.getPayload());
                             });
                     break;
 
@@ -186,6 +243,47 @@ public class AppHttpClient{
         public void onClosed(WebSocket socket, int code, String reason)
         {
             System.out.println("socket closing reason: " + reason);
+        }
+    }
+    private final class InterfaceAdapter<T> implements JsonSerializer<T>, JsonDeserializer<T> {
+
+        @Override
+        public T deserialize(JsonElement jsonElement, Type type,
+                             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            JsonPrimitive prim = (JsonPrimitive) jsonObject.get("msgType");
+            String msgType = prim.getAsString();
+            String prefix = "mikhail.shell.gleamy.models.";
+            Class klass = getObjectClass( prefix +
+                    switch (msgType)
+                            {
+                                case "RECEIVEDMESSAGE" -> "MsgInfo";
+                                case "NEWCHAT" -> "ChatInfo";
+                                default -> "";
+                            }
+            );
+            return jsonDeserializationContext.deserialize(jsonObject.get("payload"), klass);
+        }
+        @Override
+        public JsonElement serialize(T jsonElement, Type type, JsonSerializationContext jsonSerializationContext) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("msgType",
+                    switch (jsonElement.getClass().getName())
+                            {
+                                case "mikhail.shell.gleamy.models.MsgInfo" -> "RECEIVEDMESSAGE" ;
+                                case "mikhail.shell.gleamy.models.ChatInfo" -> "NEWCHAT";
+                                default -> "";
+                            });
+            jsonObject.add("payload", jsonSerializationContext.serialize(jsonElement));
+            return jsonObject;
+        }
+
+        public Class getObjectClass(String className) {
+            try {
+                return Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                throw new JsonParseException(e.getMessage());
+            }
         }
     }
 }

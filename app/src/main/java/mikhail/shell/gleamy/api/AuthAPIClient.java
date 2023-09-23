@@ -23,7 +23,7 @@ public class AuthAPIClient extends  AbstractAPI{
     private String code;
     private AuthAPIClient()
     {
-        authApi = httpClient.retrofit.create(AuthApi.class);
+        authApi = getHttpClient().retrofit.create(AuthApi.class);
     }
     public static AuthAPIClient getClient() {
         if (client == null)
@@ -47,7 +47,7 @@ public class AuthAPIClient extends  AbstractAPI{
                 if (code.equals("OK"))
                 {
                     long userid = Long.parseLong((response.body().get("userid").toString()));
-                    getHttpClient().subscribe(userid);
+                    getHttpClient().connect(userid);
                     Intent toChatsList = new Intent(loginActivity, ChatsList.class);
                     Bundle b = new Bundle();
                     b.putLong("userid", Long.parseLong(response.body().get("userid")));
@@ -83,7 +83,7 @@ public class AuthAPIClient extends  AbstractAPI{
                 {
                     long userid = Long.parseLong((response.body().get("userid").toString()));
 
-                    getHttpClient().subscribe(userid);
+                    getHttpClient().connect(userid);
                     Intent redirect = new Intent(signUpActivity, ChatsList.class);
                     Bundle b = new Bundle();
 
