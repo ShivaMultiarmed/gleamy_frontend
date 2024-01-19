@@ -1,11 +1,7 @@
 package mikhail.shell.gleamy.api;
 
-import static ua.naiksoftware.stomp.dto.LifecycleEvent.Type.OPENED;
-import static ua.naiksoftware.stomp.dto.LifecycleEvent.Type.CLOSED;
-import static ua.naiksoftware.stomp.dto.LifecycleEvent.Type.ERROR;
-
 import android.app.Activity;
-import android.util.Log;
+import android.os.Build;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,18 +14,16 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import org.reactivestreams.Subscriber;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
-import java.util.function.Consumer;
+import java.time.LocalDateTime;
 
-import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import mikhail.shell.gleamy.activities.ChatActivity;
-import mikhail.shell.gleamy.activities.ChatsList;
+import mikhail.shell.gleamy.activities.ChatsListActivity;
+import mikhail.shell.gleamy.api.json.adapters.DateTimeAdapter;
 import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.MsgInfo;
 import okhttp3.OkHttpClient;
@@ -46,9 +40,6 @@ public class AppHttpClient{
     protected static OkHttpClient okHttpClient;
     protected static AppHttpClient client;
     protected final Retrofit retrofit;
-    //@Getter
-    //protected final WebSocket socket;
-    //private Request request;
     private static final String host = "158.160.22.54";
 
     protected final StompClient stompClient;
@@ -60,6 +51,10 @@ public class AppHttpClient{
     {
         gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Serializable.class,new InterfaceAdapter<Serializable>());
+        System.out.println("sdk version is: " + Build.VERSION.SDK_INT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            gsonBuilder.registerTypeAdapter(LocalDateTime.class, new DateTimeAdapter());
+        }
         gson = gsonBuilder.create();
 
         OkHttpClient.Builder okbuilder = new OkHttpClient.Builder();
@@ -72,7 +67,7 @@ public class AppHttpClient{
         retrofit = new Retrofit.Builder()
                 .baseUrl("http://"+host+":8080/")
                 .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         /*request = new Request.Builder()
                 .url("ws://"+host+":8080/gleamy/websocket")
@@ -105,23 +100,6 @@ public class AppHttpClient{
         return currentActivity;
     }
 
-    /*public void subscribe(long userid)
-    {
-        String connectFrame = "CONNECT\n" +
-                "accept-version:1.2\n" +
-                "host:webBroker\n" +
-                "\n" +
-                "\u0000";
-        getSocket().send(connectFrame);
-        setUserid(userid);
-        String stomp = "SUBSCRIBE\n" +
-                "id:sub-"+userid+"\n" +
-                "destination:/gleamy/topic/users/"+userid+"\n"+
-                "\n"+
-                "\u0000";
-        getSocket().send(stomp);
-    }*/
-
     public StompClient getStompClient()
     {
         return stompClient;
@@ -129,8 +107,6 @@ public class AppHttpClient{
     public Gson getGson() {
         return gson;
     }
-
-
     public void connect(long userid)
     {
 
@@ -151,7 +127,7 @@ public class AppHttpClient{
 
                                 //String msgType = stompWrapper.getMsgType();
                                 //Serializable receivedObject = stompWrapper.getPayload();
-                                ChatsList list = (ChatsList) AbstractAPI.getActivity("ChatsList");
+                                ChatsListActivity list = (ChatsListActivity) AbstractAPI.getActivity("ChatsListActivity");
                                 switch (receivedObject.getClass().getName())
                                 {
                                     case "mikhail.shell.gleamy.models.MsgInfo":
@@ -226,7 +202,7 @@ public class AppHttpClient{
             /*String activityName = currentActivity.getLocalClassName();
             switch (activityName)
             {
-                case "ChatsList" ->
+                case "ChatsListActivity" ->
                 {
 
                 }

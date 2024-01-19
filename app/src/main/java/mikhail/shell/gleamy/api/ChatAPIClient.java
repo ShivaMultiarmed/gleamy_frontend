@@ -5,19 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.CompletableTransformer;
 import lombok.Getter;
 import mikhail.shell.gleamy.activities.ChatInfoActivity;
-import mikhail.shell.gleamy.activities.ChatsList;
+import mikhail.shell.gleamy.activities.ChatsListActivity;
 import mikhail.shell.gleamy.activities.CreateChatActivity;
 import mikhail.shell.gleamy.models.ChatInfo;
-import mikhail.shell.gleamy.models.MsgInfo;
 import mikhail.shell.gleamy.models.UserInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,7 +68,7 @@ public class ChatAPIClient extends AbstractAPI {
     }
     public void getAllChats(long userid)
     {
-        ChatsList chatsList = (ChatsList)activities.get("ChatsList");
+        ChatsListActivity chatsListActivity = (ChatsListActivity)activities.get("ChatsListActivity");
         Call<Map<Long, ChatInfo>> call = chatApi.getAllChats(userid);
 
         call.enqueue(new Callback<>() {
@@ -81,7 +76,7 @@ public class ChatAPIClient extends AbstractAPI {
             public void onResponse(Call<Map<Long, ChatInfo>> call, Response<Map<Long, ChatInfo>> response) {
                 chats = response.body();
                 //subscribeToAll(new ArrayList<>(chats.values()));
-                chatsList.displayAllChats(chats);
+                chatsListActivity.displayAllChats(chats);
             }
 
             @Override

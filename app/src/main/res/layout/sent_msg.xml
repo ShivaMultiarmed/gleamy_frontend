@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mikhail.shell.gleamy.models.Message xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
-    android:layout_marginTop="20dp">
+    android:layout_marginTop="20dp"
+    android:orientation="horizontal">
 
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/sent_msg"
-        android:padding='10dp'
-        android:layout_marginRight="5dp">
+        android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Some text"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/sent_msg"
+            android:orientation="vertical"
+            android:padding='10dp'>
 
-            android:textColor="@color/white"
+            <TextView
+                android:id="@+id/msgText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-            android:id="@+id/msgText"
-            />
+                android:text="Some text"
 
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/msgDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginRight="10dp"
+            android:text="10:00"
+            android:textColor="@color/primary"
+            android:textSize="12sp"/>
     </LinearLayout>
 
     <ImageView
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_gravity="bottom"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/img_bg" />
 </mikhail.shell.gleamy.models.Message>

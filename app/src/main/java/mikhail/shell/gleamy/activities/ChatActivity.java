@@ -2,28 +2,19 @@ package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-
-//import org.apache.http.client.HttpClient;
-
-import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,49 +23,33 @@ import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.MsgAPIClient;
 import mikhail.shell.gleamy.dao.MessageDAO;
+import mikhail.shell.gleamy.databinding.ChatActivityBinding;
 import mikhail.shell.gleamy.models.ChatInfo;
+import mikhail.shell.gleamy.models.DateView;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.models.MsgInfo;
-//import java.net.http.HttpClient
 public class ChatActivity extends AppCompatActivity {
-
-    //private HttpClient httpClient;
+    private ChatActivityBinding B;
     private MessageDAO msgDAO;
-
     private ChatInfo chatInfo;
-
     private long chatid, userid;
     private Map<Long,MsgInfo> msgInfos;
-
-
-
     private Map<Long, Message> msgs;
-
-    private LinearLayout chatContent;
-
-
-
-    private EditText chatTextArea;
-    private ImageView sendBtn;
-    private TextView chatTitle;
-
     private Message targetMessage;
-
     private View.OnClickListener sendListener, updListener;
     private MsgAPIClient msgClient;
-
-
+    private LocalDate lastMsgDate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat);
+        B = ChatActivityBinding.inflate(getLayoutInflater());
+        View root = B.getRoot();
+        setContentView(root);
 
         getBundle();
 
         msgDAO = MessageDAO.getInstance();
-
-        chatContent = findViewById(R.id.chatContent);
 
         msgs = new TreeMap<>();
         msgClient = MsgAPIClient.getClient();
@@ -85,18 +60,15 @@ public class ChatActivity extends AppCompatActivity {
         initSendListener();
         initUpdateListener();
 
+        B.sendBtn.setOnClickListener(sendListener);
+        B.setChatInfo(chatInfo);
 
-        chatTextArea = findViewById(R.id.chatTextArea);
-        sendBtn = findViewById(R.id.sendBtn);
-        sendBtn.setOnClickListener(sendListener);
-        chatTitle = findViewById(R.id.chatTitle);
-        chatTitle.setText(chatInfo.getTitle());
+
     }
     @Override
     protected void onStart()
     {
         super.onStart();
-
     }
     private void getBundle()
     {
@@ -123,20 +95,19 @@ public class ChatActivity extends AppCompatActivity {
                 msgs.put(info.getMsgid(), createMessage(info));
                 displayMessage(getMessage(info.getMsgid()));
             }
+            scrollToBottom();
         }
 
     }
-
     public Message getMessage(long msgid)
     {
         return msgs.get(msgid);
     }
     public void sendMessage(String text)
     {
-        MsgInfo msgInfo = new MsgInfo(userid,chatid,0,true,text, new Date());
+        B.chatTextArea.setText("");
+        MsgInfo msgInfo = new MsgInfo(userid,chatid,0,true,text);
         msgClient.sendMessage(msgInfo);
-
-
     }
     public Message createMessage(MsgInfo msgInfo)
     {
@@ -148,14 +119,10 @@ public class ChatActivity extends AppCompatActivity {
             viewId = R.layout.received_msg;
         Message msg = (Message) LayoutInflater.from(this).inflate(viewId, null);
         msg.init();
+
         msg.setInfo(msgInfo);
-        if (msgInfo.isMine) {
-            msg.setGravity(Gravity.RIGHT);
-        }
-        else
-        {
-            msg.setGravity(Gravity.LEFT);
-        }
+
+        msg.setGravity(msgInfo.isMine ? Gravity.RIGHT : Gravity.LEFT);
 
         registerForContextMenu(msg);
         return msg;
@@ -163,21 +130,22 @@ public class ChatActivity extends AppCompatActivity {
 
     public void displayMessage(Message msg)
     {
-        chatContent.addView(msg);
+        manageNewDateTime(msg.info.getDateTime());
+        B.chatContent.addView(msg);
     }
     private void removeMessage(long msgid)
     {
-        chatContent.removeView(msgs.get(msgid));
+        B.chatContent.removeView(msgs.get(msgid));
         msgs.remove(msgid);
         msgDAO.removeMessage(msgid);
     }
     private void startUpdatingMessage(Message msg)
     {
-        chatTextArea.setText(msg.info.text);
-        sendBtn.setOnClickListener(updListener);
+        B.chatTextArea.setText(msg.info.text);
+        B.sendBtn.setOnClickListener(updListener);
     }
     private void updateMessage(MsgInfo msgInfo){
-        chatTextArea.setText("");
+        B.chatTextArea.setText("");
         msgDAO.updateMessage(msgInfo);
         msgs.get(msgInfo.msgid).setInfo(msgInfo);
     }
@@ -194,7 +162,8 @@ public class ChatActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
-    {System.out.println(targetMessage + "item --------");
+    {
+        System.out.println(targetMessage + "item --------");
         switch (item.getItemId())
         {
             case R.id.edit:
@@ -212,7 +181,7 @@ public class ChatActivity extends AppCompatActivity {
         sendListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String text = chatTextArea.getText().toString();
+                String text = B.chatTextArea.getText().toString();
                 if (!text.equals(""))
                 {
                     sendMessage(text);
@@ -226,23 +195,59 @@ public class ChatActivity extends AppCompatActivity {
         updListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String text = chatTextArea.getText().toString();
+                String text = B.chatTextArea.getText().toString();
                 MsgInfo info = targetMessage.info;
                 info.text = text;
                 msgDAO.updateMessage(info);
                 updateMessage(info);
-                sendBtn.setOnClickListener(sendListener);
+                B.sendBtn.setOnClickListener(sendListener);
             }
         };
     }
     public Map<Long, Message> getMsgs() {
         return msgs;
     }
+    private LocalDate getLastMsgDate()
+    {
+        return lastMsgDate;
+    }
+    private void updateLastMsgDate(LocalDate date)
+    {
+        lastMsgDate = date;
+    }
     public EditText getChatTextArea() {
-        return chatTextArea;
+        return B.chatTextArea;
     }
     public void clear()
     {
-        chatContent.removeAllViews();
+        B.chatContent.removeAllViews();
+    }
+    public void addDateView(LocalDate date, boolean withYear)
+    {
+        DateView dateView = new DateView(this,date, withYear);
+        B.chatContent.addView(dateView);
+    }
+    private boolean needsNewDate(LocalDate date)
+    {
+        return !date.equals(getLastMsgDate()) || lastMsgDate == null;
+    }
+    private void manageNewDateTime(LocalDateTime dateTime)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && dateTime != null) {
+            LocalDate date = dateTime.toLocalDate();
+            if (needsNewDate(date)) {
+                boolean withYear;
+                if (lastMsgDate != null)
+                    withYear = date.getYear() > lastMsgDate.getYear();
+                else
+                    withYear = true;
+                updateLastMsgDate(date);
+                addDateView(date, withYear);
+            }
+        }
+    }
+    private void scrollToBottom()
+    {
+        B.chatScrollView.fullScroll(View.FOCUS_DOWN);
     }
 }

@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,21 +12,22 @@ import java.util.Map;
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.ChatAPIClient;
+import mikhail.shell.gleamy.databinding.ChatInfoActivityBinding;
 import mikhail.shell.gleamy.models.User;
 import mikhail.shell.gleamy.models.UserInfo;
 
 public class ChatInfoActivity extends AppCompatActivity {
+    private ChatInfoActivityBinding B;
     private ChatAPIClient client;
-    private LinearLayout content;
     private long userid, chatid;
     private Map<Long, User> users;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat_info_activity);
+        B = ChatInfoActivityBinding.inflate(getLayoutInflater());
+        setContentView(B.getRoot());
         initVars();
         initHttp();
-        initLayout();
     }
     private void initVars()
     {
@@ -45,10 +45,7 @@ public class ChatInfoActivity extends AppCompatActivity {
         AbstractAPI.addActivity("ChatInfoActivity", this);
         client.getChatMembers(chatid);
     }
-    private void initLayout()
-    {
-        content = findViewById(R.id.chatInfoContent);
-    }
+
     public void addAllUsers(List<UserInfo> users)
     {
         for (UserInfo user : users)
@@ -72,6 +69,6 @@ public class ChatInfoActivity extends AppCompatActivity {
     }
     public void displayUser(User user)
     {
-        content.addView(user);
+        B.chatInfoContent.addView(user);
     }
 }

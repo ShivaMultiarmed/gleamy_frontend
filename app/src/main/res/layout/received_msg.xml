@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mikhail.shell.gleamy.models.Message xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp">
+    android:layout_marginTop="20dp"
+    android:orientation="horizontal">
 
     <ImageView
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:background="@drawable/img_bg"
-        />
+        android:layout_marginTop="16dp"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/received_msg"
-        android:padding='10dp'
-
-        android:layout_marginLeft="5dp"
-        android:layout_gravity="left">
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/msgPublisher"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Some text"
+            android:layout_marginLeft="10sp"
+            android:text="Мужик"
+            android:textColor="@color/primary"
+            android:textSize="12sp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/received_msg"
 
-            android:textColor="@color/white"
-            android:id="@+id/msgText"
-            />
+            android:orientation="vertical"
+            android:padding='10dp'>
 
+            <TextView
+                android:id="@+id/msgText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="Some text"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/msgDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="10:00"
+            android:textColor="@color/primary"
+            android:textSize="12sp"/>
     </LinearLayout>
 </mikhail.shell.gleamy.models.Message>

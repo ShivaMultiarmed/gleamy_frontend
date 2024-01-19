@@ -1,17 +1,13 @@
 package mikhail.shell.gleamy.api;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import mikhail.shell.gleamy.activities.ChatsList;
-import mikhail.shell.gleamy.activities.LogIn;
-import mikhail.shell.gleamy.activities.SignUp;
-import mikhail.shell.gleamy.models.UserInfo;
-import okhttp3.Headers;
+import mikhail.shell.gleamy.activities.ChatsListActivity;
+import mikhail.shell.gleamy.activities.LogInActivity;
+import mikhail.shell.gleamy.activities.SignUpActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,7 +29,7 @@ public class AuthAPIClient extends  AbstractAPI{
 
     public void login(String login, String password)
     {
-        LogIn loginActivity = (LogIn)activities.get("LogIn");
+        LogInActivity loginActivity = (LogInActivity)activities.get("LogInActivity");
         Call<Map<String, String>> call = authApi.login(login, password);
         call.enqueue(new Callback<>() {
             @Override
@@ -48,7 +44,7 @@ public class AuthAPIClient extends  AbstractAPI{
                 {
                     long userid = Long.parseLong((response.body().get("userid").toString()));
                     getHttpClient().connect(userid);
-                    Intent toChatsList = new Intent(loginActivity, ChatsList.class);
+                    Intent toChatsList = new Intent(loginActivity, ChatsListActivity.class);
                     Bundle b = new Bundle();
                     b.putLong("userid", Long.parseLong(response.body().get("userid")));
                     toChatsList.putExtras(b);
@@ -67,7 +63,7 @@ public class AuthAPIClient extends  AbstractAPI{
     }
     public void signup( String login, String password, String email)
     {
-        SignUp signUpActivity = (SignUp) activities.get("SignUp");
+        SignUpActivity signUpActivity = (SignUpActivity) activities.get("SignUpActivity");
         Call<Map<String, Object>> call = authApi.signup( login,  password, email);
         call.enqueue(new Callback<>() {
             @Override
@@ -84,7 +80,7 @@ public class AuthAPIClient extends  AbstractAPI{
                     long userid = Long.parseLong((response.body().get("userid").toString()));
 
                     getHttpClient().connect(userid);
-                    Intent redirect = new Intent(signUpActivity, ChatsList.class);
+                    Intent redirect = new Intent(signUpActivity, ChatsListActivity.class);
                     Bundle b = new Bundle();
 
                     b.putLong("userid", userid);

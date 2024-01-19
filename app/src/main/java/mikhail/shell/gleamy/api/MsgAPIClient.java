@@ -55,13 +55,7 @@ public class MsgAPIClient extends AbstractAPI{
         call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Map<String, Long>> call, Response<Map<String, Long>> response) {
-                /*long msgid = response.body().get("msgid");
-                System.out.println("created msg: " + msgid);
-                curMsg.setMsgid(msgid);
 
-                chatActivity.getMsgs().put(msgid,chatActivity.createMessage(curMsg));
-                chatActivity.displayMessage(chatActivity.getMessage(msgid));*/
-                chatActivity.getChatTextArea().setText("");
             }
 
             @Override

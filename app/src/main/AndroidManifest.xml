@@ -16,16 +16,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ChatInfoActivity"
+            android:name=".activities.ChatInfoActivity"
             android:exported="false" />
         <activity
             android:name=".activities.CreateChatActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.ChatsList"
+            android:name=".activities.ChatsListActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.LogIn"
+            android:name=".activities.LogInActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -40,7 +40,7 @@
             android:name=".activities.ChatActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SignUp"
+            android:name=".activities.SignUpActivity"
             android:exported="false" />
     </application>
 

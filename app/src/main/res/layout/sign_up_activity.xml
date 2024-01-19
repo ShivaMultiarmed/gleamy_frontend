@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.SignUp"
+    tools:context=".activities.SignUpActivity"
     android:scrollbars="none|vertical"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
@@ -45,6 +45,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:text="Выберите изображение"
+                android:textColor="#FF171616"
                 android:textSize="10sp" />
         </FrameLayout>
 
@@ -56,7 +57,8 @@
             android:background="@drawable/input_bg"
             android:hint="Логин"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp" />
+            android:paddingEnd="20dp"
+            android:textColor="#FF171616" />
 
         <EditText
             android:id="@+id/signUpEmail"
@@ -67,7 +69,8 @@
             android:hint="E-mail"
             android:inputType="textEmailAddress"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp" />
+            android:paddingEnd="20dp"
+            android:textColor="#FF171616" />
 
         <EditText
             android:id="@+id/signUpPassword"
@@ -78,7 +81,8 @@
             android:hint="Пароль"
             android:inputType="textPassword"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp" />
+            android:paddingEnd="20dp"
+            android:textColor="#FF171616" />
 
         <TextView
             android:id="@+id/signUpMsg"

@@ -5,11 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 //import java.net.http.HttpClient;
@@ -18,22 +15,19 @@ import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.AppHttpClient;
 import mikhail.shell.gleamy.api.AuthAPIClient;
+import mikhail.shell.gleamy.databinding.LogInActivityBinding;
 import mikhail.shell.gleamy.models.UserInfo;
-public class LogIn extends AppCompatActivity {
-
-
+public class LogInActivity extends AppCompatActivity {
+    private LogInActivityBinding B;
     private AppHttpClient httpClient;
     private AuthAPIClient authAPIClient;
-
-    private EditText login, password;
-    private Button btn;
-    private TextView msgView;
     private List<UserInfo> users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.log_in);
+        B = LogInActivityBinding.inflate(getLayoutInflater());
+        setContentView(B.getRoot());
         initHttp();
         init();
         initBtn();
@@ -43,39 +37,30 @@ public class LogIn extends AppCompatActivity {
     {
         httpClient = AppHttpClient.getClient();
         authAPIClient = AuthAPIClient.getClient();
-        AbstractAPI.addActivity("LogIn", this);
+        AbstractAPI.addActivity("LogInActivity", this);
     }
     private void init()
     {
 
-        login = findViewById(R.id.logInName);
-        password = findViewById(R.id.logInPassword);
-        msgView = findViewById(R.id.logInMessage);
-
-
-
-
     }
     private void initBtn()
     {
-        btn = findViewById(R.id.logInBtn);
-        btn.setOnClickListener(e->{
-            String code = validate(login.getText().toString(), password.getText().toString());
+        B.logInBtn.setOnClickListener(e->{
+            String code = validate(B.logInName.getText().toString(), B.logInPassword.getText().toString());
             if (!code.equals("LOCALOK"))
                 displayMessage(code);
             else
-                authAPIClient.login(login.getText().toString(), password.getText().toString());
+                authAPIClient.login(B.logInName.getText().toString(), B.logInPassword.getText().toString());
         });
     }
     private void initLinkToSignUp()
     {
-        LogIn thisActivity = this;
-        TextView linkToSignUp = findViewById(R.id.linkToSignUp);
-        linkToSignUp.setOnClickListener(new View.OnClickListener()
+        LogInActivity thisActivity = this;
+        B.linkToSignUp.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(thisActivity, SignUp.class ));
+                startActivity(new Intent(thisActivity, SignUpActivity.class ));
             }
         });
     }
@@ -110,7 +95,7 @@ public class LogIn extends AppCompatActivity {
             case "EMPTY": msg = "Заполните поля";
                 break;
         }
-        msgView.setText(msg);
+        B.logInMessage.setText(msg);
     }
 
 }

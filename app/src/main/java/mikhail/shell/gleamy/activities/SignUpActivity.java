@@ -2,30 +2,20 @@ package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.AuthAPIClient;
-import retrofit2.http.Query;
-//import java.net.http.HttpClient;
+import mikhail.shell.gleamy.databinding.SignUpActivityBinding;
 
-public class SignUp extends AppCompatActivity {
-
+public class SignUpActivity extends AppCompatActivity {
+    private SignUpActivityBinding B;
     private AuthAPIClient authAPIClient;
-    private EditText userName, password, email;
-    private TextView msgView;
-    private Button btn;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sign_up);
+        B = SignUpActivityBinding.inflate(getLayoutInflater());
+        setContentView(B.getRoot());
     }
 
     @Override
@@ -38,31 +28,28 @@ public class SignUp extends AppCompatActivity {
     private void initHttp()
     {
         authAPIClient = AuthAPIClient.getClient();
-        AbstractAPI.addActivity("SignUp", this);
+        AbstractAPI.addActivity("SignUpActivity", this);
     }
     private void initViews()
     {
-        userName = findViewById(R.id.signUpName);
-        password = findViewById(R.id.signUpPassword);
-        email = findViewById(R.id.signUpEmail);
-        btn  = findViewById(R.id.signUpBtn);
-        btn.setOnClickListener(e->{
+        B.signUpBtn.setOnClickListener(e->{
             String code = validateLocal();
             if (!code.equals("LOCALOK"))
                 displayMessage(code);
             else
-                authAPIClient.signup(userName.getText().toString(), password.getText().toString(), email.getText().toString());
+                authAPIClient.signup(
+                        B.signUpName.getText().toString(),
+                        B.signUpPassword.getText().toString(),
+                        B.signUpEmail.getText().toString());
         });
-        msgView = findViewById(R.id.signUpMsg);
     }
     private String validateLocal()
     {
-        if (userName.getText().toString().equals("") || password.getText().toString().equals("") ||
-                email.getText().toString().equals(""))
+        if (B.signUpName.getText().toString().equals("") || B.signUpPassword.getText().toString().equals("") ||
+                B.signUpEmail.getText().toString().equals(""))
             return "EMPTY";
         else
             return "LOCALOK";
-                    //authAPIClient.signup(userName.getText().toString(), password.getText().toString(), email.getText().toString());
     }
     public void displayMessage(String code)
     {
@@ -80,6 +67,6 @@ public class SignUp extends AppCompatActivity {
                 msg = "Произошла ошибка.";
                 break;
         }
-        msgView.setText(msg);
+        B.signUpMsg.setText(msg);
     }
 }

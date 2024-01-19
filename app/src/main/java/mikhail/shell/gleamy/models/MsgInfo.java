@@ -1,24 +1,23 @@
 package mikhail.shell.gleamy.models;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Getter @Setter
 public class MsgInfo implements Serializable {
     public long msgid,userid,chatid;
     public boolean isMine;
-    public String text;
-    public Date datetime;
-    public MsgInfo(long userid, long chatid, long msgid, boolean isMine,String text, Date datetime)
+    public String text, login;
+    public LocalDateTime dateTime;
+    public MsgInfo(long userid, long chatid, long msgid, boolean isMine,String text)
     {
         this.userid = userid;
         this.msgid = msgid;
         this.text = text;
-        this.datetime = datetime;
         this.chatid = chatid;
     }
 
@@ -54,12 +53,12 @@ public class MsgInfo implements Serializable {
         this.text = text;
     }
 
-    public Date getDatetime() {
-        return datetime;
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
-    public void setDatetime(Date datetime) {
-        this.datetime = datetime;
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
     }
     public long getChatid() {
         return chatid;
