@@ -1,55 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mikhail.shell.gleamy.models.Message xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:orientation="horizontal">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/img_bg"
-        android:layout_marginTop="16dp"/>
+    <data>
+        <variable name="MsgInfo"
+            type="mikhail.shell.gleamy.models.MsgInfo" />
+    </data>
 
-    <LinearLayout
+    <mikhail.shell.gleamy.models.ReceivedMessage
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_gravity="left">
 
-        <TextView
-            android:id="@+id/msgPublisher"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10sp"
-            android:text="Мужик"
-            android:textColor="@color/primary"
-            android:textSize="12sp" />
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/img_bg" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginLeft="5dp"
-            android:background="@drawable/received_msg"
-
-            android:orientation="vertical"
-            android:padding='10dp'>
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/msgText"
+                android:id="@+id/msgPublisher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:text="@{MsgInfo.login}"
+                android:textColor="@color/primary"
+                android:textSize="12sp" />
 
-                android:text="Some text"
-                android:textColor="@color/white" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/received_msg"
 
+                android:orientation="vertical"
+                android:padding='10dp'>
+
+                <TextView
+                    android:id="@+id/msgText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="@{MsgInfo.text}"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/msgDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="@{MsgInfo.generateTimeString()}"
+                android:textColor="@color/primary"
+                android:textSize="12sp" />
         </LinearLayout>
-        <TextView
-            android:id="@+id/msgDateTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:text="10:00"
-            android:textColor="@color/primary"
-            android:textSize="12sp"/>
-    </LinearLayout>
-</mikhail.shell.gleamy.models.Message>
+    </mikhail.shell.gleamy.models.ReceivedMessage>
+</layout>

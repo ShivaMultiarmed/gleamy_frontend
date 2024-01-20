@@ -1,7 +1,10 @@
 package mikhail.shell.gleamy.models;
 
+import android.os.Build;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 import lombok.Getter;
@@ -66,5 +69,20 @@ public class MsgInfo implements Serializable {
 
     public void setChatid(long chatid) {
         this.chatid = chatid;
+    }
+    public String generateTimeString()
+    {
+        StringBuilder builder = new StringBuilder();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && dateTime != null) {
+            LocalTime time = dateTime.toLocalTime();
+            if (time.getHour() < 10)
+                builder.append(0);
+            builder.append(time.getHour());
+            builder.append(":");
+            if (time.getMinute() < 10)
+                builder.append(0);
+            builder.append(time.getMinute());
+        }
+        return builder.toString();
     }
 }

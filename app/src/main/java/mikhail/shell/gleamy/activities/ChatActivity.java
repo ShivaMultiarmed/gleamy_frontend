@@ -1,6 +1,7 @@
 package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +29,9 @@ import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.DateView;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.models.MsgInfo;
+import mikhail.shell.gleamy.models.ReceivedMessage;
+import mikhail.shell.gleamy.models.SentMessage;
+
 public class ChatActivity extends AppCompatActivity {
     private ChatActivityBinding B;
     private MessageDAO msgDAO;
@@ -44,8 +48,7 @@ public class ChatActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         B = ChatActivityBinding.inflate(getLayoutInflater());
-        View root = B.getRoot();
-        setContentView(root);
+        setContentView(B.getRoot());
 
         getBundle();
 
@@ -58,7 +61,7 @@ public class ChatActivity extends AppCompatActivity {
         msgClient.getChatMessages(chatid);
 
         initSendListener();
-        initUpdateListener();
+        //initUpdateListener();
 
         B.sendBtn.setOnClickListener(sendListener);
         B.setChatInfo(chatInfo);
@@ -111,26 +114,18 @@ public class ChatActivity extends AppCompatActivity {
     }
     public Message createMessage(MsgInfo msgInfo)
     {
-        int viewId;
         msgInfo.isMine = msgInfo.userid == userid;
-        if (msgInfo.isMine)
-            viewId = R.layout.sent_msg;
-        else
-            viewId = R.layout.received_msg;
-        Message msg = (Message) LayoutInflater.from(this).inflate(viewId, null);
-        msg.init();
+        Message msg = msgInfo.isMine ? new SentMessage(this, msgInfo) : new ReceivedMessage(this, msgInfo);
 
-        msg.setInfo(msgInfo);
-
-        msg.setGravity(msgInfo.isMine ? Gravity.RIGHT : Gravity.LEFT);
-
-        registerForContextMenu(msg);
+        registerForContextMenu(msg); // need to remove
         return msg;
     }
 
     public void displayMessage(Message msg)
     {
-        manageNewDateTime(msg.info.getDateTime());
+        LocalDateTime newDateTime = msg.getMsgInfo().getDateTime();
+        manageNewDateTime(newDateTime);
+
         B.chatContent.addView(msg);
     }
     private void removeMessage(long msgid)
@@ -141,13 +136,13 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void startUpdatingMessage(Message msg)
     {
-        B.chatTextArea.setText(msg.info.text);
+        B.chatTextArea.setText(msg.getMsgInfo().getText());
         B.sendBtn.setOnClickListener(updListener);
     }
     private void updateMessage(MsgInfo msgInfo){
         B.chatTextArea.setText("");
         msgDAO.updateMessage(msgInfo);
-        msgs.get(msgInfo.msgid).setInfo(msgInfo);
+        msgs.get(msgInfo.msgid).setMsgInfo(msgInfo);
     }
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo info)
@@ -160,7 +155,7 @@ public class ChatActivity extends AppCompatActivity {
         startUpdatingMessage(targetMessage);
         //removeMessage(targetMessage.info.msgid);
     }
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         System.out.println(targetMessage + "item --------");
@@ -175,7 +170,7 @@ public class ChatActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
     private void initSendListener()
     {
         sendListener = new View.OnClickListener() {
@@ -190,7 +185,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         };
     }
-    private void initUpdateListener()
+    /*private void initUpdateListener()
     {
         updListener = new View.OnClickListener() {
             @Override
@@ -203,7 +198,7 @@ public class ChatActivity extends AppCompatActivity {
                 B.sendBtn.setOnClickListener(sendListener);
             }
         };
-    }
+    }*/
     public Map<Long, Message> getMsgs() {
         return msgs;
     }
