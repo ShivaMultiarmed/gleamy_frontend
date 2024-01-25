@@ -1,6 +1,8 @@
 package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,87 +17,72 @@ import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.AppHttpClient;
 import mikhail.shell.gleamy.api.AuthAPIClient;
+import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.databinding.LogInActivityBinding;
 import mikhail.shell.gleamy.models.UserInfo;
+import mikhail.shell.gleamy.viewmodels.UserViewModel;
+
 public class LogInActivity extends AppCompatActivity {
     private LogInActivityBinding B;
-    private AppHttpClient httpClient;
-    private AuthAPIClient authAPIClient;
-    private List<UserInfo> users;
+    private WebClient webClient;
+    private UserViewModel userViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         B = LogInActivityBinding.inflate(getLayoutInflater());
         setContentView(B.getRoot());
-        initHttp();
-        init();
+
+        webClient = WebClient.getInstance();
+        initUserViewModel();
         initBtn();
         initLinkToSignUp();
     }
-    private void initHttp()
+    private void initUserViewModel()
     {
-        httpClient = AppHttpClient.getClient();
-        authAPIClient = AuthAPIClient.getClient();
-        AbstractAPI.addActivity("LogInActivity", this);
-    }
-    private void init()
-    {
-
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel.getResultCodeData().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String status) {
+                displayMessage(status);
+                if (status.equals("OK"))
+                    startChatsListActivity();
+            }
+        });
     }
     private void initBtn()
     {
         B.logInBtn.setOnClickListener(e->{
-            String code = validate(B.logInName.getText().toString(), B.logInPassword.getText().toString());
+            String login = B.logInName.getText().toString(), password = B.logInPassword.getText().toString();
+            String code = userViewModel.validate(login,password);
             if (!code.equals("LOCALOK"))
                 displayMessage(code);
             else
-                authAPIClient.login(B.logInName.getText().toString(), B.logInPassword.getText().toString());
+                userViewModel.login(login, password);
         });
     }
     private void initLinkToSignUp()
     {
-        LogInActivity thisActivity = this;
-        B.linkToSignUp.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(thisActivity, SignUpActivity.class ));
-            }
-        });
-    }
-    private String validate(String login, String password)
-    {
-        if (login.equals("") || password.equals(""))
-            return "EMPTY";
-        else
-            return "LOCALOK";
-
-    }
-
-    private UserInfo getUser(String login)
-    {
-        UserInfo user = null;
-        for (UserInfo u:users)
-            if (Objects.equals(u.login, login))
-                user = u;
-        return user;
+        Intent signUpIntent = new Intent(this, SignUpActivity.class );
+        B.linkToSignUp.setOnClickListener((view) -> startActivity(signUpIntent));
     }
     public void displayMessage(String status)
     {
-        String msg = null;
-        switch (status)
-        {
-            case "OK": msg = "Вы успешно вошли";
-                break;
-            case "PASSINCORRECT": msg = "Неверный пароль";
-                break;
-            case "NOTFOUND": msg = "Пользователь не найден";
-                break;
-            case "EMPTY": msg = "Заполните поля";
-                break;
-        }
+        String msg =
+            switch (status)
+            {
+                case "OK" -> "Вы успешно вошли";
+                case "PASSINCORRECT" -> "Неверный пароль";
+                case "NOTFOUND" -> "Пользователь не найден";
+                case "EMPTY" -> "Заполните поля";
+                default -> "Ошибка";
+            };
         B.logInMessage.setText(msg);
+    }
+    private void startChatsListActivity()
+    {
+        Intent intent = new Intent(this, ChatsListActivity.class);
+        startActivity(intent);
     }
 
 }

@@ -1,44 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mikhail.shell.gleamy.models.ChatView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:background="@drawable/bordertop">
-
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="left"
-        android:background="@drawable/img_bg"
-        android:id="@+id/chatAva"/>
-
-    <LinearLayout
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="chatInfo"
+            type="mikhail.shell.gleamy.models.ChatInfo"/>
+    </data>
+    <mikhail.shell.gleamy.models.ChatView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding='10dp'
-        android:layout_marginLeft="10dp">
+        android:layout_height="wrap_content"
+        android:background="@drawable/bordertop"
+        android:orientation="horizontal"
+        android:padding="10dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Название чата"
+        <ImageView
+            android:id="@+id/chatAva"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left"
+            android:background="@drawable/img_bg" />
 
-            android:textColor="@color/primary"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical"
+            android:padding='10dp'>
 
-            android:id="@+id/chatTitle"
-            />
+            <TextView
+                android:id="@+id/chatTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-        <TextView
-            android:id="@+id/lastMsg"
-            android:layout_width="wrap_content"
+                android:text="@{chatInfo.title}"
 
-            android:layout_height="wrap_content"
+                android:textColor="@color/primary" />
 
-            android:textColor="@color/secondary" />
+            <TextView
+                android:id="@+id/lastMsg"
+                android:layout_width="wrap_content"
 
-    </LinearLayout>
+                android:layout_height="wrap_content"
+
+                android:textColor="@color/secondary"
+                android:text='@{(chatInfo.last != null) ? chatInfo.last.text : "Напишите первое сообщение"}'/>
+
+        </LinearLayout>
 
 
-</mikhail.shell.gleamy.models.ChatView>
+    </mikhail.shell.gleamy.models.ChatView>
+</layout>

@@ -21,7 +21,7 @@ import retrofit2.Response;
 @Getter
 public class ChatAPIClient extends AbstractAPI {
     private long userid;
-    private static  ChatAPIClient client;
+    private static ChatAPIClient client;
     private ChatApi chatApi;
     private Map<Long,ChatInfo> chats;
     private ChatAPIClient()
@@ -36,16 +36,6 @@ public class ChatAPIClient extends AbstractAPI {
         return client;
     }
 
-    /*private void subscribe(long chatid)
-    {
-        String topic = "/topics/chats/"+chatid;
-        getHttpClient().getSocket().send("{\"subscribe\": \""+topic+"\"}");
-    }
-    private void subscribeToAll(List<ChatInfo> chats)
-    {
-        for (ChatInfo chat : chats)
-            subscribe(chat.getId());
-    }*/
     public void getChatMembers(long chatid)
     {
         ChatInfoActivity chatInfo = (ChatInfoActivity) activities.get("ChatInfoActivity");
@@ -75,10 +65,8 @@ public class ChatAPIClient extends AbstractAPI {
             @Override
             public void onResponse(Call<Map<Long, ChatInfo>> call, Response<Map<Long, ChatInfo>> response) {
                 chats = response.body();
-                //subscribeToAll(new ArrayList<>(chats.values()));
                 chatsListActivity.displayAllChats(chats);
             }
-
             @Override
             public void onFailure(Call<Map<Long, ChatInfo>> call, Throwable t) {
                 chats = null;
@@ -119,7 +107,6 @@ public class ChatAPIClient extends AbstractAPI {
     }
     public void notifyNewMember(long userid, ChatInfo chatInfo)
     {
-        //StompWrapper stompWrapper = new StompWrapper("NEWCHAT", chatInfo);
         String stomp = getHttpClient().getGson().toJson(chatInfo, Serializable.class);
         getHttpClient().getStompClient().send("/topic/users/"+userid, stomp).subscribe();
     }

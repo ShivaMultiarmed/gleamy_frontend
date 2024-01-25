@@ -1,55 +1,83 @@
 package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.ChatAPIClient;
-import mikhail.shell.gleamy.api.ChatApi;
 import mikhail.shell.gleamy.databinding.ChatsListActivityBinding;
 import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.ChatView;
 import mikhail.shell.gleamy.models.MsgInfo;
+import mikhail.shell.gleamy.viewmodels.ChatsListViewModel;
+import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
 public class ChatsListActivity extends AppCompatActivity {
     private ChatsListActivityBinding B;
     private static final int CREATE_CHAT_INTENT = 1;
-    private long userid;
     private Map<Long,ChatView> chats;
-    private ChatAPIClient chatsClient;
     private OpenChatListener openChatListener;
+    private ChatsListViewModel chatsListViewModel;
+    private UserViewModel userViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         B = ChatsListActivityBinding.inflate(getLayoutInflater());
         setContentView(B.getRoot());
-        retrieveBundle();
-        init();
-        initViews();
-        chatsClient.getAllChats(userid);
 
+        retrieveBundle();
+        initViewModels();
+        initChatsMap();
+        initViews();
+    }
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        chatsListViewModel.fetchAllChatsFromREST();
     }
     private void retrieveBundle()
     {
-        Bundle b = getIntent().getExtras();
-        userid = b.getLong("userid");
+        //Bundle b = getIntent().getExtras();
+        //userid = b.getLong("userid");
     }
-    private void init()
+    private void initViewModels()
     {
+        chatsListViewModel = ViewModelProviders.of(this).get(ChatsListViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
-        chatsClient  = ChatAPIClient.getClient();
-        AbstractAPI.addActivity("ChatsListActivity", this);
+        chatsListViewModel.getChatsLiveData().observe(this,
+                new Observer<Map<Long, ChatInfo>>()
+                {
+                    @Override
+                    public void onChanged(Map<Long, ChatInfo> chats)
+                    {
+                        displayAllChats(chats);
+                    }
+                }
+        );
+        chatsListViewModel.getLatestChatLiveData().observe(this, new Observer<ChatInfo>() {
+            @Override
+            public void onChanged(ChatInfo latestChat) {
+                addChat(latestChat);
+            }
+        });
+        chatsListViewModel.fetchAllChatsFromREST();
+
+    }
+    private void initChatsMap()
+    {
         chats = new LinkedHashMap<>();
-
     }
     private void initViews()
     {
@@ -66,15 +94,12 @@ public class ChatsListActivity extends AppCompatActivity {
     }
     private ChatView createChatView(ChatInfo info)
     {
-        ChatView chat= (ChatView) LayoutInflater.from(this).inflate(R.layout.chat_view, null);
-        chat.init();
-        chat.setInfo(info);
+        ChatView chat = new ChatView(this, info);
         chat.setOnClickListener(openChatListener);
         return chat;
     }
     private void displayChat(ChatView chat)
     {
-
         B.chatsListContent.addView(chat, 0);
     }
     public void addChat(ChatInfo chatInfo)
@@ -89,6 +114,7 @@ public class ChatsListActivity extends AppCompatActivity {
     {
         Intent chatCreation = new Intent(this, CreateChatActivity.class);
         Bundle b = new Bundle();
+        long userid = GleamyApp.getApp().getUser().getId();
         b.putLong("userid", userid);
         chatCreation.putExtras(b);
         startActivityForResult(chatCreation, CREATE_CHAT_INTENT);
@@ -100,13 +126,12 @@ public class ChatsListActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK)
             switch (requestCode)
             {
-                case CREATE_CHAT_INTENT:
+                case CREATE_CHAT_INTENT -> {
                     Bundle b = data.getExtras();
                     ChatInfo chatInfo = (ChatInfo) b.getSerializable("chatinfo");
                     addChat(chatInfo);
-                    break;
-                default:
-                    break;
+                }
+                default -> {}
             }
     }
 
@@ -114,6 +139,7 @@ public class ChatsListActivity extends AppCompatActivity {
     {
         Intent openChat = new Intent(this, ChatActivity.class);
         Bundle info = new Bundle();
+        long userid = GleamyApp.getApp().getUser().getId();
         info.putLong("userid", userid);
         info.putSerializable("chatInfo", chat);
         openChat.putExtras(info);
@@ -141,8 +167,6 @@ public class ChatsListActivity extends AppCompatActivity {
     }
     public void elevateChat(long chatid, MsgInfo last)
     {
-        getChatInfo(chatid).setLast(last);
-        getChatView(chatid).getLastMsg().setText(last.getText());
         B.chatsListContent.removeView(getChatView(chatid));
         B.chatsListContent.addView(getChatView(chatid), 0);
     }
@@ -153,5 +177,9 @@ public class ChatsListActivity extends AppCompatActivity {
     public ChatInfo getChatInfo(long chatid)
     {
         return getChatView(chatid).getInfo();
+    }
+    public ChatInfo getLatestChat()
+    {
+        return null;
     }
 }

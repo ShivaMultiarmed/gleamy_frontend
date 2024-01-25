@@ -2,7 +2,9 @@ package mikhail.shell.gleamy.models;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 
 import androidx.databinding.DataBindingUtil;
 
@@ -29,6 +31,13 @@ public class ReceivedMessage extends Message{
                 true
         );
         setMsgInfo(msgInfo);
+        //correctLayoutParams();
+    }
+    private void correctLayoutParams()
+    {
+        LayoutParams layoutParams = (LayoutParams) ((LinearLayout)this).getLayoutParams();
+        layoutParams.gravity = Gravity.RIGHT;
+        setLayoutParams(layoutParams);
     }
     @Override
     public void setMsgInfo(MsgInfo msgInfo) {

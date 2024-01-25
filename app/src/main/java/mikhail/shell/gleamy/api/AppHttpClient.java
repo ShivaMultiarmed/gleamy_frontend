@@ -69,10 +69,6 @@ public class AppHttpClient{
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
-        /*request = new Request.Builder()
-                .url("ws://"+host+":8080/gleamy/websocket")
-                .build();
-        socket = okHttpClient.newWebSocket(request, new AppWebSocketListener());*/
         stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP,
                 "ws://" + host + ":8080/gleamy/websocket");
     }
@@ -172,56 +168,9 @@ public class AppHttpClient{
                     break;
             }
         });
-
-
-
         //stompClient.send("/gleamy/topic/users/"+userid  , "My first STOMP message!").subscribe();
     }
-
-    private class AppWebSocketListener extends WebSocketListener {
-        @Override
-        public void onOpen(WebSocket socket, Response response)
-        {
-            System.out.println("socket is open");
-            try {
-                System.out.println(response.body().string());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-        @Override
-        public void onFailure(WebSocket socket, Throwable t, Response response)
-        {
-            System.out.println("Socket message: "+t.getMessage());
-        }
-        @Override
-        public void onMessage(WebSocket socket, String message)
-        {
-            System.out.println("from socket" + message);
-            /*String activityName = currentActivity.getLocalClassName();
-            switch (activityName)
-            {
-                case "ChatsListActivity" ->
-                {
-
-                }
-                case "ChatActivity" ->
-                {
-
-                }
-                default -> {
-
-                }
-            }*/
-        }
-        @Override
-        public void onClosed(WebSocket socket, int code, String reason)
-        {
-            System.out.println("socket closing reason: " + reason);
-        }
-    }
-    private final class InterfaceAdapter<T> implements JsonSerializer<T>, JsonDeserializer<T> {
+    public static final class InterfaceAdapter<T> implements JsonSerializer<T>, JsonDeserializer<T> {
 
         @Override
         public T deserialize(JsonElement jsonElement, Type type,

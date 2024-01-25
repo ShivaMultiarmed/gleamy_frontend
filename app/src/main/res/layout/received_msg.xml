@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-        <variable name="MsgInfo"
+        <variable name="msgInfo"
             type="mikhail.shell.gleamy.models.MsgInfo" />
     </data>
 
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
-                android:text="@{MsgInfo.login}"
+                android:text="@{msgInfo.login}"
                 android:textColor="@color/primary"
                 android:textSize="12sp" />
 
@@ -48,7 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
-                    android:text="@{MsgInfo.text}"
+                    android:text="@{msgInfo.text}"
                     android:textColor="@color/white" />
 
             </LinearLayout>
@@ -58,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="@{MsgInfo.generateTimeString()}"
+                android:text="@{msgInfo.generateTimeString()}"
                 android:textColor="@color/primary"
                 android:textSize="12sp" />
         </LinearLayout>

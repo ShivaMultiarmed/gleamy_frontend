@@ -1,72 +1,47 @@
 package mikhail.shell.gleamy.models;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.databinding.DataBindingUtil;
+
 import lombok.Getter;
 import lombok.Setter;
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.databinding.ChatViewBinding;
 
 @Getter
 @Setter
 public class ChatView extends LinearLayout {
-    private ChatInfo info;
-    private TextView chatTitle, lastMsg;
-    private ImageView chatAva;
 
-    public ChatView(Context context) {
+    private ChatViewBinding B;
+
+    public ChatView(Context context, ChatInfo chatInfo) {
         super(context);
+        init(chatInfo);
     }
     public ChatView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-    public ChatView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
 
     public ChatInfo getInfo() {
-        return info;
+        return B.getChatInfo();
     }
 
-    public void setInfo(ChatInfo info) {
-        this.info = info;
-        chatTitle.setText(info.getTitle());
-        MsgInfo last = info.getLast();
-        if (last != null)
-            lastMsg.setText(last.getText());
-        else
-            lastMsg.setText("Напишите первое сообщение");
-    }
-    public void init()
+    private void init(ChatInfo chatInfo)
     {
-        chatTitle = findViewById(R.id.chatTitle);
-        chatAva = findViewById(R.id.chatAva);
-        lastMsg = findViewById(R.id.lastMsg);
-    }
-    public TextView getChatTitle() {
-        return chatTitle;
+        LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
+        B = DataBindingUtil.inflate(inflater, R.layout.chat_view, this, true);
+        B.setChatInfo(chatInfo);
     }
 
-    public void setChatTitle(TextView chatTitle) {
-        this.chatTitle = chatTitle;
-    }
-
-    public TextView getLastMsg() {
-        return lastMsg;
-    }
-
-    public void setLastMsg(TextView lastMsg) {
-        this.lastMsg = lastMsg;
-    }
-
-    public ImageView getChatAva() {
-        return chatAva;
-    }
-
-    public void setChatAva(ImageView chatAva) {
-        this.chatAva = chatAva;
+    public MsgInfo getLastMsg()
+    {
+        return B.getChatInfo().getLast();
     }
 }
