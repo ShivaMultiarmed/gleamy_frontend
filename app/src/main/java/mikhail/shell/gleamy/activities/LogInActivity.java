@@ -6,20 +6,11 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 
-import java.util.List;
-import java.util.Objects;
 //import java.net.http.HttpClient;
 
-import mikhail.shell.gleamy.R;
-import mikhail.shell.gleamy.api.AbstractAPI;
-import mikhail.shell.gleamy.api.AppHttpClient;
-import mikhail.shell.gleamy.api.AuthAPIClient;
 import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.databinding.LogInActivityBinding;
-import mikhail.shell.gleamy.models.UserInfo;
 import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
 public class LogInActivity extends AppCompatActivity {
@@ -41,7 +32,7 @@ public class LogInActivity extends AppCompatActivity {
     private void initUserViewModel()
     {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        userViewModel.getResultCodeData().observe(this, new Observer<String>() {
+        userViewModel.getLoginData().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String status) {
                 displayMessage(status);

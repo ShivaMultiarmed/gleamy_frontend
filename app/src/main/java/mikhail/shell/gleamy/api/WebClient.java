@@ -168,13 +168,13 @@ public class WebClient {
         return gson.toJson(object);
     }
 
-    private void handleChatMessage(MsgInfo msgInfo)
+    private void handleChatMessage(MsgInfo msg)
     {
-        Log.i(TAG, "msg from: " + msgInfo.login + ". They say: " + msgInfo.text);
+        Log.i(TAG, "msg from: " + msg.login + ". They say: " + msg.text);
     }
-    private void handleNewChat(ChatInfo chatInfo)
+    private void handleNewChat(ChatInfo chat)
     {
-        Log.i(TAG, "new chat named: " + chatInfo.getTitle());
+        Log.i(TAG, "new chat named: " + chat.getTitle());
     }
 
     public <T> T createRetrofit(Class<T> klass)

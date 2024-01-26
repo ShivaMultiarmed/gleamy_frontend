@@ -37,7 +37,8 @@
             android:hint="Логин"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:textColor="#171616" />
+            android:textColor="#171616"
+            android:maxLines="1"/>
 
 
         <EditText
@@ -50,7 +51,8 @@
             android:inputType="textPassword"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
-            android:textColor="#FF171616" />
+            android:textColor="#FF171616"
+            android:maxLines="1" />
 
         <TextView
             android:id="@+id/logInMessage"

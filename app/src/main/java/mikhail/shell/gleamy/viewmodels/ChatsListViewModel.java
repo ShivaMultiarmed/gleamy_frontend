@@ -3,6 +3,7 @@ package mikhail.shell.gleamy.viewmodels;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import java.util.Collection;
@@ -18,6 +19,7 @@ import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.api.ChatApi;
 import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.models.ChatInfo;
+import mikhail.shell.gleamy.models.MsgInfo;
 import mikhail.shell.gleamy.models.UserInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -105,5 +107,10 @@ public class ChatsListViewModel extends ViewModel {
     protected void onCleared()
     {
         Log.i(TAG, "The viewmodel is cleared.");
+    }
+
+    public void setObserverToAllMessages(Observer<Map<Long, MsgInfo>> observer)
+    {
+        // to do
     }
 }

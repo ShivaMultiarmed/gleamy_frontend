@@ -1,34 +1,30 @@
 package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.AuthAPIClient;
 import mikhail.shell.gleamy.databinding.SignUpActivityBinding;
+import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
 public class SignUpActivity extends AppCompatActivity {
     private SignUpActivityBinding B;
-    private AuthAPIClient authAPIClient;
+    private UserViewModel userViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         B = SignUpActivityBinding.inflate(getLayoutInflater());
         setContentView(B.getRoot());
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
     }
 
     @Override
     protected void onStart()
     {
         super.onStart();
-        initHttp();
         initViews();
-    }
-    private void initHttp()
-    {
-        authAPIClient = AuthAPIClient.getClient();
-        AbstractAPI.addActivity("SignUpActivity", this);
     }
     private void initViews()
     {
@@ -37,10 +33,11 @@ public class SignUpActivity extends AppCompatActivity {
             if (!code.equals("LOCALOK"))
                 displayMessage(code);
             else
-                authAPIClient.signup(
+                userViewModel.signup(
                         B.signUpName.getText().toString(),
                         B.signUpPassword.getText().toString(),
-                        B.signUpEmail.getText().toString());
+                        B.signUpEmail.getText().toString()
+                );
         });
     }
     private String validateLocal()
@@ -53,20 +50,11 @@ public class SignUpActivity extends AppCompatActivity {
     }
     public void displayMessage(String code)
     {
-        String msg;
-        switch (code)
-        {
-            case "OK":
-                msg = "Вы успешно зарегистрировались.";
-                break;
-
-            case "EMPTY":
-                msg = "Заполните поля.";
-                break;
-            default:
-                msg = "Произошла ошибка.";
-                break;
-        }
+        String msg = switch (code) {
+            case "OK" -> "Вы успешно зарегистрировались.";
+            case "EMPTY" -> "Заполните поля.";
+            default -> "Произошла ошибка.";
+        };
         B.signUpMsg.setText(msg);
     }
 }

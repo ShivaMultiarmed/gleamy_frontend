@@ -1,13 +1,18 @@
 package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.api.AbstractAPI;
 import mikhail.shell.gleamy.api.ChatAPIClient;
@@ -16,67 +21,59 @@ import mikhail.shell.gleamy.databinding.CreateChatActivityBinding;
 import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.User;
 import mikhail.shell.gleamy.models.UserInfo;
+import mikhail.shell.gleamy.viewmodels.CreateChatViewModel;
 
 public class CreateChatActivity extends AppCompatActivity {
     private CreateChatActivityBinding B;
-    private long userid;
+    private CreateChatViewModel viewModel;
     private Map<Long,User> users;
-    private UserAPIClient userClient;
-    private ChatAPIClient chatClient;
-    private ChatInfo chatInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         B = CreateChatActivityBinding.inflate(getLayoutInflater());
         setContentView(B.getRoot());
 
-        init();
+        UserInfo user = GleamyApp.getApp().getUser();
+        viewModel = new ViewModelProvider(this, new CreateChatViewModel.Factory(user)).get(CreateChatViewModel.class);
+
+        initListeners();
     }
 
-    private void init()
+    private void initListeners()
     {
-        Bundle b = getIntent().getExtras();
-        userid = b.getLong("userid");
-
-        chatInfo = new ChatInfo();
-        chatInfo.addMember(userid);
-
-        AbstractAPI.addActivity("CreateChatActivity", this);
-
-        userClient = UserAPIClient.getClient();
-
-        chatClient = ChatAPIClient.getClient();
-
         B.createChatBtn.setOnClickListener(e->{
-
-            chatInfo.setTitle(B.chatTitleInput.getText().toString());
-            chatClient.addChat(chatInfo);
+            String input = B.chatTitleInput.getText().toString();
+            viewModel.getChat().setTitle(input);
+            viewModel.postChat();
         });
-
-
         B.searchUsersBtn.setOnClickListener(e->{
-            userClient.getUsersByLogin(B.searchUsersInput.getText().toString());
+            String input = B.searchUsersInput.getText().toString();
+            viewModel.getUsersByLogin(input);
         });
-        users = null; //createUsers(new ArrayList<UserInfo>());
-        //displayUsers();
     }
-    public void createUsers(Map<Long,UserInfo> infos)
+    void initObservers()
+    {
+        viewModel.observeChatMembers(this, members -> createUsers(members));
+        viewModel.observeStatus(this,
+                status -> {
+                    if (status.equals("OK"))
+                        goToChatsList();
+                    else
+                        Toast.makeText(this,"Не удалось создать чат.", 1000);
+                }
+        );
+    }
+    private void createUsers(Map<Long,UserInfo> infos)
     {
         users = new HashMap<>();
         for (UserInfo info : infos.values())
-        {
             users.put(info.getId(),createUser(info));
-        }
-
     }
-    public void displayUsers()
+    private void displayUsers()
     {
         clear();
         for (User user : users.values())
-        {
-
-            displayUser(user);
-        }
+             displayUser(user);
     }
     private User createUser(UserInfo info)
     {
@@ -85,16 +82,17 @@ public class CreateChatActivity extends AppCompatActivity {
         user.setUser(info);
         return user;
     }
-    public void displayUser(User user)
+    private void displayUser(User user)
     {
         B.addUsersToChat.addView(user);
     }
-    public void clear()
+    private void clear()
     {
         B.addUsersToChat.removeAllViews();
     }
-    public void setChooseListener()
+    private void setChooseListener()
     {
+        ChatInfo chatInfo = viewModel.getChat();
         for (User user : users.values())
             user.setOnClickListener(view->{
                 User curUser = (User) view;
@@ -111,5 +109,9 @@ public class CreateChatActivity extends AppCompatActivity {
                 }
 
             });
+    }
+    private void goToChatsList()
+    {
+
     }
 }
