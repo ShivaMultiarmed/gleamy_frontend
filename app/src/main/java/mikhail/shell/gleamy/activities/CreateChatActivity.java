@@ -1,9 +1,7 @@
 package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,9 +12,6 @@ import java.util.Map;
 
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.R;
-import mikhail.shell.gleamy.api.AbstractAPI;
-import mikhail.shell.gleamy.api.ChatAPIClient;
-import mikhail.shell.gleamy.api.UserAPIClient;
 import mikhail.shell.gleamy.databinding.CreateChatActivityBinding;
 import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.User;
@@ -46,12 +41,12 @@ public class CreateChatActivity extends AppCompatActivity {
             viewModel.getChat().setTitle(input);
             viewModel.postChat();
         });
-        B.searchUsersBtn.setOnClickListener(e->{
+        B.searchUsersBtn.setOnClickListener(view->{
             String input = B.searchUsersInput.getText().toString();
             viewModel.getUsersByLogin(input);
         });
     }
-    void initObservers()
+    private void initObservers()
     {
         viewModel.observeChatMembers(this, members -> createUsers(members));
         viewModel.observeStatus(this,
@@ -59,7 +54,7 @@ public class CreateChatActivity extends AppCompatActivity {
                     if (status.equals("OK"))
                         goToChatsList();
                     else
-                        Toast.makeText(this,"Не удалось создать чат.", 1000);
+                        Toast.makeText(this,"Не удалось создать чат.", Toast.LENGTH_SHORT);
                 }
         );
     }

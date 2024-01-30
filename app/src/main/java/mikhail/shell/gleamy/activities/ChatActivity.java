@@ -1,6 +1,7 @@
 package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Build;
@@ -9,6 +10,7 @@ import android.view.View;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,7 +25,6 @@ import mikhail.shell.gleamy.models.MsgInfo;
 import mikhail.shell.gleamy.models.ReceivedMessage;
 import mikhail.shell.gleamy.models.SentMessage;
 import mikhail.shell.gleamy.viewmodels.ChatViewModel;
-import mikhail.shell.gleamy.viewmodels.ChatViewModelFactory;
 
 public class ChatActivity extends AppCompatActivity {
     private ChatActivityBinding B;
@@ -39,23 +40,39 @@ public class ChatActivity extends AppCompatActivity {
         getBundle();
 
         msgs = new TreeMap<>();
-
-        chatViewModel.fetchAllMessagesFromREST();
-        chatViewModel.observeAllMessages(this, map -> addAllMessages(map.values().stream().collect(Collectors.toList())) );
-        chatViewModel.observeReceivedMessage(this, msg -> addMessage(msg));
-
-        setSendListener();
     }
     @Override
     protected void onStart()
     {
         super.onStart();
+
+        initChat();
+
+        setSendListener();
+    }
+    private void initChat()
+    {
+        chatViewModel.fetchAllMessages();
+        LifecycleOwner subscriber = this;
+        chatViewModel.observeMessages(subscriber,
+                (initialMap) -> {
+                    addAllMessages(new ArrayList<>(initialMap.values()));
+                    chatViewModel.removeObservers(subscriber);
+                    chatViewModel.observeMessages(subscriber,
+                            (map) -> {
+                                MsgInfo msg = chatViewModel.getLastMessage();
+                                addMessage(msg);
+                            }
+                    );
+                }
+        );
+        chatViewModel.fetchAllChatMembers();
     }
     private void getBundle()
     {
         Bundle b = getIntent().getExtras();
         ChatInfo chat = (ChatInfo) b.getSerializable("chatInfo");
-        chatViewModel = new ViewModelProvider(this, new ChatViewModelFactory(chat)).get(ChatViewModel.class);
+        chatViewModel = new ViewModelProvider(this, new ChatViewModel.ChatViewModelFactory(chat)).get(ChatViewModel.class);
         B.setChatInfo(chat);
     }
     private void addAllMessages(List<MsgInfo> msgInfos)
@@ -63,8 +80,7 @@ public class ChatActivity extends AppCompatActivity {
         if (!msgInfos.isEmpty())
         {
             clear();
-            for (MsgInfo msg : msgInfos)
-                addMessage(msg);
+            msgInfos.stream().forEach(msg -> addMessage(msg));
             scrollToBottom();
         }
     }

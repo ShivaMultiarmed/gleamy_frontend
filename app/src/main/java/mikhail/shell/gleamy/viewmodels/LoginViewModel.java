@@ -38,13 +38,14 @@ public class LoginViewModel extends AuthViewModel {
                     code = responseDetails.get("code");
                 else
                     code = "ERROR";
-                if (code.equals("OK"))
-                {
+                long userid = 0;
+                if (code.equals("OK")) {
                     webClient.connect();
-                    long userid = Long.valueOf(responseDetails.get("userid"));
+                    userid = Long.valueOf(responseDetails.get("userid"));
                     webClient.setUserStompConnection(userid);
                 }
                 loginData.postValue(code);
+                GleamyApp.getApp().setUser(new UserInfo(userid,login,password));
             }
 
             @Override

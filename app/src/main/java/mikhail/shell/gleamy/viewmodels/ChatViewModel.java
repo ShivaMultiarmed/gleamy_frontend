@@ -1,6 +1,5 @@
 package mikhail.shell.gleamy.viewmodels;
 
-import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -8,95 +7,110 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import mikhail.shell.gleamy.GleamyApp;
+import mikhail.shell.gleamy.api.ChatApi;
 import mikhail.shell.gleamy.api.MsgApi;
 import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.MsgInfo;
 import mikhail.shell.gleamy.models.UserInfo;
+import mikhail.shell.gleamy.repositories.ChatsRepo;
+import mikhail.shell.gleamy.repositories.MessagesRepo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChatViewModel extends ViewModel {
-    private final static String TAG = "ChatViewModel";
+    private final static String TAG = ChatViewModel.class.getName();
     private MutableLiveData<ChatInfo> chatData;
     private MutableLiveData<Map<Long,MsgInfo>> msgListData;
-    private MutableLiveData<MsgInfo> lastMsgData;
-    private WebClient webClient;
-    private MsgApi msgApi;
+    private MessagesRepo msgsRepo;
+    private ChatsRepo chatsRepo;
     public ChatViewModel(ChatInfo chat)
     {
-        webClient = WebClient.getInstance();
-
-        initLiveData();
-        initRetrofits();
+        initLiveData(chat);
+        initRepos();
+        initSubConsumer(chat.getId());
     }
-    private void initLiveData()
+    private void initRepos()
+    {
+        msgsRepo = new MessagesRepo();
+        chatsRepo = new ChatsRepo();
+    }
+    private void initLiveData(ChatInfo chat)
     {
         chatData = new MutableLiveData<>();
+        chatData.setValue(chat);
         msgListData = new MutableLiveData<>();
-        lastMsgData = new MutableLiveData<>();
     }
-    private void initRetrofits()
+    private void initSubConsumer(long chatid)
     {
-        msgApi = webClient.createRetrofit(MsgApi.class);
+        msgsRepo.observeIncomingMessage(msgListData, chatid);
     }
-    public void fetchAllMessagesFromREST()
+    public void fetchAllMessages()
     {
         long chatid = chatData.getValue().getId();
-        Call<List<MsgInfo>> call = msgApi.getChatMsgs(chatid);
-        call.enqueue(
-                new Callback<>() {
-                    @Override
-                    public void onResponse(Call<List<MsgInfo>> call, Response<List<MsgInfo>> response) {
-                        List<MsgInfo> msgsList = response.body();
-                        Map<Long, MsgInfo> msgMap = msgsList.stream().collect(Collectors.toMap(msg -> msg.msgid,msg -> msg));
-                        msgListData.postValue(msgMap);
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<MsgInfo>> call, Throwable t) {
-                        msgListData.postValue(null); // handle error via toast in activity
-                    }
-                }
-        );
+        msgsRepo.fetchAllMessages(msgListData, chatid);
     }
-    public void sendMessage(String text)
+    public void sendMessage(String text) {
+
+        MsgInfo msg = generateMessage(text);
+        msgsRepo.sendMessage(msg);
+    }
+    private MsgInfo generateMessage(String text)
     {
-        ChatInfo chat = chatData.getValue();
-        Set<Long> userids = chat.getUsers().keySet();
         long ownUserId = GleamyApp.getApp().getUser().getId();
         long chatid = chatData.getValue().getId();
         MsgInfo msg = new MsgInfo(ownUserId,chatid,0,true,text);
-        for (long userid : userids)
-            webClient.sendStompMessage("/topics/users/" + userid, msg);
+        return  msg;
     }
     public MsgInfo getLastMessage()
     {
-        return lastMsgData.getValue();
+        List<MsgInfo> msgsList = msgListData.getValue().values().stream().collect(Collectors.toList());
+        MsgInfo lastMsg = msgsList.get(msgsList.size()-1);
+        return lastMsg;
     }
     public LocalDate getLastMsgDate()
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && getLastMessage() != null && getLastMessage().getDateTime() != null) {
             return getLastMessage().getDateTime().toLocalDate();
         }
         else
             return null;
     }
-    public void observeAllMessages(LifecycleOwner subscriber, Observer<Map<Long, MsgInfo>> observer)
+    public void observeMessages(LifecycleOwner subscriber, Observer<Map<Long, MsgInfo>> observer)
     {
         msgListData.observe(subscriber, observer);
     }
-    public void observeReceivedMessage(LifecycleOwner subscriber, Observer<MsgInfo> observer)
+    public void removeObservers(LifecycleOwner subscriber)
     {
-        lastMsgData.observe(subscriber, observer);
+        msgListData.removeObservers(subscriber);
+    }
+    public static class ChatViewModelFactory implements ViewModelProvider.Factory {
+        private final ChatInfo chat;
+        public ChatViewModelFactory(ChatInfo chat)
+        {
+            this.chat = chat;
+        }
+        @Override
+        public <T extends ViewModel> T create(Class<T> type)
+        {
+            return (T) new ChatViewModel(chat);
+        }
+    }
+    public void fetchAllChatMembers()
+    {
+        chatsRepo.fetchAllChatMembers(chatData, chatData.getValue().getId());
     }
 }

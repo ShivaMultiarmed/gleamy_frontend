@@ -11,12 +11,13 @@ import android.os.Bundle;
 
 import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.databinding.LogInActivityBinding;
+import mikhail.shell.gleamy.viewmodels.LoginViewModel;
 import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
 public class LogInActivity extends AppCompatActivity {
     private LogInActivityBinding B;
     private WebClient webClient;
-    private UserViewModel userViewModel;
+    private LoginViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,30 +32,29 @@ public class LogInActivity extends AppCompatActivity {
     }
     private void initUserViewModel()
     {
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
-        userViewModel.getLoginData().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(String status) {
-                displayMessage(status);
-                if (status.equals("OK"))
-                    startChatsListActivity();
-            }
-        });
+        viewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        viewModel.getLoginData().observe(this,
+                (status) ->  {
+                    displayMessage(status);
+                    if (status.equals("OK"))
+                        startChatsListActivity();
+                }
+        );
     }
     private void initBtn()
     {
         B.logInBtn.setOnClickListener(e->{
             String login = B.logInName.getText().toString(), password = B.logInPassword.getText().toString();
-            String code = userViewModel.validate(login,password);
+            String code = viewModel.validate(login,password);
             if (!code.equals("LOCALOK"))
                 displayMessage(code);
             else
-                userViewModel.login(login, password);
+                viewModel.login(login, password);
         });
     }
     private void initLinkToSignUp()
     {
-        Intent signUpIntent = new Intent(this, SignUpActivity.class );
+        Intent signUpIntent = new Intent(this, SignUpActivity.class);
         B.linkToSignUp.setOnClickListener((view) -> startActivity(signUpIntent));
     }
     public void displayMessage(String status)

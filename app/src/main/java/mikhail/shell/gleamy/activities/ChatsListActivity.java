@@ -9,11 +9,11 @@ import android.os.Bundle;
 import android.view.View;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import mikhail.shell.gleamy.GleamyApp;
-import mikhail.shell.gleamy.api.AbstractAPI;
-import mikhail.shell.gleamy.api.ChatAPIClient;
 import mikhail.shell.gleamy.databinding.ChatsListActivityBinding;
 import mikhail.shell.gleamy.models.ChatInfo;
 import mikhail.shell.gleamy.models.ChatView;
@@ -39,12 +39,14 @@ public class ChatsListActivity extends AppCompatActivity {
         initViewModels();
         initChatsMap();
         initViews();
+
+        chatsListViewModel.fetchAllChatsFromREST();
     }
     @Override
     protected void onStart()
     {
         super.onStart();
-        chatsListViewModel.fetchAllChatsFromREST();
+
     }
     private void retrieveBundle()
     {
@@ -56,22 +58,16 @@ public class ChatsListActivity extends AppCompatActivity {
         chatsListViewModel = ViewModelProviders.of(this).get(ChatsListViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
-        chatsListViewModel.getChatsLiveData().observe(this,
-                new Observer<Map<Long, ChatInfo>>()
-                {
-                    @Override
-                    public void onChanged(Map<Long, ChatInfo> chats)
-                    {
-                        displayAllChats(chats);
-                    }
+        chatsListViewModel.getChatsLiveData().observe(this, chats -> displayAllChats(chats));
+        chatsListViewModel.getLatestChatLiveData().observe(this,
+                (latestChat) -> {
+                    addChat(latestChat);
+
+                    long chatid = latestChat.getId();
+                    MsgInfo msg = latestChat.getLast();
+                    elevateChat(chatid, msg);
                 }
         );
-        chatsListViewModel.getLatestChatLiveData().observe(this, new Observer<ChatInfo>() {
-            @Override
-            public void onChanged(ChatInfo latestChat) {
-                addChat(latestChat);
-            }
-        });
         chatsListViewModel.fetchAllChatsFromREST();
 
     }
@@ -84,13 +80,11 @@ public class ChatsListActivity extends AppCompatActivity {
         B.addChatBtn.setOnClickListener(e-> createChat());
         openChatListener = new OpenChatListener();
     }
-    public void displayAllChats(Map<Long, ChatInfo> chatInfos)
+    private void displayAllChats(Map<Long, ChatInfo> chatInfos)
     {
         if (!chatInfos.isEmpty())
             for (ChatInfo chatInfo : chatInfos.values())
-            {
                 addChat(chatInfo);
-            }
     }
     private ChatView createChatView(ChatInfo info)
     {
@@ -161,8 +155,7 @@ public class ChatsListActivity extends AppCompatActivity {
         public void onClick(View view)
         {
             ChatView chatView = (ChatView) view;
-            long chatid = chatView.getInfo().getId();
-            openChat(chats.get(chatid).getInfo());
+            openChat(chatView.getInfo());
         }
     }
     public void elevateChat(long chatid, MsgInfo last)

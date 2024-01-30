@@ -10,15 +10,12 @@ import java.util.List;
 import java.util.Map;
 
 import mikhail.shell.gleamy.R;
-import mikhail.shell.gleamy.api.AbstractAPI;
-import mikhail.shell.gleamy.api.ChatAPIClient;
 import mikhail.shell.gleamy.databinding.ChatInfoActivityBinding;
 import mikhail.shell.gleamy.models.User;
 import mikhail.shell.gleamy.models.UserInfo;
 
 public class ChatInfoActivity extends AppCompatActivity {
     private ChatInfoActivityBinding B;
-    private ChatAPIClient client;
     private long userid, chatid;
     private Map<Long, User> users;
     @Override
@@ -41,9 +38,7 @@ public class ChatInfoActivity extends AppCompatActivity {
     }
     private void initHttp()
     {
-        client = ChatAPIClient.getClient();
-        AbstractAPI.addActivity("ChatInfoActivity", this);
-        client.getChatMembers(chatid);
+
     }
 
     public void addAllUsers(List<UserInfo> users)

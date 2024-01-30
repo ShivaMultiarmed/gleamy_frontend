@@ -11,10 +11,8 @@ import lombok.Setter;
 
 @Data
 public class ChatInfo implements Serializable {
-
     private long id;
-    @Setter(AccessLevel.PRIVATE)
-    private final Map<Long, UserInfo> users;
+    private Map<Long, UserInfo> users;
     private String title;
     private MsgInfo last;
     public ChatInfo()
@@ -23,12 +21,10 @@ public class ChatInfo implements Serializable {
     }
     public ChatInfo(long id, String title, MsgInfo last)
     {
-
+        this();
         this.id = id;
-        users = new HashMap<>();
         this.title = title;
         this.last = last;
-
     }
     public long getId() {
         return id;
@@ -74,6 +70,10 @@ public class ChatInfo implements Serializable {
         return users.containsKey(userid);
     }
 
+    public void setUsers(Map<Long, UserInfo> users)
+    {
+        this.users = users;
+    }
     public Map<Long, UserInfo> getUsers()
     {
         return users;

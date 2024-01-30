@@ -4,20 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
-import mikhail.shell.gleamy.api.AbstractAPI;
-import mikhail.shell.gleamy.api.AuthAPIClient;
 import mikhail.shell.gleamy.databinding.SignUpActivityBinding;
+import mikhail.shell.gleamy.viewmodels.SignupViewModel;
 import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
 public class SignUpActivity extends AppCompatActivity {
     private SignUpActivityBinding B;
-    private UserViewModel userViewModel;
+    private SignupViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         B = SignUpActivityBinding.inflate(getLayoutInflater());
         setContentView(B.getRoot());
-        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(SignupViewModel.class);
     }
 
     @Override
@@ -33,7 +32,7 @@ public class SignUpActivity extends AppCompatActivity {
             if (!code.equals("LOCALOK"))
                 displayMessage(code);
             else
-                userViewModel.signup(
+                viewModel.signup(
                         B.signUpName.getText().toString(),
                         B.signUpPassword.getText().toString(),
                         B.signUpEmail.getText().toString()
