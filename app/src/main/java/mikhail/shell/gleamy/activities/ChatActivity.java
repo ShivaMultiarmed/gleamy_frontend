@@ -11,6 +11,7 @@ import android.view.View;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -61,7 +62,8 @@ public class ChatActivity extends AppCompatActivity {
                     chatViewModel.observeMessages(subscriber,
                             (map) -> {
                                 MsgInfo msg = chatViewModel.getLastMessage();
-                                addMessage(msg);
+                                if (!msgs.containsKey(msg.getMsgid()))
+                                    addMessage(msg);
                             }
                     );
                 }
@@ -128,7 +130,16 @@ public class ChatActivity extends AppCompatActivity {
     }
     private boolean needsNewDate(LocalDate date)
     {
-        return !date.equals(chatViewModel.getLastMsgDate()) || chatViewModel.getLastMsgDate() == null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            MsgInfo lastMsg = getSecondLastAddedMsg();
+            if (lastMsg == null)
+                return true;
+            else
+                return !date.equals(lastMsg.getDateTime().toLocalDate());
+        }
+        else
+            return false;
     }
     private void manageNewDateTime(LocalDateTime dateTime)
     {
@@ -136,8 +147,8 @@ public class ChatActivity extends AppCompatActivity {
             LocalDate date = dateTime.toLocalDate();
             if (needsNewDate(date)) {
                 boolean withYear;
-                if (chatViewModel.getLastMsgDate() != null)
-                    withYear = date.getYear() > chatViewModel.getLastMsgDate().getYear();
+                if (getSecondLastAddedMsg() != null)
+                    withYear = date.getYear() > getSecondLastAddedMsg().getDateTime().getYear();
                 else
                     withYear = true;
                 addDateView(date, withYear);
@@ -147,5 +158,20 @@ public class ChatActivity extends AppCompatActivity {
     private void scrollToBottom()
     {
         B.chatScrollView.fullScroll(View.FOCUS_DOWN);
+    }
+    private MsgInfo getLastAddedMsg()
+    {
+        long msgid = msgs.keySet().stream().skip(msgs.size()-1).findFirst().get();
+        return msgs.get(msgid).getMsgInfo();
+    }
+    private MsgInfo getSecondLastAddedMsg()
+    {
+        try{
+            long msgid = msgs.keySet().stream().skip(msgs.size() - 2).findFirst().get();
+            return msgs.get(msgid).getMsgInfo();
+        }
+        catch (IllegalArgumentException exception) {
+            return null;
+        }
     }
 }

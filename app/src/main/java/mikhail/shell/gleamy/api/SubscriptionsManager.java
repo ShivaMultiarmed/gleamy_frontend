@@ -18,8 +18,7 @@ public class SubscriptionsManager {
     }
     public void addConsumer(String topic)
     {
-        if (consumerExists(topic))
-            consumers.put(topic, new StompConsumer());
+        consumers.put(topic, new StompConsumer());
     }
     public StompConsumer getConsumer(String topic)
     {

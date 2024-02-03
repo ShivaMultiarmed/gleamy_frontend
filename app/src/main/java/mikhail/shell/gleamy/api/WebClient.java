@@ -204,21 +204,20 @@ public class WebClient {
     {
         webClient.setStompLifeCycle(createConsumer(userid));
     }
-    public void subscribe(String topic, Consumer<StompMessage> subConsumer)
+    private void subscribe(String topic)
     {
-        /*if (!subscriptionsManager.consumerExists(topic)) {
-            subscriptionsManager.addConsumer(topic);
-            StompConsumer consumer = subscriptionsManager.getConsumer(topic);*/
-            stompClient.topic(topic)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(subConsumer);
-        /*}
-        else
-        {
-            StompConsumer consumer = subscriptionsManager.getConsumer(topic);
-            consumer.addSubConsumer(subConsumer);
-        }
-        */
+        subscriptionsManager.addConsumer(topic);
+        StompConsumer consumer = subscriptionsManager.getConsumer(topic);
+        stompClient.topic(topic)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(consumer);
+    }
+    public void observeSubscription(String topic, Consumer<StompMessage> subConsumer)
+    {
+        if (!subscriptionsManager.consumerExists(topic))
+            subscribe(topic);
+        StompConsumer consumer = subscriptionsManager.getConsumer(topic);
+        consumer.addSubConsumer(subConsumer);
     }
 }

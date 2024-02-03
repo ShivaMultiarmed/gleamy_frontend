@@ -28,15 +28,6 @@ public class MessagesRepo extends AbstractRepo {
                     @Override
                     public void onResponse(Call<List<MsgInfo>> call, Response<List<MsgInfo>> response) {
                         List<MsgInfo> msgsList = response.body();
-                        /*Stream<MsgInfo> stream = msgsList.stream();
-                        stream = stream.filter(msg -> msg.getDateTime() != null);
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                            stream = stream.sorted((m1, m2) -> {
-                                LocalDateTime dt1 = m1.getDateTime(), dt2 = m2.getDateTime();
-                                return dt1.compareTo(dt2);
-                            });
-                        }
-                        Map<Long, MsgInfo> msgMap = stream.collect(Collectors.toMap(msg -> msg.msgid, msg -> msg));*/
                         Map<Long, MsgInfo> msgMap = new LinkedHashMap<>();
                         if (msgsList != null && !msgsList.isEmpty())
                             for (MsgInfo msg: msgsList)
@@ -70,7 +61,7 @@ public class MessagesRepo extends AbstractRepo {
     }
     public void observeIncomingMessage(MutableLiveData<Map<Long, MsgInfo>> msgsData, long chatid)
     {
-        webClient.subscribe("/topic/chats/" + chatid,
+        webClient.observeSubscription("/topic/chats/" + chatid,
                 message -> {
                     Map<Long, MsgInfo> msgsMap = msgsData.getValue();
                     MsgInfo msg = webClient.deserializePayload(message, MsgInfo.class);

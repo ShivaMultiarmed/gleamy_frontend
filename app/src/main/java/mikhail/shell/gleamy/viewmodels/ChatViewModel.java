@@ -11,6 +11,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,8 +80,12 @@ public class ChatViewModel extends ViewModel {
     }
     public MsgInfo getLastMessage()
     {
-        List<MsgInfo> msgsList = msgListData.getValue().values().stream().collect(Collectors.toList());
-        MsgInfo lastMsg = msgsList.get(msgsList.size()-1);
+        Collection<MsgInfo> msgInfos = msgListData.getValue().values();
+        MsgInfo lastMsg = null;
+        for (Iterator<MsgInfo> iterator = msgInfos.iterator(); iterator.hasNext();)
+            lastMsg = iterator.next();
+        //List<MsgInfo> msgsList = msgListData.getValue().values().stream().collect(Collectors.toList());
+        //MsgInfo lastMsg = msgsList.get(msgsList.size() - 1);
         return lastMsg;
     }
     public LocalDate getLastMsgDate()
