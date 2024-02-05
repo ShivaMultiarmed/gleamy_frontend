@@ -1,41 +1,51 @@
 package mikhail.shell.gleamy.models;
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import java.io.Serializable;
 
-import androidx.annotation.NonNull;
+import lombok.Getter;
+import lombok.Setter;
+//import java.net.http.HttpClient;
 
-import mikhail.shell.gleamy.R;
-
-
-public class User extends LinearLayout {
-    private UserInfo user;
-    private TextView login;
-
-    public User(Context context) {
-        super(context);
-    }
-    public User(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-    public User(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    public void init ()
+@Getter @Setter
+public class UserInfo implements Serializable {
+    public long id;
+    public String login, password;
+    public UserInfo(String login, String password)
     {
-        login = findViewById(R.id.userLogin);
+        this.login = login;
+        this.password = password;
+    }
+    public UserInfo(long id, String login, String password)
+    {
+        this(login, password);
+        this.id = id;
+    }
+    public UserInfo(long id)
+    {
+        setId(id);
     }
 
-    public UserInfo getUser() {
-        return user;
+    public long getId() {
+        return id;
     }
 
-    public void setUser(@NonNull UserInfo user) {
-        this.user = user;
-        login.setText(user.getLogin());
+    public void setId(long id) {
+        this.id = id;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

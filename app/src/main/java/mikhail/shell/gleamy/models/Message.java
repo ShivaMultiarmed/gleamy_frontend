@@ -1,31 +1,88 @@
 package mikhail.shell.gleamy.models;
 
-import android.content.Context;
 import android.os.Build;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import androidx.viewbinding.ViewBinding;
-
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Date;
 
-import mikhail.shell.gleamy.R;
-import mikhail.shell.gleamy.databinding.ReceivedMsgBinding;
+import lombok.Getter;
+import lombok.Setter;
 
-
-public abstract class Message extends LinearLayout {
-    public Message(Context context)
+@Getter @Setter
+public class MsgInfo implements Serializable {
+    public long msgid,userid,chatid;
+    public boolean isMine;
+    public String text, login;
+    public LocalDateTime dateTime;
+    public MsgInfo(long userid, long chatid, long msgid, boolean isMine,String text)
     {
-        super(context);
+        this.userid = userid;
+        this.msgid = msgid;
+        this.text = text;
+        this.chatid = chatid;
     }
-    public Message(Context context, AttributeSet attrs) {
-        super(context, attrs);
+
+    public long getMsgid() {
+        return msgid;
     }
-    abstract protected void init(MsgInfo msgInfo);
-    abstract public void setMsgInfo(MsgInfo msgInfo);
-    abstract public MsgInfo getMsgInfo();
+
+    public void setMsgid(long msgid) {
+        this.msgid = msgid;
+    }
+
+    public long getUserid() {
+        return userid;
+    }
+
+    public void setUserid(long userid) {
+        this.userid = userid;
+    }
+
+    public boolean isMine() {
+        return isMine;
+    }
+
+    public void setMine(boolean mine) {
+        isMine = mine;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+    public long getChatid() {
+        return chatid;
+    }
+
+    public void setChatid(long chatid) {
+        this.chatid = chatid;
+    }
+    public String generateTimeString()
+    {
+        StringBuilder builder = new StringBuilder();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && dateTime != null) {
+            LocalTime time = dateTime.toLocalTime();
+            if (time.getHour() < 10)
+                builder.append(0);
+            builder.append(time.getHour());
+            builder.append(":");
+            if (time.getMinute() < 10)
+                builder.append(0);
+            builder.append(time.getMinute());
+        }
+        return builder.toString();
+    }
 }

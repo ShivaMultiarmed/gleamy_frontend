@@ -4,16 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.databinding.DataBindingUtil;
 
 import lombok.Getter;
 import lombok.Setter;
 import mikhail.shell.gleamy.R;
-import mikhail.shell.gleamy.databinding.ChatViewBinding;
 
 @Getter
 @Setter
@@ -21,26 +18,26 @@ public class ChatView extends LinearLayout {
 
     private ChatViewBinding B;
 
-    public ChatView(Context context, ChatInfo chatInfo) {
+    public ChatView(Context context, Chat chat) {
         super(context);
-        init(chatInfo);
+        init(chat);
     }
     public ChatView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ChatInfo getInfo() {
+    public Chat getInfo() {
         return B.getChatInfo();
     }
 
-    private void init(ChatInfo chatInfo)
+    private void init(Chat chat)
     {
         LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
         B = DataBindingUtil.inflate(inflater, R.layout.chat_view, this, true);
-        B.setChatInfo(chatInfo);
+        B.setChatInfo(chat);
     }
 
-    public MsgInfo getLastMsg()
+    public Message getLastMsg()
     {
         return B.getChatInfo().getLast();
     }

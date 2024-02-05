@@ -2,23 +2,21 @@ package mikhail.shell.gleamy.models;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
 
 import androidx.databinding.DataBindingUtil;
 
 import mikhail.shell.gleamy.R;
-import mikhail.shell.gleamy.databinding.ReceivedMsgBinding;
+import mikhail.shell.gleamy.databinding.SentMsgBinding;
 
-public class ReceivedMessage extends Message{
-    private ReceivedMsgBinding B;
-    public ReceivedMessage(Context context, MsgInfo msgInfo)
+public class SentMessageView extends MessageView {
+    private SentMsgBinding B;
+    public SentMessageView(Context context, MsgInfo msgInfo)
     {
         super(context);
         init(msgInfo);
     }
-    public ReceivedMessage(Context context, AttributeSet attrs) {
+    public SentMessageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
     @Override
@@ -26,18 +24,11 @@ public class ReceivedMessage extends Message{
     {
         B = DataBindingUtil.inflate(
                 LayoutInflater.from(getContext()),
-                R.layout.received_msg,
+                R.layout.sent_msg,
                 this,
                 true
         );
-        setMsgInfo(msgInfo);
-        //correctLayoutParams();
-    }
-    private void correctLayoutParams()
-    {
-        LayoutParams layoutParams = (LayoutParams) ((LinearLayout)this).getLayoutParams();
-        layoutParams.gravity = Gravity.RIGHT;
-        setLayoutParams(layoutParams);
+        B.setMsgInfo(msgInfo);
     }
     @Override
     public void setMsgInfo(MsgInfo msgInfo) {
