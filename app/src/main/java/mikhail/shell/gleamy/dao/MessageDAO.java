@@ -1,21 +1,18 @@
 package mikhail.shell.gleamy.dao;
 
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import mikhail.shell.gleamy.models.Message;
-import mikhail.shell.gleamy.models.MsgInfo;
 
 public class MessageDAO {
     private static MessageDAO msgDAO;
-    public static final Map<Long, MsgInfo> infos = new HashMap<>();
+    public static final Map<Long, Message> infos = new HashMap<>();
     private MessageDAO ()
     {
         for (int i=0;i<5;i++)
         {
-            //infos.put((long)(i+1),new MsgInfo(i%2+1, 1,i+1, i%2+1==1,"Brand new text", new LocalDateTime()));
+            //infos.put((long)(i+1),new Message(i%2+1, 1,i+1, i%2+1==1,"Brand new text", new LocalDateTime()));
         }
     }
     public static MessageDAO getInstance()
@@ -24,11 +21,11 @@ public class MessageDAO {
             msgDAO = new MessageDAO();
         return msgDAO;
     }
-    public MsgInfo getMessage(long msgid)
+    public Message getMessage(long msgid)
     {
         return infos.get(msgid);
     }
-    public Map<Long,MsgInfo> getAllMessages()
+    public Map<Long, Message> getAllMessages()
     {
         return infos;
     }
@@ -36,8 +33,8 @@ public class MessageDAO {
     {
         infos.remove(msgid);
     }
-    public void updateMessage(MsgInfo info) { infos.replace(info.msgid, info);}
-    public long addMessage(MsgInfo info)
+    public void updateMessage(Message info) { infos.replace(info.msgid, info);}
+    public long addMessage(Message info)
     {
         System.out.println("sending a msg");
         info.msgid = infos.entrySet().stream().reduce((first,second) -> second).get().getValue().msgid+1;

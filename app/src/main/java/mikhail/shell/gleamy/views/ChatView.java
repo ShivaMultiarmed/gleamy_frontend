@@ -1,4 +1,4 @@
-package mikhail.shell.gleamy.models;
+package mikhail.shell.gleamy.views;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +11,9 @@ import androidx.databinding.DataBindingUtil;
 import lombok.Getter;
 import lombok.Setter;
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.databinding.ChatViewBinding;
+import mikhail.shell.gleamy.models.Chat;
+import mikhail.shell.gleamy.models.Message;
 
 @Getter
 @Setter
@@ -27,18 +30,18 @@ public class ChatView extends LinearLayout {
     }
 
     public Chat getInfo() {
-        return B.getChatInfo();
+        return B.getChat();
     }
 
     private void init(Chat chat)
     {
         LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
         B = DataBindingUtil.inflate(inflater, R.layout.chat_view, this, true);
-        B.setChatInfo(chat);
+        B.setChat(chat);
     }
 
     public Message getLastMsg()
     {
-        return B.getChatInfo().getLast();
+        return B.getChat().getLast();
     }
 }

@@ -2,13 +2,11 @@ package mikhail.shell.gleamy.viewmodels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.util.Map;
 
 import mikhail.shell.gleamy.GleamyApp;
-import mikhail.shell.gleamy.api.WebClient;
-import mikhail.shell.gleamy.models.UserInfo;
+import mikhail.shell.gleamy.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,7 +43,7 @@ public class LoginViewModel extends AuthViewModel {
                     webClient.setUserStompConnection(userid);
                 }
                 loginData.postValue(code);
-                GleamyApp.getApp().setUser(new UserInfo(userid,login,password));
+                GleamyApp.getApp().setUser(new User(userid,login,password));
             }
 
             @Override

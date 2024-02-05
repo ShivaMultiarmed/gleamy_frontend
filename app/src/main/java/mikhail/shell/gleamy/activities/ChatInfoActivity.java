@@ -12,12 +12,12 @@ import java.util.Map;
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.ChatInfoActivityBinding;
 import mikhail.shell.gleamy.models.User;
-import mikhail.shell.gleamy.models.UserInfo;
+import mikhail.shell.gleamy.views.UserView;
 
 public class ChatInfoActivity extends AppCompatActivity {
     private ChatInfoActivityBinding B;
     private long userid, chatid;
-    private Map<Long, User> users;
+    private Map<Long, UserView> users;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,29 +41,29 @@ public class ChatInfoActivity extends AppCompatActivity {
 
     }
 
-    public void addAllUsers(List<UserInfo> users)
+    public void addAllUsers(List<User> users)
     {
-        for (UserInfo user : users)
+        for (User user : users)
             addUser(user);
     }
-    public void addUser(UserInfo user)
+    public void addUser(User user)
     {
         users.put(user.getId(), createUser(user));
     }
-    private User createUser(UserInfo info)
+    private UserView createUser(User info)
     {
-        User user = (User)  LayoutInflater.from(this).inflate(R.layout.user_view, null);
-        user.init();
-        user.setUser(info);
-        return user;
+        UserView userView = (UserView)  LayoutInflater.from(this).inflate(R.layout.user_view, null);
+        userView.init();
+        userView.setUser(info);
+        return userView;
     }
-    public void displayAllUsers(Map<Long, User> users)
+    public void displayAllUsers(Map<Long, UserView> users)
     {
-        for (User user : users.values())
-            displayUser(user);
+        for (UserView userView : users.values())
+            displayUser(userView);
     }
-    public void displayUser(User user)
+    public void displayUser(UserView userView)
     {
-        B.chatInfoContent.addView(user);
+        B.chatInfoContent.addView(userView);
     }
 }

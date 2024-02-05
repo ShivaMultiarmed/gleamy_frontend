@@ -2,11 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-        <variable name="msgInfo"
-            type="mikhail.shell.gleamy.models.MsgInfo" />
+        <variable name="message"
+            type="mikhail.shell.gleamy.models.Message" />
     </data>
 
-    <mikhail.shell.gleamy.models.ReceivedMessage
+    <mikhail.shell.gleamy.views.ReceivedMessageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
-                android:text="@{msgInfo.login}"
+                android:text="@{message.login}"
                 android:textColor="@color/primary"
                 android:textSize="12sp" />
 
@@ -48,7 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
-                    android:text="@{msgInfo.text}"
+                    android:text="@{message.text}"
                     android:textColor="@color/white" />
 
             </LinearLayout>
@@ -58,9 +58,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:text="@{msgInfo.generateTimeString()}"
+                android:text="@{message.generateTimeString()}"
                 android:textColor="@color/primary"
                 android:textSize="12sp" />
         </LinearLayout>
-    </mikhail.shell.gleamy.models.ReceivedMessage>
+    </mikhail.shell.gleamy.views.ReceivedMessageView>
 </layout>

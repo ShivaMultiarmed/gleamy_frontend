@@ -1,23 +1,28 @@
 package mikhail.shell.gleamy.activities;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.databinding.ChatsListActivityBinding;
-import mikhail.shell.gleamy.models.ChatInfo;
-import mikhail.shell.gleamy.models.ChatView;
-import mikhail.shell.gleamy.models.MsgInfo;
+import mikhail.shell.gleamy.models.Chat;
+import mikhail.shell.gleamy.views.ChatView;
+import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.viewmodels.ChatsListViewModel;
 import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
@@ -28,6 +33,7 @@ public class ChatsListActivity extends AppCompatActivity {
     private OpenChatListener openChatListener;
     private ChatsListViewModel chatsListViewModel;
     private UserViewModel userViewModel;
+    private ActivityResultLauncher createChatLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,8 @@ public class ChatsListActivity extends AppCompatActivity {
         initViews();
 
         chatsListViewModel.fetchAllChatsFromREST();
+
+        initCreateChatLauncher();
     }
     @Override
     protected void onStart()
@@ -58,14 +66,24 @@ public class ChatsListActivity extends AppCompatActivity {
         chatsListViewModel = ViewModelProviders.of(this).get(ChatsListViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
-        chatsListViewModel.getChatsLiveData().observe(this, chats -> displayAllChats(chats));
-        chatsListViewModel.getLatestChatLiveData().observe(this,
-                (latestChat) -> {
-                    addChat(latestChat);
+        LifecycleOwner owner = this;
+        chatsListViewModel.getChatsLiveData().observe(owner,
+                initialChats ->
+                {
+                    addAllChats(initialChats);
 
-                    long chatid = latestChat.getId();
-                    MsgInfo msg = latestChat.getLast();
-                    elevateChat(chatid, msg);
+                    chatsListViewModel.getChatsLiveData().removeObservers(owner);
+
+                    chatsListViewModel.getChatsLiveData().observe(owner, chats -> {
+                        Log.d("ChatsListActivity", "trying to elevate chat.");
+                        Chat lastChat = chatsListViewModel.getLastChat();
+                        long chatid = lastChat.getId();
+                        Message msg = lastChat.getLast();
+                        if (!chats.containsKey(chatid))
+                            addChat(lastChat);
+                        elevateChat(chatid, msg);
+                    });
+
                 }
         );
         chatsListViewModel.fetchAllChatsFromREST();
@@ -80,13 +98,12 @@ public class ChatsListActivity extends AppCompatActivity {
         B.addChatBtn.setOnClickListener(e-> createChat());
         openChatListener = new OpenChatListener();
     }
-    private void displayAllChats(Map<Long, ChatInfo> chatInfos)
+    private void addAllChats(Map<Long, Chat> chats)
     {
-        if (!chatInfos.isEmpty())
-            for (ChatInfo chatInfo : chatInfos.values())
-                addChat(chatInfo);
+        if (!chats.isEmpty())
+            chats.values().forEach(this::addChat);
     }
-    private ChatView createChatView(ChatInfo info)
+    private ChatView createChatView(Chat info)
     {
         ChatView chat = new ChatView(this, info);
         chat.setOnClickListener(openChatListener);
@@ -96,22 +113,18 @@ public class ChatsListActivity extends AppCompatActivity {
     {
         B.chatsListContent.addView(chat, 0);
     }
-    public void addChat(ChatInfo chatInfo)
+    public void addChat(Chat chat)
     {
         if (chats.isEmpty())
             clear();
-        ChatView chatView = createChatView(chatInfo);
-        chats.put(chatInfo.getId(), chatView);
+        ChatView chatView = createChatView(chat);
+        chats.put(chat.getId(), chatView);
         displayChat(chatView);
     }
     private void createChat()
     {
-        Intent chatCreation = new Intent(this, CreateChatActivity.class);
-        Bundle b = new Bundle();
         long userid = GleamyApp.getApp().getUser().getId();
-        b.putLong("userid", userid);
-        chatCreation.putExtras(b);
-        startActivityForResult(chatCreation, CREATE_CHAT_INTENT);
+        createChatLauncher.launch(userid);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -122,14 +135,14 @@ public class ChatsListActivity extends AppCompatActivity {
             {
                 case CREATE_CHAT_INTENT -> {
                     Bundle b = data.getExtras();
-                    ChatInfo chatInfo = (ChatInfo) b.getSerializable("chatinfo");
-                    addChat(chatInfo);
+                    Chat chat = (Chat) b.getSerializable("chatinfo");
+                    addChat(chat);
                 }
                 default -> {}
             }
     }
 
-    private void openChat(ChatInfo chat)
+    private void openChat(Chat chat)
     {
         Intent openChat = new Intent(this, ChatActivity.class);
         Bundle info = new Bundle();
@@ -158,7 +171,7 @@ public class ChatsListActivity extends AppCompatActivity {
             openChat(chatView.getInfo());
         }
     }
-    public void elevateChat(long chatid, MsgInfo last)
+    public void elevateChat(long chatid, Message last)
     {
         B.chatsListContent.removeView(getChatView(chatid));
         B.chatsListContent.addView(getChatView(chatid), 0);
@@ -167,12 +180,31 @@ public class ChatsListActivity extends AppCompatActivity {
     {
         return chats.get(chatid);
     }
-    public ChatInfo getChatInfo(long chatid)
+    public Chat getChat(long chatid)
     {
         return getChatView(chatid).getInfo();
     }
-    public ChatInfo getLatestChat()
+    public Chat getLatestChat()
     {
         return null;
+    }
+    private void initCreateChatLauncher()
+    {
+        ActivityResultContract<Long, Void> contract = new ActivityResultContract<>() {
+            @NonNull
+            @Override
+            public Intent createIntent(@NonNull Context context, Long userid) {
+                Intent chatCreation = new Intent(context, CreateChatActivity.class);
+                chatCreation.putExtra("userid", userid);
+                return chatCreation;
+            }
+
+            @Override
+            public Void parseResult(int i, @Nullable Intent intent) {
+                return null;
+            }
+        };
+        ActivityResultCallback<Void> callback = (aVoid) -> {};
+        createChatLauncher = registerForActivityResult(contract, callback);
     }
 }

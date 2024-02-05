@@ -3,27 +3,21 @@ package mikhail.shell.gleamy.api;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.lifecycle.Observer;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
-import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import mikhail.shell.gleamy.activities.ChatActivity;
 import mikhail.shell.gleamy.api.json.adapters.DateTimeAdapter;
-import mikhail.shell.gleamy.models.ChatInfo;
-import mikhail.shell.gleamy.models.MsgInfo;
+import mikhail.shell.gleamy.models.Chat;
+import mikhail.shell.gleamy.models.Message;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ua.naiksoftware.stomp.Stomp;
@@ -66,6 +60,7 @@ public class WebClient {
     private void initOkHttpClient()
     {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.addInterceptor(new HttpLoggingInterceptor());
         okHttpClient = builder.build();
     }
     private void initStompClient()
@@ -147,12 +142,12 @@ public class WebClient {
                 switch (getMsgType(msg))
                 {
                     case "RECEIVEDMESSAGE" -> {
-                        MsgInfo msgInfo = deserializePayload(msg, MsgInfo.class);
-                        handleChatMessage(msgInfo);
+                        Message message = deserializePayload(msg, Message.class);
+                        handleChatMessage(message);
                     }
                     case "NEWCHAT" -> {
-                        ChatInfo chatInfo = deserializePayload(msg, ChatInfo.class);
-                        handleNewChat(chatInfo);
+                        Chat chat = deserializePayload(msg, Chat.class);
+                        handleNewChat(chat);
                     }
                 }
             }
@@ -182,11 +177,11 @@ public class WebClient {
         return gson.toJson(object);
     }
 
-    private void handleChatMessage(MsgInfo msg)
+    private void handleChatMessage(Message msg)
     {
         Log.i(TAG, "msg from: " + msg.login + ". They say: " + msg.text);
     }
-    private void handleNewChat(ChatInfo chat)
+    private void handleNewChat(Chat chat)
     {
         Log.i(TAG, "new chat named: " + chat.getTitle());
     }

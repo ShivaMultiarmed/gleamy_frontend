@@ -3,11 +3,11 @@
 
     <data>
         <variable
-            name="msgInfo"
-            type="mikhail.shell.gleamy.models.MsgInfo" />
+            name="message"
+            type="mikhail.shell.gleamy.models.Message" />
     </data>
 
-    <mikhail.shell.gleamy.models.SentMessage
+    <mikhail.shell.gleamy.views.SentMessageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
-                    android:text="@{msgInfo.text}"
+                    android:text="@{message.text}"
 
                     android:textColor="@color/white" />
 
@@ -44,9 +44,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginRight="10dp"
-                android:text="@{msgInfo.generateTimeString()}"
+                android:text="@{message.generateTimeString()}"
                 android:textColor="@color/primary"
                 android:textSize="12sp" />
         </LinearLayout>
-    </mikhail.shell.gleamy.models.SentMessage>
+    </mikhail.shell.gleamy.views.SentMessageView>
 </layout>

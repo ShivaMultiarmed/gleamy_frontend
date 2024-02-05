@@ -7,20 +7,20 @@ import lombok.Setter;
 //import java.net.http.HttpClient;
 
 @Getter @Setter
-public class UserInfo implements Serializable {
+public class User implements Serializable {
     public long id;
     public String login, password;
-    public UserInfo(String login, String password)
+    public User(String login, String password)
     {
         this.login = login;
         this.password = password;
     }
-    public UserInfo(long id, String login, String password)
+    public User(long id, String login, String password)
     {
         this(login, password);
         this.id = id;
     }
-    public UserInfo(long id)
+    public User(long id)
     {
         setId(id);
     }

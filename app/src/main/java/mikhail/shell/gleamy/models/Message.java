@@ -5,18 +5,17 @@ import android.os.Build;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class MsgInfo implements Serializable {
+public class Message implements Serializable {
     public long msgid,userid,chatid;
     public boolean isMine;
     public String text, login;
     public LocalDateTime dateTime;
-    public MsgInfo(long userid, long chatid, long msgid, boolean isMine,String text)
+    public Message(long userid, long chatid, long msgid, boolean isMine, String text)
     {
         this.userid = userid;
         this.msgid = msgid;

@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import mikhail.shell.gleamy.api.MsgApi;
-import mikhail.shell.gleamy.models.MsgInfo;
+import mikhail.shell.gleamy.models.Message;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,17 +20,17 @@ public class MessagesRepo extends AbstractRepo {
         super();
         msgApi = webClient.createRetrofit(MsgApi.class);
     }
-    public void fetchAllMessages(MutableLiveData<Map<Long, MsgInfo>> msgsData, long chatid)
+    public void fetchAllMessages(MutableLiveData<Map<Long, Message>> msgsData, long chatid)
     {
-        Call<List<MsgInfo>> call = msgApi.getChatMsgs(chatid);
+        Call<List<Message>> call = msgApi.getChatMsgs(chatid);
         call.enqueue(
                 new Callback<>() {
                     @Override
-                    public void onResponse(Call<List<MsgInfo>> call, Response<List<MsgInfo>> response) {
-                        List<MsgInfo> msgsList = response.body();
-                        Map<Long, MsgInfo> msgMap = new LinkedHashMap<>();
+                    public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+                        List<Message> msgsList = response.body();
+                        Map<Long, Message> msgMap = new LinkedHashMap<>();
                         if (msgsList != null && !msgsList.isEmpty())
-                            for (MsgInfo msg: msgsList)
+                            for (Message msg: msgsList)
                                 if (msg.getDateTime() != null)
                                     msgMap.put(msg.msgid, msg);
                         msgsData.postValue(msgMap);
@@ -38,13 +38,13 @@ public class MessagesRepo extends AbstractRepo {
                     }
 
                     @Override
-                    public void onFailure(Call<List<MsgInfo>> call, Throwable t) {
+                    public void onFailure(Call<List<Message>> call, Throwable t) {
                         msgsData.postValue(null); // handle error via toast in activity
                     }
                 }
         );
     }
-    public void sendMessage(MsgInfo msg)
+    public void sendMessage(Message msg)
     {
         Call<Map<String, Long>> request = msgApi.sendMessage(msg);
         request.enqueue(new Callback<>() {
@@ -59,12 +59,12 @@ public class MessagesRepo extends AbstractRepo {
             }
         });
     }
-    public void observeIncomingMessage(MutableLiveData<Map<Long, MsgInfo>> msgsData, long chatid)
+    public void observeIncomingMessage(MutableLiveData<Map<Long, Message>> msgsData, long chatid)
     {
         webClient.observeSubscription("/topic/chats/" + chatid,
                 message -> {
-                    Map<Long, MsgInfo> msgsMap = msgsData.getValue();
-                    MsgInfo msg = webClient.deserializePayload(message, MsgInfo.class);
+                    Map<Long, Message> msgsMap = msgsData.getValue();
+                    Message msg = webClient.deserializePayload(message, Message.class);
                     msgsMap.put(msg.msgid, msg);
                     msgsData.postValue(msgsMap);
                     Log.i(TAG, "Msg text here: "+msg.getText());

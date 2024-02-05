@@ -1,4 +1,4 @@
-package mikhail.shell.gleamy.models;
+package mikhail.shell.gleamy.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -8,20 +8,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.models.User;
 
 
-public class User extends LinearLayout {
-    private UserInfo user;
+public class UserView extends LinearLayout {
+    private User user;
     private TextView login;
 
-    public User(Context context) {
+    public UserView(Context context) {
         super(context);
     }
-    public User(Context context, AttributeSet attrs) {
+    public UserView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-    public User(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
     }
 
     public void init ()
@@ -29,11 +27,11 @@ public class User extends LinearLayout {
         login = findViewById(R.id.userLogin);
     }
 
-    public UserInfo getUser() {
+    public User getUser() {
         return user;
     }
 
-    public void setUser(@NonNull UserInfo user) {
+    public void setUser(@NonNull User user) {
         this.user = user;
         login.setText(user.getLogin());
     }

@@ -1,4 +1,4 @@
-package mikhail.shell.gleamy.models;
+package mikhail.shell.gleamy.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -10,19 +10,20 @@ import androidx.databinding.DataBindingUtil;
 
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.ReceivedMsgBinding;
+import mikhail.shell.gleamy.models.Message;
 
 public class ReceivedMessageView extends MessageView {
     private ReceivedMsgBinding B;
-    public ReceivedMessageView(Context context, MsgInfo msgInfo)
+    public ReceivedMessageView(Context context, Message message)
     {
         super(context);
-        init(msgInfo);
+        init(message);
     }
     public ReceivedMessageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
     @Override
-    protected void init(MsgInfo msgInfo)
+    protected void init(Message message)
     {
         B = DataBindingUtil.inflate(
                 LayoutInflater.from(getContext()),
@@ -30,21 +31,15 @@ public class ReceivedMessageView extends MessageView {
                 this,
                 true
         );
-        setMsgInfo(msgInfo);
-        //correctLayoutParams();
+        setMsgInfo(message);
     }
-    private void correctLayoutParams()
-    {
-        LayoutParams layoutParams = (LayoutParams) ((LinearLayout)this).getLayoutParams();
-        layoutParams.gravity = Gravity.RIGHT;
-        setLayoutParams(layoutParams);
+
+    @Override
+    public void setMsgInfo(Message message) {
+        B.setMessage(message);
     }
     @Override
-    public void setMsgInfo(MsgInfo msgInfo) {
-        B.setMsgInfo(msgInfo);
-    }
-    @Override
-    public MsgInfo getMsgInfo() {
-        return B.getMsgInfo();
+    public Message getMsgInfo() {
+        return B.getMessage();
     }
 }

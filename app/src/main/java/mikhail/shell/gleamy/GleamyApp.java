@@ -6,13 +6,13 @@ import android.content.Intent;
 
 import mikhail.shell.gleamy.activities.LogInActivity;
 import mikhail.shell.gleamy.api.WebClient;
-import mikhail.shell.gleamy.models.UserInfo;
+import mikhail.shell.gleamy.models.User;
 
 public class GleamyApp extends Application {
 
     private WebClient webClient;
     private Activity currentActivity;
-    private UserInfo user;
+    private User user;
 
     private static GleamyApp app;
 
@@ -44,11 +44,11 @@ public class GleamyApp extends Application {
         webClient = WebClient.getInstance();
     }
 
-    public UserInfo getUser()
+    public User getUser()
     {
         return user;
     }
-    public void setUser(UserInfo user) { this.user = user;}
+    public void setUser(User user) { this.user = user;}
 
     public Activity getCurrentActivity()
     {

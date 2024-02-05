@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mikhail.shell.gleamy.models.User xmlns:android="http://schemas.android.com/apk/res/android"
+<mikhail.shell.gleamy.views.UserView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -28,4 +28,4 @@
 
 
 
-</mikhail.shell.gleamy.models.User>
+</mikhail.shell.gleamy.views.UserView>

@@ -1,4 +1,4 @@
-package mikhail.shell.gleamy.models;
+package mikhail.shell.gleamy.views;
 
 import android.app.Activity;
 import android.content.Context;

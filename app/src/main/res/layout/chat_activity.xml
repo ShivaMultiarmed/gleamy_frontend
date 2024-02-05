@@ -4,8 +4,8 @@
 
     <data>
         <variable
-            name="chatInfo"
-            type="mikhail.shell.gleamy.models.ChatInfo" />
+            name="chat"
+            type="mikhail.shell.gleamy.models.Chat" />
     </data>
 
     <LinearLayout
@@ -31,7 +31,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:gravity="center_vertical"
-                android:text="@{chatInfo.title}"
+                android:text="@{chat.title}"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />

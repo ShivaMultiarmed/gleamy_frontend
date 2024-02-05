@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
-        <variable name="chatInfo"
-            type="mikhail.shell.gleamy.models.ChatInfo"/>
+        <variable name="chat"
+            type="mikhail.shell.gleamy.models.Chat"/>
     </data>
-    <mikhail.shell.gleamy.models.ChatView
+    <mikhail.shell.gleamy.views.ChatView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bordertop"
@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
-                android:text="@{chatInfo.title}"
+                android:text="@{chat.title}"
 
                 android:textColor="@color/primary" />
 
@@ -41,10 +41,10 @@
                 android:layout_height="wrap_content"
 
                 android:textColor="@color/secondary"
-                android:text='@{(chatInfo.last != null) ? chatInfo.last.text : "Напишите первое сообщение"}'/>
+                android:text='@{(chat.last != null) ? chat.last.text : "Напишите первое сообщение"}'/>
 
         </LinearLayout>
 
 
-    </mikhail.shell.gleamy.models.ChatView>
+    </mikhail.shell.gleamy.views.ChatView>
 </layout>

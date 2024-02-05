@@ -8,87 +8,56 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Map;
 
-import mikhail.shell.gleamy.api.ChatApi;
-import mikhail.shell.gleamy.api.UserApi;
-import mikhail.shell.gleamy.api.WebClient;
-import mikhail.shell.gleamy.models.ChatInfo;
-import mikhail.shell.gleamy.models.UserInfo;
+import mikhail.shell.gleamy.models.Chat;
+import mikhail.shell.gleamy.models.User;
+import mikhail.shell.gleamy.repositories.ChatsRepo;
+import mikhail.shell.gleamy.repositories.UserRepo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CreateChatViewModel extends ViewModel {
-    private final WebClient webClient;
-    private final MutableLiveData<Map<Long, UserInfo>> usersData;
+    private final MutableLiveData<Map<Long, User>> usersData;
     private final MutableLiveData<String> statusData;
-    private final UserApi userApi;
-    private final ChatApi chatApi;
-    private final ChatInfo chat;
-    public CreateChatViewModel(UserInfo user)
+    private final Chat chat;
+    private final ChatsRepo chatsRepo;
+    private final UserRepo usersRepo;
+    public CreateChatViewModel(User user)
     {
-        webClient= WebClient.getInstance();
+        chatsRepo = new ChatsRepo();
+        usersRepo = new UserRepo();
 
-        userApi = webClient.createRetrofit(UserApi.class);
-        chatApi = webClient.createRetrofit(ChatApi.class);
+        chat = new Chat();
+        chat.addMember(user);
 
-        chat = new ChatInfo();
         usersData = new MutableLiveData<>();
-        addMember(user);
-
         statusData = new MutableLiveData<>();
     }
-    public ChatInfo getChat() { return chat; }
+    public Chat getChat()
+    {
+        return chat;
+    }
     public void observeStatus(LifecycleOwner subscriber, Observer<String> observer)
     {
         statusData.observe(subscriber, observer);
     }
-    public void observeChatMembers(LifecycleOwner subscriber, Observer<Map<Long, UserInfo>> observer)
+    public void observeChatMembers(LifecycleOwner subscriber, Observer<Map<Long, User>> observer)
     {
         usersData.observe(subscriber, observer);
     }
     public void getUsersByLogin(String login)
     {
-        Call<Map<Long, UserInfo>> request = userApi.getUsersByLogin(login);
-        request.enqueue(
-                new Callback<>() {
-                    @Override
-                    public void onResponse(Call<Map<Long, UserInfo>> call, Response<Map<Long, UserInfo>> response) {
-                        usersData.postValue(response.body());
-                    }
-
-                    @Override
-                    public void onFailure(Call<Map<Long, UserInfo>> call, Throwable t) {
-                        usersData.postValue(null);
-                    }
-                }
-        );
+        usersRepo.getUsersByLogin(usersData, login);
     }
-    public void postChat()
+    public void addChat()
     {
-        Call<Map<String, String>> request = chatApi.addChat(chat);
-        request.enqueue(
-                new Callback<>() {
-                    @Override
-                    public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
-                        statusData.postValue("OK");
-                    }
-
-                    @Override
-                    public void onFailure(Call<Map<String, String>> call, Throwable t) {
-                        statusData.postValue("ERROR");
-                    }
-                }
-        );
-    }
-    public void addMember(UserInfo user)
-    {
-        usersData.getValue().put(user.getId(), user);
+        chatsRepo.postChat(statusData, chat);
     }
 
     public static class Factory implements ViewModelProvider.Factory
     {
-        private final UserInfo user;
-        public Factory(UserInfo user)
+        private final User user;
+        public Factory(User user)
         {
             this.user = user;
         }

@@ -5,7 +5,7 @@
             name="dateString"
             type="java.lang.String"/>
     </data>
-    <mikhail.shell.gleamy.models.DateView
+    <mikhail.shell.gleamy.views.DateView
         android:id="@+id/date_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,6 +22,6 @@
             android:textColor="@color/secondary"
             android:textSize="12sp"/>
 
-    </mikhail.shell.gleamy.models.DateView>
+    </mikhail.shell.gleamy.views.DateView>
 
 </layout>

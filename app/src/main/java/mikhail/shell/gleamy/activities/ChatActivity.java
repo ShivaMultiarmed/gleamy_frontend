@@ -11,25 +11,23 @@ import android.view.View;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.databinding.ChatActivityBinding;
-import mikhail.shell.gleamy.models.ChatInfo;
-import mikhail.shell.gleamy.models.DateView;
+import mikhail.shell.gleamy.models.Chat;
+import mikhail.shell.gleamy.views.DateView;
 import mikhail.shell.gleamy.models.Message;
-import mikhail.shell.gleamy.models.MsgInfo;
-import mikhail.shell.gleamy.models.ReceivedMessage;
-import mikhail.shell.gleamy.models.SentMessage;
+import mikhail.shell.gleamy.views.MessageView;
+import mikhail.shell.gleamy.views.ReceivedMessageView;
+import mikhail.shell.gleamy.views.SentMessageView;
 import mikhail.shell.gleamy.viewmodels.ChatViewModel;
 
 public class ChatActivity extends AppCompatActivity {
     private ChatActivityBinding B;
-    private Map<Long, Message> msgs;
+    private Map<Long, MessageView> msgs;
     private ChatViewModel chatViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +59,10 @@ public class ChatActivity extends AppCompatActivity {
                     chatViewModel.removeObservers(subscriber);
                     chatViewModel.observeMessages(subscriber,
                             (map) -> {
-                                MsgInfo msg = chatViewModel.getLastMessage();
-                                if (!msgs.containsKey(msg.getMsgid()))
-                                    addMessage(msg);
+                                Message msg = chatViewModel.getLastMessage();
+                                if (msg!=null)
+                                    if (!msgs.containsKey(msg.getMsgid()))
+                                        addMessage(msg);
                             }
                     );
                 }
@@ -73,35 +72,37 @@ public class ChatActivity extends AppCompatActivity {
     private void getBundle()
     {
         Bundle b = getIntent().getExtras();
-        ChatInfo chat = (ChatInfo) b.getSerializable("chatInfo");
+        Chat chat = (Chat) b.getSerializable("chatInfo");
         chatViewModel = new ViewModelProvider(this, new ChatViewModel.ChatViewModelFactory(chat)).get(ChatViewModel.class);
-        B.setChatInfo(chat);
+        B.setChat(chat);
     }
-    private void addAllMessages(List<MsgInfo> msgInfos)
+    private void addAllMessages(List<Message> messages)
     {
-        if (!msgInfos.isEmpty())
+        if (!messages.isEmpty())
         {
             clear();
-            msgInfos.stream().forEach(msg -> addMessage(msg));
+            messages.stream().forEach(msg -> addMessage(msg));
             scrollToBottom();
         }
     }
-    private void addMessage(MsgInfo msg)
+    private void addMessage(Message msg)
     {
-        Message message = createMessage(msg);
-        msgs.put(msg.getMsgid(), message);
-        displayMessage(message);
+        MessageView messageView = createMessage(msg);
+        if (msgs.isEmpty())
+            clear();
+        msgs.put(msg.getMsgid(), messageView);
+        displayMessage(messageView);
     }
 
-    private Message createMessage(MsgInfo msgInfo)
+    private MessageView createMessage(Message message)
     {
         long userid = GleamyApp.getApp().getUser().getId();
-        msgInfo.isMine = msgInfo.userid == userid;
-        Message msg = msgInfo.isMine ? new SentMessage(this, msgInfo) : new ReceivedMessage(this, msgInfo);
+        message.isMine = message.userid == userid;
+        MessageView msg = message.isMine ? new SentMessageView(this, message) : new ReceivedMessageView(this, message);
         return msg;
     }
 
-    private void displayMessage(Message msg)
+    private void displayMessage(MessageView msg)
     {
         LocalDateTime newDateTime = msg.getMsgInfo().getDateTime();
         manageNewDateTime(newDateTime);
@@ -132,7 +133,7 @@ public class ChatActivity extends AppCompatActivity {
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
-            MsgInfo lastMsg = getSecondLastAddedMsg();
+            Message lastMsg = getSecondLastAddedMsg();
             if (lastMsg == null)
                 return true;
             else
@@ -159,12 +160,12 @@ public class ChatActivity extends AppCompatActivity {
     {
         B.chatScrollView.fullScroll(View.FOCUS_DOWN);
     }
-    private MsgInfo getLastAddedMsg()
+    private Message getLastAddedMsg()
     {
         long msgid = msgs.keySet().stream().skip(msgs.size()-1).findFirst().get();
         return msgs.get(msgid).getMsgInfo();
     }
-    private MsgInfo getSecondLastAddedMsg()
+    private Message getSecondLastAddedMsg()
     {
         try{
             long msgid = msgs.keySet().stream().skip(msgs.size() - 2).findFirst().get();

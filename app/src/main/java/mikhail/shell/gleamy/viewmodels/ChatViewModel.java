@@ -1,7 +1,6 @@
 package mikhail.shell.gleamy.viewmodels;
 
 import android.os.Build;
-import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
@@ -9,38 +8,24 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import mikhail.shell.gleamy.GleamyApp;
-import mikhail.shell.gleamy.api.ChatApi;
-import mikhail.shell.gleamy.api.MsgApi;
-import mikhail.shell.gleamy.api.WebClient;
-import mikhail.shell.gleamy.models.ChatInfo;
-import mikhail.shell.gleamy.models.MsgInfo;
-import mikhail.shell.gleamy.models.UserInfo;
+import mikhail.shell.gleamy.models.Chat;
+import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.repositories.ChatsRepo;
 import mikhail.shell.gleamy.repositories.MessagesRepo;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ChatViewModel extends ViewModel {
     private final static String TAG = ChatViewModel.class.getName();
-    private MutableLiveData<ChatInfo> chatData;
-    private MutableLiveData<Map<Long,MsgInfo>> msgListData;
+    private MutableLiveData<Chat> chatData;
+    private MutableLiveData<Map<Long, Message>> msgListData;
     private MessagesRepo msgsRepo;
     private ChatsRepo chatsRepo;
-    public ChatViewModel(ChatInfo chat)
+    public ChatViewModel(Chat chat)
     {
         initLiveData(chat);
         initRepos();
@@ -51,7 +36,7 @@ public class ChatViewModel extends ViewModel {
         msgsRepo = new MessagesRepo();
         chatsRepo = new ChatsRepo();
     }
-    private void initLiveData(ChatInfo chat)
+    private void initLiveData(Chat chat)
     {
         chatData = new MutableLiveData<>();
         chatData.setValue(chat);
@@ -68,24 +53,24 @@ public class ChatViewModel extends ViewModel {
     }
     public void sendMessage(String text) {
 
-        MsgInfo msg = generateMessage(text);
+        Message msg = generateMessage(text);
         msgsRepo.sendMessage(msg);
     }
-    private MsgInfo generateMessage(String text)
+    private Message generateMessage(String text)
     {
         long ownUserId = GleamyApp.getApp().getUser().getId();
         long chatid = chatData.getValue().getId();
-        MsgInfo msg = new MsgInfo(ownUserId,chatid,0,true,text);
+        Message msg = new Message(ownUserId,chatid,0,true,text);
         return  msg;
     }
-    public MsgInfo getLastMessage()
+    public Message getLastMessage()
     {
-        Collection<MsgInfo> msgInfos = msgListData.getValue().values();
-        MsgInfo lastMsg = null;
-        for (Iterator<MsgInfo> iterator = msgInfos.iterator(); iterator.hasNext();)
+        Collection<Message> messages = msgListData.getValue().values();
+        Message lastMsg = null;
+        for (Iterator<Message> iterator = messages.iterator(); iterator.hasNext();)
             lastMsg = iterator.next();
-        //List<MsgInfo> msgsList = msgListData.getValue().values().stream().collect(Collectors.toList());
-        //MsgInfo lastMsg = msgsList.get(msgsList.size() - 1);
+        //List<Message> msgsList = msgListData.getValue().values().stream().collect(Collectors.toList());
+        //Message lastMsg = msgsList.get(msgsList.size() - 1);
         return lastMsg;
     }
     public LocalDate getLastMsgDate()
@@ -96,7 +81,7 @@ public class ChatViewModel extends ViewModel {
         else
             return null;
     }
-    public void observeMessages(LifecycleOwner subscriber, Observer<Map<Long, MsgInfo>> observer)
+    public void observeMessages(LifecycleOwner subscriber, Observer<Map<Long, Message>> observer)
     {
         msgListData.observe(subscriber, observer);
     }
@@ -105,8 +90,8 @@ public class ChatViewModel extends ViewModel {
         msgListData.removeObservers(subscriber);
     }
     public static class ChatViewModelFactory implements ViewModelProvider.Factory {
-        private final ChatInfo chat;
-        public ChatViewModelFactory(ChatInfo chat)
+        private final Chat chat;
+        public ChatViewModelFactory(Chat chat)
         {
             this.chat = chat;
         }

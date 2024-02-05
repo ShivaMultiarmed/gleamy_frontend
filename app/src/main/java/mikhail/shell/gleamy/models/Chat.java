@@ -4,22 +4,19 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
-public class ChatInfo implements Serializable {
+public class Chat implements Serializable {
     private long id;
-    private Map<Long, UserInfo> users;
+    private Map<Long, User> users;
     private String title;
-    private MsgInfo last;
-    public ChatInfo()
+    private Message last;
+    public Chat()
     {
         users = new HashMap<>();
     }
-    public ChatInfo(long id, String title, MsgInfo last)
+    public Chat(long id, String title, Message last)
     {
         this();
         this.id = id;
@@ -36,9 +33,9 @@ public class ChatInfo implements Serializable {
     }
     public void addMember(long userid)
     {
-            users.put(userid, new UserInfo("", ""));
+            users.put(userid, new User("", ""));
     }
-    public void addMember(UserInfo user)
+    public void addMember(User user)
     {
         if (users != null)
             users.put(user.getId(), user);
@@ -57,11 +54,11 @@ public class ChatInfo implements Serializable {
         this.title = title;
     }
 
-    public MsgInfo getLast() {
+    public Message getLast() {
         return last;
     }
 
-    public void setLast(MsgInfo last) {
+    public void setLast(Message last) {
         this.last = last;
 
     }
@@ -70,11 +67,11 @@ public class ChatInfo implements Serializable {
         return users.containsKey(userid);
     }
 
-    public void setUsers(Map<Long, UserInfo> users)
+    public void setUsers(Map<Long, User> users)
     {
         this.users = users;
     }
-    public Map<Long, UserInfo> getUsers()
+    public Map<Long, User> getUsers()
     {
         return users;
     }
