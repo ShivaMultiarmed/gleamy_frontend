@@ -22,7 +22,6 @@ import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.databinding.ChatsListActivityBinding;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.views.ChatView;
-import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.viewmodels.ChatsListViewModel;
 import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
@@ -74,16 +73,12 @@ public class ChatsListActivity extends AppCompatActivity {
 
                     chatsListViewModel.getChatsLiveData().removeObservers(owner);
 
-                    chatsListViewModel.getChatsLiveData().observe(owner, chats -> {
-                        Log.d("ChatsListActivity", "trying to elevate chat.");
+                    chatsListViewModel.getChatsLiveData().observeForever(updatedChats -> {
                         Chat lastChat = chatsListViewModel.getLastChat();
-                        long chatid = lastChat.getId();
-                        Message msg = lastChat.getLast();
-                        if (!chats.containsKey(chatid))
+                        if (!chats.containsKey(lastChat.getId()))
                             addChat(lastChat);
-                        elevateChat(chatid, msg);
+                        elevateChat(lastChat);
                     });
-
                 }
         );
         chatsListViewModel.fetchAllChatsFromREST();
@@ -103,11 +98,11 @@ public class ChatsListActivity extends AppCompatActivity {
         if (!chats.isEmpty())
             chats.values().forEach(this::addChat);
     }
-    private ChatView createChatView(Chat info)
+    private ChatView createChatView(Chat chat)
     {
-        ChatView chat = new ChatView(this, info);
-        chat.setOnClickListener(openChatListener);
-        return chat;
+        ChatView chatView = new ChatView(this, chat);
+        chatView.setOnClickListener(openChatListener);
+        return chatView;
     }
     private void displayChat(ChatView chat)
     {
@@ -116,7 +111,7 @@ public class ChatsListActivity extends AppCompatActivity {
     public void addChat(Chat chat)
     {
         if (chats.isEmpty())
-            clear();
+            removeEmptyMessage();
         ChatView chatView = createChatView(chat);
         chats.put(chat.getId(), chatView);
         displayChat(chatView);
@@ -153,7 +148,7 @@ public class ChatsListActivity extends AppCompatActivity {
         startActivity(openChat);
     }
 
-    public void clear()
+    public void removeEmptyMessage()
     {
         B.chatsListContent.removeAllViews();
     }
@@ -171,10 +166,13 @@ public class ChatsListActivity extends AppCompatActivity {
             openChat(chatView.getInfo());
         }
     }
-    public void elevateChat(long chatid, Message last)
+    public void elevateChat(Chat chat)
     {
-        B.chatsListContent.removeView(getChatView(chatid));
-        B.chatsListContent.addView(getChatView(chatid), 0);
+        long chatid = chat.getId();
+        ChatView chatView = getChatView(chatid);
+        chatView.setChat(chat);
+        B.chatsListContent.removeView(chatView);
+        B.chatsListContent.addView(chatView, 0);
     }
     public ChatView getChatView(long chatid)
     {

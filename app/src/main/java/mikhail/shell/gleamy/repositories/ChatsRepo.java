@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class ChatsRepo extends AbstractRepo{
                                 Map<Long, Chat> chatMap  = response.body();
                                 if(chatMap != null) {
                                     if (!chatMap.isEmpty()) {
-                                        chatsData.postValue(chatMap);
+                                        chatsData.postValue(new LinkedHashMap<>(chatMap));
                                         subscribeToIncomingChats(chatsData);
                                         subscribeToChats(chatsData, chatMap.keySet());
                                     }
@@ -54,17 +55,7 @@ public class ChatsRepo extends AbstractRepo{
     }
     private void subscribeToChats(MutableLiveData<Map<Long,Chat>> chatsData, Set<Long> chatids)
     {
-        chatids.stream().forEachOrdered(chatid -> webClient.observeSubscription(
-                "/topic/chats/"+ chatid,
-                incomingMessage -> {
-                    Message msg = webClient.deserializePayload(incomingMessage, Message.class);
-                    Map<Long, Chat> chats = chatsData.getValue();
-                    Chat chat = chats.get(chatid);
-                    chat.setLast(msg);
-
-                    chatsData.postValue(chats);
-                }
-        ));
+        chatids.stream().forEachOrdered(chatid -> subscribeToChat(chatsData, chatid));
     }
     private void subscribeToIncomingChats(MutableLiveData<Map<Long,Chat>> chatsData)
     {
@@ -74,6 +65,23 @@ public class ChatsRepo extends AbstractRepo{
                     Chat chat = webClient.deserializePayload(incomingChat, Chat.class);
                     chatsData.getValue().put(chat.getId(), chat);
                     chatsData.postValue(chatsData.getValue());
+                    subscribeToChat(chatsData, chat.getId());
+                }
+        );
+    }
+    private void subscribeToChat(MutableLiveData<Map<Long, Chat>> chatsData, long chatid)
+    {
+        webClient.observeSubscription(
+                "/topic/chats/"+ chatid,
+                incomingMessage -> {
+                    Message msg = webClient.deserializePayload(incomingMessage, Message.class);
+                    Map<Long, Chat> chats = chatsData.getValue();
+                    Chat chat = chats.get(chatid);
+                    chat.setLast(msg);
+                    chats.remove(chat.getId());
+                    chats.put(chatid, chat);
+
+                    chatsData.postValue(chats);
                 }
         );
     }
@@ -97,29 +105,6 @@ public class ChatsRepo extends AbstractRepo{
                     }
                 }
         );
-    }
-    public void sendChat(MutableLiveData<Map<Long, Chat>> chatsData, Chat chat)
-    {
-        Call<Map<String, String>> request = chatApi.addChat(chat);
-        request.enqueue(new Callback<>() {
-            @Override
-            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
-                switch (response.code())
-                {
-                    case 200 -> {
-//                        Map<String, String> chatDetails = response.body();
-//                        long chatid = Long.parseLong(chatDetails.get("chatid"));
-//                        chat.setId(chatid);
-//                        chat.getUsers().keySet().stream().forEach(uid -> notifyNewChatMember(uid, chat));
-                    }
-                    default -> Log.d("Chats Repository", "Error adding a chat to the server.");
-                }
-            }
-            @Override
-            public void onFailure(Call<Map<String, String>> call, Throwable t) {
-                Log.d("Chats Repository", "Error adding a chat to the server.");
-            }
-        });
     }
     public void postChat(MutableLiveData<String> statusData, Chat chat)
     {

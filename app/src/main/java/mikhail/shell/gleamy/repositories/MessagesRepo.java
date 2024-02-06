@@ -68,7 +68,6 @@ public class MessagesRepo extends AbstractRepo {
                     Message msg = webClient.deserializePayload(message, Message.class);
                     msgsMap.put(msg.msgid, msg);
                     msgsData.postValue(msgsMap);
-                    Log.i(TAG, "Msg text here: "+msg.getText());
                 }
         );
     }

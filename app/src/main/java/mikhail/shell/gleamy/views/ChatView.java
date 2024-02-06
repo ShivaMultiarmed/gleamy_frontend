@@ -44,4 +44,12 @@ public class ChatView extends LinearLayout {
     {
         return B.getChat().getLast();
     }
+    public void setChat(Chat chat)
+    {
+        B.setChat(chat);
+    }
+    public Chat getChat()
+    {
+        return B.getChat();
+    }
 }
