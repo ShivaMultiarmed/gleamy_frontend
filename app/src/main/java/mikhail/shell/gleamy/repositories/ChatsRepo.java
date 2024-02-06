@@ -39,9 +39,11 @@ public class ChatsRepo extends AbstractRepo{
                                 if(chatMap != null) {
                                     if (!chatMap.isEmpty()) {
                                         chatsData.postValue(new LinkedHashMap<>(chatMap));
-                                        subscribeToIncomingChats(chatsData);
                                         subscribeToChats(chatsData, chatMap.keySet());
                                     }
+                                    else
+                                        chatsData.postValue(new LinkedHashMap<>());
+                                    subscribeToIncomingChats(chatsData);
                                 }
                             }
                         }

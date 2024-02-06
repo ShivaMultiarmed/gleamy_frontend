@@ -49,9 +49,15 @@ public class ChatsListViewModel extends ViewModel {
     }
     public Chat getLastChat()
     {
-        Set<Long> chatids = getAllChats().keySet();
-        long chatid = chatids.stream().skip(chatids.size()-1).findFirst().get();
-        return getAllChats().get(chatid);
+        try {
+            Set<Long> chatids = getAllChats().keySet();
+            long chatid = chatids.stream().skip(chatids.size()-1).findFirst().get();
+            return getAllChats().get(chatid);
+        }
+        catch (IllegalArgumentException e)
+        {
+            return null;
+        }
     }
 
 }

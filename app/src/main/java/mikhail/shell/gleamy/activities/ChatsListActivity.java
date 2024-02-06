@@ -69,19 +69,24 @@ public class ChatsListActivity extends AppCompatActivity {
         chatsListViewModel.getChatsLiveData().observe(owner,
                 initialChats ->
                 {
+                    /*if (!chats.isEmpty())
+                        removeEmptyMessage();*/
+
                     addAllChats(initialChats);
 
                     chatsListViewModel.getChatsLiveData().removeObservers(owner);
 
                     chatsListViewModel.getChatsLiveData().observeForever(updatedChats -> {
                         Chat lastChat = chatsListViewModel.getLastChat();
-                        if (!chats.containsKey(lastChat.getId()))
-                            addChat(lastChat);
-                        elevateChat(lastChat);
+                        if (lastChat != null)
+                        {
+                            if (!chats.containsKey(lastChat.getId()))
+                                addChat(lastChat);
+                            elevateChat(lastChat);
+                        }
                     });
                 }
         );
-        chatsListViewModel.fetchAllChatsFromREST();
 
     }
     private void initChatsMap()
@@ -110,8 +115,6 @@ public class ChatsListActivity extends AppCompatActivity {
     }
     public void addChat(Chat chat)
     {
-        if (chats.isEmpty())
-            removeEmptyMessage();
         ChatView chatView = createChatView(chat);
         chats.put(chat.getId(), chatView);
         displayChat(chatView);

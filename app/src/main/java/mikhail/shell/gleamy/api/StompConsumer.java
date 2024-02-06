@@ -21,6 +21,7 @@ public class StompConsumer implements Consumer<StompMessage> {
             try {
                 consumer.accept(message);
             } catch (Exception e) {
+                e.printStackTrace(System.err);
                 Log.e(TAG, "Error while running consumers.");
             }
         });
