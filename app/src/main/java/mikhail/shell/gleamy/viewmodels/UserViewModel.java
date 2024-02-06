@@ -16,7 +16,7 @@ public class UserViewModel extends ViewModel {
 
     public UserViewModel() {
         webClient = WebClient.getInstance();
-        authApi = webClient.createRetrofit(AuthApi.class);
+        authApi = webClient.createApi(AuthApi.class);
 
         userData = new MutableLiveData<>();
         loginData = new MutableLiveData<>();

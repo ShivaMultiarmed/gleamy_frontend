@@ -60,7 +60,6 @@ public class Chat implements Serializable {
 
     public void setLast(Message last) {
         this.last = last;
-
     }
     public boolean hasMember(long userid)
     {

@@ -15,7 +15,7 @@ public class UserRepo extends  AbstractRepo{
     public UserRepo()
     {
         super();
-        userApi = webClient.createRetrofit(UserApi.class);
+        userApi = webClient.createApi(UserApi.class);
     }
     public void getUsersByLogin(MutableLiveData<Map<Long, User>> usersData, String login)
     {

@@ -89,7 +89,7 @@ public class WebClient {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
-    public void connect()
+    public void connectToStomp()
     {
         stompClient.connect();
         stompClient.withClientHeartbeat(HEARTBEAT).withClientHeartbeat(HEARTBEAT);
@@ -186,7 +186,7 @@ public class WebClient {
         Log.i(TAG, "new chat named: " + chat.getTitle());
     }
 
-    public <T> T createRetrofit(Class<T> klass)
+    public <T> T createApi(Class<T> klass)
     {
         return retrofit.create(klass);
     }

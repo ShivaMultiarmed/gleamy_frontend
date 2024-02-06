@@ -3,6 +3,7 @@ package mikhail.shell.gleamy.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 import mikhail.shell.gleamy.databinding.SignUpActivityBinding;
 import mikhail.shell.gleamy.viewmodels.SignupViewModel;
@@ -23,31 +24,27 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onStart()
     {
         super.onStart();
-        initViews();
+        initBtn();
+        viewModel.observeSignUpStatus(this,
+                statusCode -> {
+                    displayMessage(statusCode);
+                    if (statusCode.equals("OK"))
+                        goToChats();
+                }
+        );
     }
-    private void initViews()
+
+    private void initBtn()
     {
         B.signUpBtn.setOnClickListener(e->{
-            String code = validateLocal();
-            if (!code.equals("LOCALOK"))
-                displayMessage(code);
-            else
-                viewModel.signup(
-                        B.signUpName.getText().toString(),
-                        B.signUpPassword.getText().toString(),
-                        B.signUpEmail.getText().toString()
-                );
+            String name = B.signUpName.getText().toString(),
+            password = B.signUpPassword.getText().toString(),
+            email = B.signUpEmail.getText().toString();
+
+            viewModel.tryToSignUp(name, password, email);
         });
     }
-    private String validateLocal()
-    {
-        if (B.signUpName.getText().toString().equals("") || B.signUpPassword.getText().toString().equals("") ||
-                B.signUpEmail.getText().toString().equals(""))
-            return "EMPTY";
-        else
-            return "LOCALOK";
-    }
-    public void displayMessage(String code)
+    private void displayMessage(String code)
     {
         String msg = switch (code) {
             case "OK" -> "Вы успешно зарегистрировались.";
@@ -56,4 +53,11 @@ public class SignUpActivity extends AppCompatActivity {
         };
         B.signUpMsg.setText(msg);
     }
+    private void goToChats()
+    {
+        Intent openChats = new Intent(this, ChatsListActivity.class);
+        startActivity(openChats);
+        finish();
+    }
+
 }

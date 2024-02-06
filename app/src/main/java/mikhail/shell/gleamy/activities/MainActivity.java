@@ -22,5 +22,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
+        finish();
     }
 }

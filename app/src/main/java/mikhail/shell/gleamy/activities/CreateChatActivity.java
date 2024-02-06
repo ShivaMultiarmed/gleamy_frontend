@@ -130,6 +130,7 @@ public class CreateChatActivity extends AppCompatActivity {
     private void goToChatsList()
     {
         setResult(RESULT_OK, getIntent());
+        Log.d("CreateChatActivity", "Going to chats list.");
         finish();
     }
 }

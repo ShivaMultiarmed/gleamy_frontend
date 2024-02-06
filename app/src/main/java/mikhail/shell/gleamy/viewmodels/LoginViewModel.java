@@ -38,7 +38,7 @@ public class LoginViewModel extends AuthViewModel {
                     code = "ERROR";
                 long userid = 0;
                 if (code.equals("OK")) {
-                    webClient.connect();
+                    webClient.connectToStomp();
                     userid = Long.valueOf(responseDetails.get("userid"));
                     webClient.setUserStompConnection(userid);
                 }

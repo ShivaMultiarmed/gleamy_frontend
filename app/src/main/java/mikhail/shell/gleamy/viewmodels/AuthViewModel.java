@@ -11,6 +11,6 @@ public abstract class AuthViewModel extends ViewModel {
     public AuthViewModel()
     {
         webClient = WebClient.getInstance();
-        authApi = webClient.createRetrofit(AuthApi.class);
+        authApi = webClient.createApi(AuthApi.class);
     }
 }

@@ -22,7 +22,7 @@ public class ChatsRepo extends AbstractRepo{
     public ChatsRepo()
     {
         super();
-        chatApi = webClient.createRetrofit(ChatApi.class);
+        chatApi = webClient.createApi(ChatApi.class);
     }
     public void fetchAllChats(MutableLiveData<Map<Long,Chat>> chatsData, long userid)
     {
@@ -58,11 +58,9 @@ public class ChatsRepo extends AbstractRepo{
                 "/topic/chats/"+ chatid,
                 incomingMessage -> {
                     Message msg = webClient.deserializePayload(incomingMessage, Message.class);
-                    Log.d("ChatsRepo", msg.getText());
                     Map<Long, Chat> chats = chatsData.getValue();
                     Chat chat = chats.get(chatid);
                     chat.setLast(msg);
-                    chats.replace(chat.getId(), chat);
 
                     chatsData.postValue(chats);
                 }

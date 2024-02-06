@@ -18,7 +18,7 @@ public class MessagesRepo extends AbstractRepo {
 
     public MessagesRepo() {
         super();
-        msgApi = webClient.createRetrofit(MsgApi.class);
+        msgApi = webClient.createApi(MsgApi.class);
     }
     public void fetchAllMessages(MutableLiveData<Map<Long, Message>> msgsData, long chatid)
     {
@@ -29,10 +29,11 @@ public class MessagesRepo extends AbstractRepo {
                     public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
                         List<Message> msgsList = response.body();
                         Map<Long, Message> msgMap = new LinkedHashMap<>();
-                        if (msgsList != null && !msgsList.isEmpty())
-                            for (Message msg: msgsList)
-                                if (msg.getDateTime() != null)
-                                    msgMap.put(msg.msgid, msg);
+                        if (msgsList != null)
+                            if (!msgsList.isEmpty())
+                                for (Message msg: msgsList)
+                                    if (msg.getDateTime() != null)
+                                        msgMap.put(msg.msgid, msg);
                         msgsData.postValue(msgMap);
                         observeIncomingMessage(msgsData, chatid);
                     }
