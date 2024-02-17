@@ -71,4 +71,13 @@ public class MessagesRepo extends AbstractRepo {
                 }
         );
     }
+    public void observeLastIncomingMessage(MutableLiveData<Message> msgData, long chatid)
+    {
+        webClient.observeSubscription("/topic/chats/" + chatid,
+                message -> {
+                    Message msg = webClient.deserializePayload(message, Message.class);
+                    msgData.postValue(msg);
+                }
+        );
+    }
 }

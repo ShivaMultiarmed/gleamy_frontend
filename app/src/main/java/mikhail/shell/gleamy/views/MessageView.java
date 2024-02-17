@@ -8,9 +8,10 @@ import mikhail.shell.gleamy.models.Message;
 
 
 public abstract class MessageView extends LinearLayout {
-    public MessageView(Context context)
+    public MessageView(Context context, Message message)
     {
         super(context);
+        init(message);
     }
     public MessageView(Context context, AttributeSet attrs) {
         super(context, attrs);

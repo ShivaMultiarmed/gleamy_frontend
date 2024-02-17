@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import java.time.LocalDate;
@@ -39,15 +40,13 @@ public class ChatActivity extends AppCompatActivity {
         getBundle();
 
         msgs = new TreeMap<>();
+        initChat();
+        setSendListener();
     }
     @Override
     protected void onStart()
     {
         super.onStart();
-
-        initChat();
-
-        setSendListener();
     }
     private void initChat()
     {
@@ -62,7 +61,11 @@ public class ChatActivity extends AppCompatActivity {
                                 Message msg = chatViewModel.getLastMessage();
                                 if (msg!=null)
                                     if (!msgs.containsKey(msg.getMsgid()))
+                                    {
                                         addMessage(msg);
+                                        scrollToBottom();
+                                    }
+
                             }
                     );
                 }
@@ -81,7 +84,7 @@ public class ChatActivity extends AppCompatActivity {
         if (!messages.isEmpty())
         {
             clear();
-            messages.stream().forEach(msg -> addMessage(msg));
+            messages.forEach(this::addMessage);
             scrollToBottom();
         }
     }
@@ -158,7 +161,7 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void scrollToBottom()
     {
-        B.chatScrollView.fullScroll(View.FOCUS_DOWN);
+        B.chatScrollView.post(() -> B.chatScrollView.fullScroll(View.FOCUS_DOWN));
     }
     private Message getLastAddedMsg()
     {

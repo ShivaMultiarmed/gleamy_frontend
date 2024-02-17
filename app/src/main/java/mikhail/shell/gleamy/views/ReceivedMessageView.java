@@ -16,8 +16,7 @@ public class ReceivedMessageView extends MessageView {
     private ReceivedMsgBinding B;
     public ReceivedMessageView(Context context, Message message)
     {
-        super(context);
-        init(message);
+        super(context, message);
     }
     public ReceivedMessageView(Context context, AttributeSet attrs) {
         super(context, attrs);

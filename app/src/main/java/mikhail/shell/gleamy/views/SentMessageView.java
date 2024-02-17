@@ -16,12 +16,10 @@ public class SentMessageView extends MessageView {
     private SentMsgBinding B;
     public SentMessageView(Context context, Message message)
     {
-        super(context);
-        init(message);
+        super(context, message);
     }
     public SentMessageView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        //correctLayoutParams();
     }
     @Override
     protected void init(Message message)
@@ -41,11 +39,5 @@ public class SentMessageView extends MessageView {
     @Override
     public Message getMsgInfo() {
         return B.getMessage();
-    }
-    private void correctLayoutParams()
-    {
-        LayoutParams layoutParams = (LayoutParams) ((LinearLayout)this).getLayoutParams();
-        layoutParams.gravity = Gravity.RIGHT;
-        setLayoutParams(layoutParams);
     }
 }
