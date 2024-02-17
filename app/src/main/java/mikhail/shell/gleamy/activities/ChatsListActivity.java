@@ -42,7 +42,7 @@ public class ChatsListActivity extends AppCompatActivity {
 
         retrieveBundle();
         initViewModels();
-        initChatsMap();
+        chats = new LinkedHashMap<>();
         initViews();
 
         chatsListViewModel.fetchAllChatsFromREST();
@@ -65,16 +65,15 @@ public class ChatsListActivity extends AppCompatActivity {
         chatsListViewModel = ViewModelProviders.of(this).get(ChatsListViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
-        LifecycleOwner owner = this;
-        chatsListViewModel.getChatsLiveData().observe(owner,
-                initialChats ->
+        chatsListViewModel.getChatsLiveData().observe(this,
+                chatMap ->
                 {
                     /*if (!chats.isEmpty())
                         removeEmptyMessage();*/
 
-                    addAllChats(initialChats);
+                    addAllChats(chatMap);
 
-                    chatsListViewModel.getChatsLiveData().removeObservers(owner);
+                    chatsListViewModel.getChatsLiveData().removeObservers(this);
 
                     chatsListViewModel.getChatsLiveData().observeForever(updatedChats -> {
                         Chat lastChat = chatsListViewModel.getLastChat();
@@ -88,10 +87,6 @@ public class ChatsListActivity extends AppCompatActivity {
                 }
         );
 
-    }
-    private void initChatsMap()
-    {
-        chats = new LinkedHashMap<>();
     }
     private void initViews()
     {

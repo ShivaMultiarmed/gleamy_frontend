@@ -1,12 +1,10 @@
 package mikhail.shell.gleamy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import java.time.LocalDate;
@@ -30,6 +28,7 @@ public class ChatActivity extends AppCompatActivity {
     private ChatActivityBinding B;
     private Map<Long, MessageView> msgs;
     private ChatViewModel chatViewModel;
+    private Message lastMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -50,27 +49,24 @@ public class ChatActivity extends AppCompatActivity {
     }
     private void initChat()
     {
-        chatViewModel.fetchAllMessages();
-        LifecycleOwner subscriber = this;
-        chatViewModel.observeMessages(subscriber,
-                (initialMap) -> {
-                    addAllMessages(new ArrayList<>(initialMap.values()));
-                    chatViewModel.removeObservers(subscriber);
-                    chatViewModel.observeMessages(subscriber,
-                            (map) -> {
-                                Message msg = chatViewModel.getLastMessage();
+        chatViewModel.fetchAllMessages(this,
+                msgsMap -> {
+                    addAllMessages(new ArrayList<>(msgsMap.values()));
+                    chatViewModel.removeObservers(this);
+                    chatViewModel.observeIncomingMessage(this,
+                            (message) -> {
+                                Message msg = message.getObject();
                                 if (msg!=null)
                                     if (!msgs.containsKey(msg.getMsgid()))
                                     {
                                         addMessage(msg);
                                         scrollToBottom();
                                     }
-
                             }
                     );
                 }
         );
-        chatViewModel.fetchAllChatMembers();
+        //chatViewModel.fetchAllChatMembers();
     }
     private void getBundle()
     {
@@ -91,10 +87,9 @@ public class ChatActivity extends AppCompatActivity {
     private void addMessage(Message msg)
     {
         MessageView messageView = createMessage(msg);
-        if (msgs.isEmpty())
-            clear();
-        msgs.put(msg.getMsgid(), messageView);
         displayMessage(messageView);
+        msgs.put(msg.getMsgid(), messageView);
+        lastMessage = msg;
     }
 
     private MessageView createMessage(Message message)
@@ -136,11 +131,10 @@ public class ChatActivity extends AppCompatActivity {
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
-            Message lastMsg = getSecondLastAddedMsg();
-            if (lastMsg == null)
+            if (lastMessage == null)
                 return true;
             else
-                return !date.equals(lastMsg.getDateTime().toLocalDate());
+                return !date.equals(lastMessage.getDateTime().toLocalDate());
         }
         else
             return false;
@@ -150,11 +144,9 @@ public class ChatActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && dateTime != null) {
             LocalDate date = dateTime.toLocalDate();
             if (needsNewDate(date)) {
-                boolean withYear;
-                if (getSecondLastAddedMsg() != null)
-                    withYear = date.getYear() > getSecondLastAddedMsg().getDateTime().getYear();
-                else
-                    withYear = true;
+                boolean withYear = true;
+                if (lastMessage != null)
+                    withYear = date.getYear() > lastMessage.getDateTime().getYear();
                 addDateView(date, withYear);
             }
         }
@@ -162,20 +154,5 @@ public class ChatActivity extends AppCompatActivity {
     private void scrollToBottom()
     {
         B.chatScrollView.post(() -> B.chatScrollView.fullScroll(View.FOCUS_DOWN));
-    }
-    private Message getLastAddedMsg()
-    {
-        long msgid = msgs.keySet().stream().skip(msgs.size()-1).findFirst().get();
-        return msgs.get(msgid).getMsgInfo();
-    }
-    private Message getSecondLastAddedMsg()
-    {
-        try{
-            long msgid = msgs.keySet().stream().skip(msgs.size() - 2).findFirst().get();
-            return msgs.get(msgid).getMsgInfo();
-        }
-        catch (IllegalArgumentException exception) {
-            return null;
-        }
     }
 }

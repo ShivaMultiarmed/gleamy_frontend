@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import mikhail.shell.gleamy.api.MsgApi;
+import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.Message;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,7 +36,6 @@ public class MessagesRepo extends AbstractRepo {
                                     if (msg.getDateTime() != null)
                                         msgMap.put(msg.msgid, msg);
                         msgsData.postValue(msgMap);
-                        observeIncomingMessage(msgsData, chatid);
                     }
 
                     @Override
@@ -60,23 +60,12 @@ public class MessagesRepo extends AbstractRepo {
             }
         });
     }
-    public void observeIncomingMessage(MutableLiveData<Map<Long, Message>> msgsData, long chatid)
-    {
-        webClient.observeSubscription("/topic/chats/" + chatid,
-                message -> {
-                    Map<Long, Message> msgsMap = msgsData.getValue();
-                    Message msg = webClient.deserializePayload(message, Message.class);
-                    msgsMap.put(msg.msgid, msg);
-                    msgsData.postValue(msgsMap);
-                }
-        );
-    }
-    public void observeLastIncomingMessage(MutableLiveData<Message> msgData, long chatid)
+    public void observeIncomingMessage(MutableLiveData<ActionModel<Message>> msgData, long chatid)
     {
         webClient.observeSubscription("/topic/chats/" + chatid,
                 message -> {
                     Message msg = webClient.deserializePayload(message, Message.class);
-                    msgData.postValue(msg);
+                    msgData.postValue(new ActionModel<>("RECEIVEDMESSAGE", msg));
                 }
         );
     }

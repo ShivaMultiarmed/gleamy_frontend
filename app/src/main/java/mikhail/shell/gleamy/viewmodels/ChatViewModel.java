@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.viewmodels;
 
+import android.app.Notification;
 import android.os.Build;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -14,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import mikhail.shell.gleamy.GleamyApp;
+import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.repositories.ChatsRepo;
@@ -22,14 +24,14 @@ import mikhail.shell.gleamy.repositories.MessagesRepo;
 public class ChatViewModel extends ViewModel {
     private final static String TAG = ChatViewModel.class.getName();
     private MutableLiveData<Chat> chatData;
-    private MutableLiveData<Map<Long, Message>> msgListData;
+    private MutableLiveData<ActionModel<Message>> msgsData;
+    private MutableLiveData<Message> lastMsgData;
     private MessagesRepo msgsRepo;
     private ChatsRepo chatsRepo;
     public ChatViewModel(Chat chat)
     {
         initLiveData(chat);
         initRepos();
-        initSubConsumer(chat.getId());
     }
     private void initRepos()
     {
@@ -40,16 +42,19 @@ public class ChatViewModel extends ViewModel {
     {
         chatData = new MutableLiveData<>();
         chatData.setValue(chat);
-        msgListData = new MutableLiveData<>();
+        msgsData = new MutableLiveData<>();
     }
-    private void initSubConsumer(long chatid)
+    public void observeIncomingMessage(LifecycleOwner owner, Observer<ActionModel<Message>> observer)
     {
-        msgsRepo.observeIncomingMessage(msgListData, chatid);
+        msgsData.observe(owner,observer);
+        msgsRepo.observeIncomingMessage(msgsData, chatData.getValue().getId());
     }
-    public void fetchAllMessages()
+    public void fetchAllMessages(LifecycleOwner subscriber, Observer<Map<Long, Message>> observer)
     {
         long chatid = chatData.getValue().getId();
-        msgsRepo.fetchAllMessages(msgListData, chatid);
+        MutableLiveData<Map<Long, Message>> msgsData = new MutableLiveData<>();
+        msgsData.observe(subscriber,observer);
+        msgsRepo.fetchAllMessages(msgsData, chatid);
     }
     public void sendMessage(String text) {
 
@@ -65,13 +70,7 @@ public class ChatViewModel extends ViewModel {
     }
     public Message getLastMessage()
     {
-        Collection<Message> messages = msgListData.getValue().values();
-        Message lastMsg = null;
-        for (Iterator<Message> iterator = messages.iterator(); iterator.hasNext();)
-            lastMsg = iterator.next();
-        //List<Message> msgsList = msgListData.getValue().values().stream().collect(Collectors.toList());
-        //Message lastMsg = msgsList.get(msgsList.size() - 1);
-        return lastMsg;
+        return lastMsgData.getValue();
     }
     public LocalDate getLastMsgDate()
     {
@@ -81,13 +80,9 @@ public class ChatViewModel extends ViewModel {
         else
             return null;
     }
-    public void observeMessages(LifecycleOwner subscriber, Observer<Map<Long, Message>> observer)
-    {
-        msgListData.observe(subscriber, observer);
-    }
     public void removeObservers(LifecycleOwner subscriber)
     {
-        msgListData.removeObservers(subscriber);
+        msgsData.removeObservers(subscriber);
     }
     public static class ChatViewModelFactory implements ViewModelProvider.Factory {
         private final Chat chat;
