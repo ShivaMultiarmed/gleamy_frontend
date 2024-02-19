@@ -11,6 +11,8 @@ import com.google.gson.JsonObject;
 import java.time.LocalDateTime;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import mikhail.shell.gleamy.api.json.adapters.DateTimeAdapter;
@@ -40,6 +42,7 @@ public class WebClient {
     private StompClient stompClient;
     private Retrofit retrofit;
     private SubscriptionsManager subscriptionsManager;
+    private final CompositeDisposable compositeDisposable;
     private WebClient()
     {
         initGson();
@@ -48,6 +51,7 @@ public class WebClient {
 
         initStompClient();
         initSubscriptionsManager();
+        compositeDisposable = new CompositeDisposable();
     }
 
     public static WebClient getInstance()
@@ -94,36 +98,42 @@ public class WebClient {
         stompClient.connect();
         stompClient.withClientHeartbeat(HEARTBEAT).withClientHeartbeat(HEARTBEAT);
     }
+    public void disconnectFromStomp()
+    {
+        resetSubscriptions();
+        stompClient.disconnect();
+    }
     private void setStompLifeCycle(Consumer<LifecycleEvent> consumer)
     {
-        stompClient.lifecycle().subscribe(consumer);
+        compositeDisposable.add(stompClient.lifecycle().subscribe(consumer));
     }
     private Consumer<LifecycleEvent> createConsumer(long userid)
     {
         return lifecycleEvent -> {
-
             switch (lifecycleEvent.getType())
             {
                 case OPENED -> onStompOpened(lifecycleEvent, userid);
                 case CLOSED -> onStompClosed(lifecycleEvent);
                 case ERROR -> onStompError(lifecycleEvent);
-                case FAILED_SERVER_HEARTBEAT -> onFailedHearbeat(lifecycleEvent);
+                case FAILED_SERVER_HEARTBEAT -> onFailedHeartbeat(lifecycleEvent);
             }
-
+            if (!lifecycleEvent.getType().equals(LifecycleEvent.Type.OPENED))
+                connectToStomp();
         };
     }
     private void onStompOpened(LifecycleEvent e, long userid)
     {
         //subscribeToUserTopic(userid);
+        Log.i(TAG, "stomp is opened");
     }
     private void onStompClosed(LifecycleEvent e) {
-        //Log.e(TAG, e.getMessage());
+        Log.e(TAG, "stomp is closed");
     }
     private void onStompError(LifecycleEvent e) {
-        //Log.e(TAG, e.getMessage());
+        Log.e(TAG, "error with stomp");
     }
-    private void onFailedHearbeat(LifecycleEvent e) {
-        Log.e(TAG, e.getMessage());
+    private void onFailedHeartbeat(LifecycleEvent e) {
+        Log.e(TAG, "failed hearbeat");
     }
 
     private void subscribeToUserTopic(long userid)
@@ -138,18 +148,7 @@ public class WebClient {
         return new Consumer<StompMessage>() {
             @Override
             public void accept(StompMessage msg) {
-                Log.i(TAG, msg.getPayload());
-                switch (getMsgType(msg))
-                {
-                    case "RECEIVEDMESSAGE" -> {
-                        Message message = deserializePayload(msg, Message.class);
-                        handleChatMessage(message);
-                    }
-                    case "NEWCHAT" -> {
-                        Chat chat = deserializePayload(msg, Chat.class);
-                        handleNewChat(chat);
-                    }
-                }
+
             }
         };
     }
@@ -203,10 +202,15 @@ public class WebClient {
     {
         subscriptionsManager.addConsumer(topic);
         StompConsumer consumer = subscriptionsManager.getConsumer(topic);
-        stompClient.topic(topic)
+        subscribe(topic, consumer);
+    }
+    private void subscribe(String topic, StompConsumer consumer)
+    {
+        Disposable disposable = stompClient.topic(topic)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(consumer);
+        compositeDisposable.add(disposable);
     }
     public void observeSubscription(String topic, Consumer<StompMessage> subConsumer)
     {
@@ -214,5 +218,21 @@ public class WebClient {
             subscribe(topic);
         StompConsumer consumer = subscriptionsManager.getConsumer(topic);
         consumer.addSubConsumer(subConsumer);
+    }
+    private void unsubscribe(String topic)
+    {
+        stompClient.topic(topic)
+                .unsubscribeOn(Schedulers.io())
+                .subscribe();
+        subscriptionsManager.removeConsumer(topic);
+    }
+    private void resetSubscriptions()
+    {
+        subscriptionsManager.getConsumers().forEach(webClient::subscribe);
+    }
+    public void removeSubscriptions()
+    {
+        compositeDisposable.dispose();
+        subscriptionsManager.removeAllConsumers();
     }
 }

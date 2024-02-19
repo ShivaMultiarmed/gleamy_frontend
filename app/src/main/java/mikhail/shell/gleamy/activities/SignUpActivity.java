@@ -3,9 +3,14 @@ package mikhail.shell.gleamy.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+
+import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.databinding.SignUpActivityBinding;
+import mikhail.shell.gleamy.services.MessagesService;
 import mikhail.shell.gleamy.viewmodels.SignupViewModel;
 import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
@@ -29,7 +34,13 @@ public class SignUpActivity extends AppCompatActivity {
                 statusCode -> {
                     displayMessage(statusCode);
                     if (statusCode.equals("OK"))
+                    {
+                        startMessageService();
                         goToChats();
+                        Long userid = GleamyApp.getApp().getUser().getId();
+                        saveUser(userid);
+                    }
+
                 }
         );
     }
@@ -59,5 +70,16 @@ public class SignUpActivity extends AppCompatActivity {
         startActivity(openChats);
         finish();
     }
-
+    private void saveUser(Long userid)
+    {
+        SharedPreferences sharedPref = getSharedPreferences("authdetails", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong("userid", userid);
+        editor.apply();
+    }
+    private void startMessageService()
+    {
+        Intent intent = new Intent(this, MessagesService.class);
+        startService(intent);
+    }
 }

@@ -5,13 +5,17 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 //import java.net.http.HttpClient;
 
+import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.databinding.LogInActivityBinding;
+import mikhail.shell.gleamy.services.MessagesService;
 import mikhail.shell.gleamy.viewmodels.LoginViewModel;
 import mikhail.shell.gleamy.viewmodels.UserViewModel;
 
@@ -38,7 +42,13 @@ public class LogInActivity extends AppCompatActivity {
                 (status) ->  {
                     displayMessage(status);
                     if (status.equals("OK"))
+                    {
+                        startMessageService();
                         startChatsListActivity();
+                        Long userid = GleamyApp.getApp().getUser().getId();
+                        saveUser(userid);
+                    }
+
                 }
         );
     }
@@ -75,6 +85,18 @@ public class LogInActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, ChatsListActivity.class);
         startActivity(intent);
+        finish();
     }
-
+    private void saveUser(Long userid)
+    {
+        SharedPreferences sharedPref = getSharedPreferences("authdetails", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putLong("userid", userid);
+        editor.apply();
+    }
+    private void startMessageService()
+    {
+        Intent intent = new Intent(this, MessagesService.class);
+        startService(intent);
+    }
 }

@@ -26,6 +26,15 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/logoutbtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="right|center"
+
+            android:layout_marginRight="20dp"
+            app:srcCompat="@android:drawable/ic_menu_directions" />
     </FrameLayout>
 
     <FrameLayout

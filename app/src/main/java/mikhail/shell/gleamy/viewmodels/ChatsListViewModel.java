@@ -59,5 +59,8 @@ public class ChatsListViewModel extends ViewModel {
             return null;
         }
     }
-
+    public void logout()
+    {
+        chatsRepo.logout();
+    }
 }

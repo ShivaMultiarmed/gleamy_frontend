@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -90,7 +91,8 @@ public class ChatsListActivity extends AppCompatActivity {
     }
     private void initViews()
     {
-        B.addChatBtn.setOnClickListener(e-> createChat());
+        B.addChatBtn.setOnClickListener(v-> createChat());
+        B.logoutbtn.setOnClickListener(v -> logout());
         openChatListener = new OpenChatListener();
     }
     private void addAllChats(Map<Long, Chat> chats)
@@ -202,5 +204,19 @@ public class ChatsListActivity extends AppCompatActivity {
         };
         ActivityResultCallback<Void> callback = (aVoid) -> {};
         createChatLauncher = registerForActivityResult(contract, callback);
+    }
+    private void logout()
+    {
+        chatsListViewModel.logout();
+        SharedPreferences.Editor editor = getSharedPreferences("authdetails", MODE_PRIVATE).edit();
+        editor.remove("userid");
+        editor.apply();
+        goToAuth();
+    }
+    private void goToAuth()
+    {
+        Intent intent = new Intent(this, LogInActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

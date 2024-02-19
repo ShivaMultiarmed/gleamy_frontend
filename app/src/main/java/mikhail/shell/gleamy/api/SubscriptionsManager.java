@@ -28,4 +28,13 @@ public class SubscriptionsManager {
     {
         return  consumers.containsKey(topic);
     }
+    public void removeConsumer(String topic){ consumers.remove(topic);}
+    public void removeAllConsumers()
+    {
+        consumers.clear();
+    }
+    public Map<String, StompConsumer> getConsumers()
+    {
+        return consumers;
+    }
 }

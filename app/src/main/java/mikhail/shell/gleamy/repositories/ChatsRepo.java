@@ -125,4 +125,9 @@ public class ChatsRepo extends AbstractRepo{
                 }
         );
     }
+    public void logout()
+    {
+        webClient.removeSubscriptions();
+        webClient.disconnectFromStomp();
+    }
 }

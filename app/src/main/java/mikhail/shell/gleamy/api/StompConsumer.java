@@ -10,14 +10,14 @@ import ua.naiksoftware.stomp.dto.StompMessage;
 
 public class StompConsumer implements Consumer<StompMessage> {
     private final static String TAG = StompConsumer.class.getName();
-    private final List<Consumer> subConsumers;
+    private final List<Consumer<StompMessage>> subConsumers;
     public StompConsumer()
     {
         subConsumers = new ArrayList<>();
     }
     @Override
     public void accept(StompMessage message) {
-        subConsumers.stream().forEach(consumer -> {
+        subConsumers.forEach(consumer -> {
             try {
                 consumer.accept(message);
             } catch (Exception e) {
