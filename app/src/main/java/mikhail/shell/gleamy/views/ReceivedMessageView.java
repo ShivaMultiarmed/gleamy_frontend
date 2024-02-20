@@ -1,6 +1,7 @@
 package mikhail.shell.gleamy.views;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -9,6 +10,8 @@ import android.widget.LinearLayout;
 import androidx.databinding.DataBindingUtil;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.activities.ChatActivity;
+import mikhail.shell.gleamy.activities.UserActivity;
 import mikhail.shell.gleamy.databinding.ReceivedMsgBinding;
 import mikhail.shell.gleamy.models.Message;
 
@@ -31,6 +34,7 @@ public class ReceivedMessageView extends MessageView {
                 true
         );
         setMsgInfo(message);
+        B.userAva.setOnClickListener(view -> goToUserProfile());
     }
 
     @Override
@@ -40,5 +44,11 @@ public class ReceivedMessageView extends MessageView {
     @Override
     public Message getMsgInfo() {
         return B.getMessage();
+    }
+    protected void goToUserProfile() {
+        Intent intent = new Intent(getContext(), UserActivity.class);
+        ChatActivity chatActivity = (ChatActivity) getContext();
+        intent.putExtra("userid", B.getMessage().getUserid());
+        chatActivity.startActivity(intent);
     }
 }

@@ -104,7 +104,8 @@ public class ChatActivity extends AppCompatActivity {
     {
         LocalDateTime newDateTime = msg.getMsgInfo().getDateTime();
         manageNewDateTime(newDateTime);
-
+        if (msgs.isEmpty())
+            clear();
         B.chatContent.addView(msg);
     }
     private void setSendListener()

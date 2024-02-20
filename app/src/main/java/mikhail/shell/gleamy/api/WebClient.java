@@ -100,7 +100,7 @@ public class WebClient {
     }
     public void disconnectFromStomp()
     {
-        resetSubscriptions();
+        removeSubscriptions();
         stompClient.disconnect();
     }
     private void setStompLifeCycle(Consumer<LifecycleEvent> consumer)
@@ -117,14 +117,15 @@ public class WebClient {
                 case ERROR -> onStompError(lifecycleEvent);
                 case FAILED_SERVER_HEARTBEAT -> onFailedHeartbeat(lifecycleEvent);
             }
-            if (!lifecycleEvent.getType().equals(LifecycleEvent.Type.OPENED))
-                connectToStomp();
+            //if (!lifecycleEvent.getType().equals(LifecycleEvent.Type.OPENED))
+                //connectToStomp();
         };
     }
     private void onStompOpened(LifecycleEvent e, long userid)
     {
         //subscribeToUserTopic(userid);
         Log.i(TAG, "stomp is opened");
+        resetSubscriptions();
     }
     private void onStompClosed(LifecycleEvent e) {
         Log.e(TAG, "stomp is closed");

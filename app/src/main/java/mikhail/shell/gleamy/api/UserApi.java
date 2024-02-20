@@ -16,4 +16,6 @@ public interface UserApi {
     Call<byte[]> getUserAvatar(@Path("id") long userid);
     @GET("/gleamy/users/avatars")
     Call<List<byte[]>> getUsersAvatars(@Body List<Long> usersids);
+    @GET("/users/{id}")
+    Call<User> getUserById(@Path("id") Long userid);
 }
