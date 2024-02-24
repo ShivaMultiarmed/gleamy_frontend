@@ -20,7 +20,7 @@ public class GleamyApp extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
-        webClient = WebClient.getInstance();
+        webClient = WebClient.getInstance(this);
         //if (!false) // to do: if client is NOT logged in
             //startLoginActivity();
     }
@@ -41,7 +41,7 @@ public class GleamyApp extends Application {
     }
     public void initWebClient()
     {
-        webClient = WebClient.getInstance();
+        //webClient = WebClient.getInstance();
     }
 
     public User getUser()

@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.repositories;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -16,10 +17,17 @@ import retrofit2.Response;
 
 public class UserRepo extends  AbstractRepo{
     private final UserApi userApi;
-    public UserRepo()
+    private static UserRepo instance;
+    private UserRepo(Context context)
     {
-        super();
+        super(context);
         userApi = webClient.createApi(UserApi.class);
+    }
+    public static UserRepo getInstance(Context context)
+    {
+        if (instance == null)
+            instance = new UserRepo(context);
+        return instance;
     }
     public void getUsersByLogin(MutableLiveData<Map<Long, User>> usersData, String login)
     {

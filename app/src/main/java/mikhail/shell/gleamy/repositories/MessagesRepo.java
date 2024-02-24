@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.repositories;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -15,11 +16,18 @@ import retrofit2.Response;
 
 public class MessagesRepo extends AbstractRepo {
     private final static String TAG = MessagesRepo.class.getName();
+    private static MessagesRepo instance;
     private MsgApi msgApi;
 
-    public MessagesRepo() {
-        super();
+    private MessagesRepo(Context context) {
+        super(context);
         msgApi = webClient.createApi(MsgApi.class);
+    }
+    public static MessagesRepo getInstance(Context context)
+    {
+        if (instance == null)
+            instance = new MessagesRepo(context);
+        return instance;
     }
     public void fetchAllMessages(MutableLiveData<Map<Long, Message>> msgsData, long chatid)
     {

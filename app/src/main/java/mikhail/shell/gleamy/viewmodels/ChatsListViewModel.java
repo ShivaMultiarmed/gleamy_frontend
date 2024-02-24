@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.viewmodels;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -29,7 +30,8 @@ public class ChatsListViewModel extends ViewModel {
     private ChatsRepo chatsRepo;
 
     public ChatsListViewModel() {
-        chatsRepo = new ChatsRepo();
+        Context appContext  = GleamyApp.getApp().getApplicationContext();
+        chatsRepo = ChatsRepo.getInstance(appContext);
         chatsLiveData = new MutableLiveData<>();
     }
     public LiveData<Map<Long, Chat>> getChatsLiveData() {

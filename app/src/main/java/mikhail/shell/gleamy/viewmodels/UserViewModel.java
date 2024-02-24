@@ -3,6 +3,7 @@ package mikhail.shell.gleamy.viewmodels;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.api.AuthApi;
 import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.models.User;
@@ -15,7 +16,7 @@ public class UserViewModel extends ViewModel {
     private final AuthApi authApi;
 
     public UserViewModel() {
-        webClient = WebClient.getInstance();
+        webClient = WebClient.getInstance(GleamyApp.getApp().getApplicationContext());
         authApi = webClient.createApi(AuthApi.class);
 
         userData = new MutableLiveData<>();

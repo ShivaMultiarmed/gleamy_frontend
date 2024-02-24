@@ -30,7 +30,7 @@ public class LogInActivity extends AppCompatActivity {
         B = LogInActivityBinding.inflate(getLayoutInflater());
         setContentView(B.getRoot());
 
-        webClient = WebClient.getInstance();
+        webClient = WebClient.getInstance(this);
         initUserViewModel();
         initBtn();
         initLinkToSignUp();

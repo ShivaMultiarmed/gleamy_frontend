@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.api;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -42,22 +43,24 @@ public class WebClient {
     private StompClient stompClient;
     private Retrofit retrofit;
     private SubscriptionsManager subscriptionsManager;
-    private final CompositeDisposable compositeDisposable;
-    private WebClient()
+    private CompositeDisposable compositeDisposable;
+    private final Context appContext;
+    private WebClient(Context appContext)
     {
+        this.appContext = appContext;
+
         initGson();
         initOkHttpClient();
         initRetrofit();
 
         initStompClient();
         initSubscriptionsManager();
-        compositeDisposable = new CompositeDisposable();
     }
 
-    public static WebClient getInstance()
+    public static WebClient getInstance(Context context)
     {
         if (webClient == null)
-            webClient = new WebClient();
+            webClient = new WebClient(context.getApplicationContext());
         return webClient;
     }
 
@@ -95,12 +98,13 @@ public class WebClient {
     }
     public void connectToStomp()
     {
+        compositeDisposable = new CompositeDisposable();
         stompClient.connect();
         stompClient.withClientHeartbeat(HEARTBEAT).withClientHeartbeat(HEARTBEAT);
     }
     public void reconnectToStomp()
     {
-        stompClient.connect();
+        connectToStomp();
         resetSubscriptions();
     }
     public void disconnectFromStomp()

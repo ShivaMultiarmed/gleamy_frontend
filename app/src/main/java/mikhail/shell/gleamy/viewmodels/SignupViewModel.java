@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.viewmodels;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -9,6 +10,7 @@ import androidx.lifecycle.Observer;
 
 import java.util.Map;
 
+import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.repositories.AuthRepo;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,7 +24,8 @@ public class SignupViewModel extends AuthViewModel{
     {
         super();
         signupData = new MutableLiveData<>();
-        authRepo = new AuthRepo();
+        Context context = GleamyApp.getApp().getApplicationContext();
+        authRepo = AuthRepo.getInstance(context);
     }
     public void observeSignUpStatus(LifecycleOwner subscriber, Observer<String> statusObserver)
     {

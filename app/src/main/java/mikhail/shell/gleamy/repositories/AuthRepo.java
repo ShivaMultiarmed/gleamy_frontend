@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.repositories;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -15,8 +16,16 @@ import retrofit2.Response;
 
 public class AuthRepo extends AbstractRepo {
     private AuthApi authApi;
-    public AuthRepo() {
+    private static AuthRepo instance;
+    private AuthRepo(Context context) {
+        super(context);
         authApi = webClient.createApi(AuthApi.class);
+    }
+    public static AuthRepo getInstance(Context context)
+    {
+        if (instance == null)
+            instance = new AuthRepo(context);
+        return instance;
     }
     public void signUp(MutableLiveData<String> signupData, String login, String password, String email) {
         Call<Map<String, Object>> request = authApi.signup(login, password, email);

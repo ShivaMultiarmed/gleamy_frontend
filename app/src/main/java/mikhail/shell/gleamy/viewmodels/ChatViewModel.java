@@ -1,6 +1,7 @@
 package mikhail.shell.gleamy.viewmodels;
 
 import android.app.Notification;
+import android.content.Context;
 import android.os.Build;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -35,8 +36,9 @@ public class ChatViewModel extends ViewModel {
     }
     private void initRepos()
     {
-        msgsRepo = new MessagesRepo();
-        chatsRepo = new ChatsRepo();
+        Context appContext = GleamyApp.getApp().getApplicationContext();
+        msgsRepo = MessagesRepo.getInstance(appContext);
+        chatsRepo = ChatsRepo.getInstance(appContext);
     }
     private void initLiveData(Chat chat)
     {

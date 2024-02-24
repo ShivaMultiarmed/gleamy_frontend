@@ -1,5 +1,7 @@
 package mikhail.shell.gleamy.viewmodels;
 
+import android.content.Context;
+
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -8,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Map;
 
+import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.models.User;
 import mikhail.shell.gleamy.repositories.ChatsRepo;
@@ -24,8 +27,9 @@ public class CreateChatViewModel extends ViewModel {
     private final UserRepo usersRepo;
     public CreateChatViewModel(User user)
     {
-        chatsRepo = new ChatsRepo();
-        usersRepo = new UserRepo();
+        Context appContext = GleamyApp.getApp().getApplicationContext();
+        chatsRepo = ChatsRepo.getInstance(appContext);
+        usersRepo = UserRepo.getInstance(appContext);
 
         chat = new Chat();
         chat.addMember(user);

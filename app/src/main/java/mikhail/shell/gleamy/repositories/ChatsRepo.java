@@ -1,5 +1,6 @@
 package mikhail.shell.gleamy.repositories;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -20,10 +21,17 @@ import retrofit2.Response;
 
 public class ChatsRepo extends AbstractRepo{
     private final ChatApi chatApi;
-    public ChatsRepo()
+    private static ChatsRepo instance;
+    private ChatsRepo(Context context)
     {
-        super();
+        super(context);
         chatApi = webClient.createApi(ChatApi.class);
+    }
+    public static ChatsRepo getInstance(Context context)
+    {
+        if (instance == null)
+            instance = new ChatsRepo(context);
+        return instance;
     }
     public void fetchAllChats(MutableLiveData<Map<Long,Chat>> chatsData, long userid)
     {
@@ -127,7 +135,6 @@ public class ChatsRepo extends AbstractRepo{
     }
     public void logout()
     {
-        webClient.removeSubscriptions();
         webClient.disconnectFromStomp();
     }
 }
