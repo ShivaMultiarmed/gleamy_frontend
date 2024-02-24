@@ -98,6 +98,11 @@ public class WebClient {
         stompClient.connect();
         stompClient.withClientHeartbeat(HEARTBEAT).withClientHeartbeat(HEARTBEAT);
     }
+    public void reconnectToStomp()
+    {
+        stompClient.connect();
+        resetSubscriptions();
+    }
     public void disconnectFromStomp()
     {
         removeSubscriptions();
@@ -117,18 +122,17 @@ public class WebClient {
                 case ERROR -> onStompError(lifecycleEvent);
                 case FAILED_SERVER_HEARTBEAT -> onFailedHeartbeat(lifecycleEvent);
             }
-            //if (!lifecycleEvent.getType().equals(LifecycleEvent.Type.OPENED))
-                //connectToStomp();
         };
     }
     private void onStompOpened(LifecycleEvent e, long userid)
     {
         //subscribeToUserTopic(userid);
         Log.i(TAG, "stomp is opened");
-        resetSubscriptions();
     }
     private void onStompClosed(LifecycleEvent e) {
         Log.e(TAG, "stomp is closed");
+        Log.i(TAG, "trying to reconnect to stomp");
+        reconnectToStomp();
     }
     private void onStompError(LifecycleEvent e) {
         Log.e(TAG, "error with stomp");
@@ -146,11 +150,8 @@ public class WebClient {
     }
 
     private Consumer<StompMessage> createMessageHandler() {
-        return new Consumer<StompMessage>() {
-            @Override
-            public void accept(StompMessage msg) {
+        return stompMsg -> {
 
-            }
         };
     }
 
