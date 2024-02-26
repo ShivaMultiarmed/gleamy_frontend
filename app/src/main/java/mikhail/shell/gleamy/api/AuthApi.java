@@ -15,8 +15,4 @@ public interface AuthApi {
     Call<Map<String, String>> login(@Query("login") String login, @Query("password") String password);
     @POST("/gleamy/auth/signup")
     Call<Map<String, Object>> signup(@Query("login") String login, @Query("password") String password, @Query("email") String email);
-
-    @GET("/gleamy/auth/test")
-    //@Headers("UserView-Agent: Mozilla/5.0 (Android 10; Mobile; rv:92.0) Gecko/92.0 Firefox/92.0")
-    Call<User> test();
 }
