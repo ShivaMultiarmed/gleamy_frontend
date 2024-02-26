@@ -235,6 +235,7 @@ public class WebClient {
     private void resetSubscriptions()
     {
         subscriptionsManager.getConsumers().forEach(webClient::subscribe);
+        Log.i(TAG, "subscriptions are reset");
     }
     public void removeSubscriptions()
     {
