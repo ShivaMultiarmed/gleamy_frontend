@@ -2,6 +2,7 @@ package mikhail.shell.gleamy.views;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -50,5 +51,9 @@ public class ReceivedMessageView extends MessageView {
         ChatActivity chatActivity = (ChatActivity) getContext();
         intent.putExtra("userid", B.getMessage().getUserid());
         chatActivity.startActivity(intent);
+    }
+    public void setAvatar(byte[] imageBytes)
+    {
+        B.userAva.setImageBitmap(BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
     }
 }

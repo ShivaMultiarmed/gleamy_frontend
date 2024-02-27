@@ -3,8 +3,6 @@ package mikhail.shell.gleamy.viewmodels;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import java.util.Map;
-
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.models.User;
 import retrofit2.Call;
@@ -26,27 +24,30 @@ public class LoginViewModel extends AuthViewModel {
 
     public void login(String login, String password)
     {
-        Call<Map<String, String>> call = authApi.login(login, password);
+        Call<User> call = authApi.login(login, password);
         call.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
-                Map<String, String> responseDetails = response.body();
+            public void onResponse(Call<User> call, Response<User> response) {
                 String code;
-                if (response.isSuccessful())
-                    code = responseDetails.get("code");
-                else
-                    code = "ERROR";
-                if (code.equals("OK")) {
-                    webClient.connectToStomp();
-                    long userid = Long.parseLong(responseDetails.get("userid"));
-                    GleamyApp.getApp().setUser(new User(userid,login,password));
-                    webClient.setUserStompConnection(userid);
+                switch (response.code())
+                {
+                    case 200 -> {
+                        User user = (User) response.body();
+                        webClient.connectToStomp();
+                        GleamyApp.getApp().setUser(user);
+                        webClient.setUserStompConnection(user.getId());
+                        code = "OK";
+                    }
+                    case 404 -> code = "NOTFOUND";
+                    case 400 -> code = "PASSINCORRECT";
+                    default -> code = "ERROR";
                 }
+
                 loginData.postValue(code);
             }
 
             @Override
-            public void onFailure(Call<Map<String, String>> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 loginData.postValue("ERROR");
             }
         });

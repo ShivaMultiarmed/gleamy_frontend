@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.databinding.ChatActivityBinding;
 import mikhail.shell.gleamy.models.Chat;
+import mikhail.shell.gleamy.models.User;
 import mikhail.shell.gleamy.views.DateView;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.views.MessageView;
@@ -52,7 +53,10 @@ public class ChatActivity extends AppCompatActivity {
         chatViewModel.fetchAllMessages(this,
                 msgsMap -> {
                     addAllMessages(new ArrayList<>(msgsMap.values()));
+                    fetchAllAvatars();
+
                     chatViewModel.removeObservers(this);
+
                     chatViewModel.observeIncomingMessage(this,
                             (message) -> {
                                 Message msg = message.getObject();
@@ -155,5 +159,21 @@ public class ChatActivity extends AppCompatActivity {
     private void scrollToBottom()
     {
         B.chatScrollView.post(() -> B.chatScrollView.fullScroll(View.FOCUS_DOWN));
+    }
+    private void fetchAllAvatars()
+    {
+        chatViewModel.fetchAllAvatarsByChatId(this, incomingAva -> {
+            msgs.values().stream().filter(
+                    msgView ->
+                    {
+                        long userid = msgView.getMsgInfo().getUserid();
+                        List<User> userList = chatViewModel.getChatData().getValue().getUsers();
+                        User user = userList.stream().filter(curUser -> curUser.getId() == userid).findAny().get();
+                        return user.getAvatar().equals(incomingAva.getDetails().get("filename"));
+                    }
+            ).forEachOrdered(
+                    msgView -> ((ReceivedMessageView) msgView).setAvatar(incomingAva.getObject())
+            );
+        });
     }
 }

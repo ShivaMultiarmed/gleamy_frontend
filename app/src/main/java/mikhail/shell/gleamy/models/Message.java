@@ -14,7 +14,7 @@ public class Message implements Serializable {
     public long msgid,userid,chatid;
     public boolean isMine;
     public String text, login;
-    public LocalDateTime dateTime;
+    public LocalDateTime datetime;
     public Message(long userid, long chatid, long msgid, boolean isMine, String text)
     {
         this.userid = userid;
@@ -56,11 +56,11 @@ public class Message implements Serializable {
     }
 
     public LocalDateTime getDateTime() {
-        return dateTime;
+        return datetime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setDateTime(LocalDateTime datetime) {
+        this.datetime = datetime;
     }
     public long getChatid() {
         return chatid;
@@ -72,8 +72,8 @@ public class Message implements Serializable {
     public String generateTimeString()
     {
         StringBuilder builder = new StringBuilder();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && dateTime != null) {
-            LocalTime time = dateTime.toLocalTime();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && datetime != null) {
+            LocalTime time = datetime.toLocalTime();
             if (time.getHour() < 10)
                 builder.append(0);
             builder.append(time.getHour());

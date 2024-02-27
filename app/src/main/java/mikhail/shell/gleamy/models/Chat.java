@@ -1,7 +1,9 @@
 package mikhail.shell.gleamy.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
@@ -9,12 +11,12 @@ import lombok.Data;
 @Data
 public class Chat implements Serializable {
     private long id;
-    private Map<Long, User> users;
+    private List<User> users;
     private String title;
     private Message last;
     public Chat()
     {
-        users = new HashMap<>();
+        users = new ArrayList<>();
     }
     public Chat(long id, String title, Message last)
     {
@@ -33,17 +35,17 @@ public class Chat implements Serializable {
     }
     public void addMember(long userid)
     {
-            users.put(userid, new User("", ""));
+        users.add(new User(userid,"", "", ""));
     }
     public void addMember(User user)
     {
         if (users != null)
-            users.put(user.getId(), user);
+            users.add(user);
     }
     public void removeMember(long userid)
     {
         if (users != null)
-            users.remove(users.get(userid));
+            users.remove(userid);
     }
 
     public String getTitle() {
@@ -63,14 +65,22 @@ public class Chat implements Serializable {
     }
     public boolean hasMember(long userid)
     {
-        return users.containsKey(userid);
+        for (User user : users)
+            if (user.getId() == userid)
+                return true;
+        return
+                false;
+    }
+    public boolean hasMember(User user)
+    {
+        return hasMember(user.getId());
     }
 
-    public void setUsers(Map<Long, User> users)
+    public void setUsers(List<User> users)
     {
         this.users = users;
     }
-    public Map<Long, User> getUsers()
+    public List<User> getUsers()
     {
         return users;
     }

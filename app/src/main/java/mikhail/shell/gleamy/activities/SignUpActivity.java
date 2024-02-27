@@ -60,6 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
         String msg = switch (code) {
             case "OK" -> "Вы успешно зарегистрировались.";
             case "EMPTY" -> "Заполните поля.";
+            case "USEREXISTS" -> "Пользователь уже существует.";
             default -> "Произошла ошибка.";
         };
         B.signUpMsg.setText(msg);

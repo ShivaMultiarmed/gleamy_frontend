@@ -12,10 +12,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface ChatApi {
-    @GET("/gleamy/chats/users/{userid}")
-    Call<Map<Long, Chat>> getAllChats(@Path("userid") long userid);
-    @POST("/gleamy/chats/add")
-    Call<Map<String, String>> addChat(@Body Chat chat);
+    @GET("/api/v1/chats/users/{userid}")
+    Call<List<Chat>> getAllChats(@Path("userid") Long userid);
+    @POST("/api/v1/chats/add")
+    Call<Chat> addChat(@Body Chat chat);
     @POST("/gleamy/chats/{userid}/members")
     Call<List<User>> getChatMembers(@Path("userid") long chatid);
 }

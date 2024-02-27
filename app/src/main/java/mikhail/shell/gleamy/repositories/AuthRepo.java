@@ -28,26 +28,27 @@ public class AuthRepo extends AbstractRepo {
         return instance;
     }
     public void signUp(MutableLiveData<String> signupData, String login, String password, String email) {
-        Call<Map<String, Object>> request = authApi.signup(login, password, email);
+        Call<User> request = authApi.signup(new User(login, password, email));
         request.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                switch (response.code())
-                {
-                    case 200 ->{
-                        String code = String.valueOf(response.body().get("code"));
-                        if (code.equals("OK")) {
-                            long userid = Long.parseLong((response.body().get("userid").toString()));
-                            GleamyApp.getApp().setUser(new User(userid,login, password));
-                            webClient.connectToStomp();
-                            webClient.setUserStompConnection(userid);
-                        }
-                        signupData.postValue(code);
-                    }
+            public void onResponse(Call<User> call, Response<User> response) {
+                String code =
+                    switch (response.code())
+                    {
+                        case 200 -> "OK";
+                        case 400 -> "USEREXISTS";
+                        default -> "ERROR";
+                    };
+                signupData.postValue(code);
+                if (code.equals("OK")) {
+                    User user = response.body();
+                    GleamyApp.getApp().setUser(user);
+                    webClient.connectToStomp();
+                    webClient.setUserStompConnection(user.getId());
                 }
             }
             @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Log.e("AuthRepo", "Error while signing up.");
             }
         });

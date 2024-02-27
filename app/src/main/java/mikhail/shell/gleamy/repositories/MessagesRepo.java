@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import mikhail.shell.gleamy.api.MsgApi;
+import mikhail.shell.gleamy.api.UserApi;
 import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.Message;
 import retrofit2.Call;
@@ -18,6 +19,7 @@ public class MessagesRepo extends AbstractRepo {
     private final static String TAG = MessagesRepo.class.getName();
     private static MessagesRepo instance;
     private MsgApi msgApi;
+    private UserApi userApi;
 
     private MessagesRepo(Context context) {
         super(context);
@@ -42,7 +44,7 @@ public class MessagesRepo extends AbstractRepo {
                             if (!msgsList.isEmpty())
                                 for (Message msg: msgsList)
                                     if (msg.getDateTime() != null)
-                                        msgMap.put(msg.msgid, msg);
+                                        msgMap.put(msg.getMsgid(), msg);
                         msgsData.postValue(msgMap);
                     }
 
@@ -55,26 +57,27 @@ public class MessagesRepo extends AbstractRepo {
     }
     public void sendMessage(Message msg)
     {
-        Call<Map<String, Long>> request = msgApi.sendMessage(msg);
+        Call<Message> request = msgApi.sendMessage(msg);
         request.enqueue(new Callback<>() {
             @Override
-            public void onResponse(Call<Map<String, Long>> call, Response<Map<String, Long>> response) {
+            public void onResponse(Call<Message> call, Response<Message> response) {
 
             }
 
             @Override
-            public void onFailure(Call<Map<String, Long>> call, Throwable t) {
+            public void onFailure(Call<Message> call, Throwable t) {
 
             }
         });
     }
     public void observeIncomingMessage(MutableLiveData<ActionModel<Message>> msgData, long chatid)
     {
-        webClient.observeSubscription("/topic/chats/" + chatid,
+        webClient.observeSubscription("/topics/chats/" + chatid,
                 message -> {
                     Message msg = webClient.deserializePayload(message, Message.class);
                     msgData.postValue(new ActionModel<>("RECEIVEDMESSAGE", msg));
                 }
         );
     }
+
 }

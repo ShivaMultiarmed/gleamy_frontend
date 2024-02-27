@@ -8,16 +8,17 @@ import lombok.Setter;
 
 @Getter @Setter
 public class User implements Serializable {
-    public long id;
-    public String login, password;
-    public User(String login, String password)
+    public Long id;
+    public String login, password, email, avatar;
+    public User(String login, String password, String email)
     {
         this.login = login;
         this.password = password;
+        this.email = email;
     }
-    public User(long id, String login, String password)
+    public User(long id, String login, String password, String email)
     {
-        this(login, password);
+        this(login, password, email);
         this.id = id;
     }
     public User(long id)
@@ -47,5 +48,13 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    public void setAvatar(String avatar)
+    {
+        this.avatar = avatar;
+    }
+    public  String getAvatar()
+    {
+        return avatar;
     }
 }

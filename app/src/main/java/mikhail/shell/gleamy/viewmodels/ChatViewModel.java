@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
@@ -13,12 +14,16 @@ import androidx.lifecycle.ViewModelProvider;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import io.reactivex.Observable;
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.models.Message;
+import mikhail.shell.gleamy.models.User;
 import mikhail.shell.gleamy.repositories.ChatsRepo;
 import mikhail.shell.gleamy.repositories.MessagesRepo;
 
@@ -26,6 +31,8 @@ public class ChatViewModel extends ViewModel {
     private final static String TAG = ChatViewModel.class.getName();
     private MutableLiveData<Chat> chatData;
     private MutableLiveData<ActionModel<Message>> msgsData;
+    private MutableLiveData<ActionModel<User>> memberData;
+    private MutableLiveData<ActionModel<byte[]>> avatarData;
     private MutableLiveData<Message> lastMsgData;
     private MessagesRepo msgsRepo;
     private ChatsRepo chatsRepo;
@@ -45,6 +52,8 @@ public class ChatViewModel extends ViewModel {
         chatData = new MutableLiveData<>();
         chatData.setValue(chat);
         msgsData = new MutableLiveData<>();
+        memberData = new MutableLiveData<>();
+        avatarData = new MutableLiveData<>();
     }
     public void observeIncomingMessage(LifecycleOwner owner, Observer<ActionModel<Message>> observer)
     {
@@ -98,8 +107,14 @@ public class ChatViewModel extends ViewModel {
             return (T) new ChatViewModel(chat);
         }
     }
-    public void fetchAllChatMembers()
+    public void fetchAllAvatarsByChatId(LifecycleOwner subscriber, Observer<ActionModel<byte[]>> observer)
     {
-        chatsRepo.fetchAllChatMembers(chatData, chatData.getValue().getId());
+        avatarData.observe(subscriber, observer);
+        List<Long> memberIds = chatData.getValue().getUsers().stream().map(User::getId).collect(Collectors.toList());
+        chatsRepo.fetchMemberAvatars(avatarData, memberIds);
+    }
+    public LiveData<Chat> getChatData()
+    {
+        return chatData;
     }
 }

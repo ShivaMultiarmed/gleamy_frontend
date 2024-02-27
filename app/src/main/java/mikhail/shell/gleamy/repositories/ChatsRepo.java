@@ -9,9 +9,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.api.ChatApi;
+import mikhail.shell.gleamy.api.UserApi;
+import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.models.User;
@@ -21,11 +25,13 @@ import retrofit2.Response;
 
 public class ChatsRepo extends AbstractRepo{
     private final ChatApi chatApi;
+    private final UserApi userApi;
     private static ChatsRepo instance;
     private ChatsRepo(Context context)
     {
         super(context);
         chatApi = webClient.createApi(ChatApi.class);
+        userApi = webClient.createApi(UserApi.class);
     }
     public static ChatsRepo getInstance(Context context)
     {
@@ -35,18 +41,19 @@ public class ChatsRepo extends AbstractRepo{
     }
     public void fetchAllChats(MutableLiveData<Map<Long,Chat>> chatsData, long userid)
     {
-        Call<Map<Long, Chat>> request = chatApi.getAllChats(userid);
+        Call<List<Chat>> request = chatApi.getAllChats(userid);
         request.enqueue(
                 new Callback<>() {
                     @Override
-                    public void onResponse(Call<Map<Long, Chat>> call, Response<Map<Long, Chat>> response) {
+                    public void onResponse(Call<List<Chat>> call, Response<List<Chat>> response) {
                         switch(response.code())
                         {
                             case 200 -> {
-                                Map<Long, Chat> chatMap  = response.body();
-                                if(chatMap != null) {
-                                    if (!chatMap.isEmpty()) {
-                                        chatsData.postValue(new LinkedHashMap<>(chatMap));
+                                List<Chat> chatList  = response.body();
+                                if(chatList != null) {
+                                    if (!chatList.isEmpty()) {
+                                        Map chatMap = chatList.stream().collect(Collectors.toMap(Chat::getId, Function.identity()));
+                                        chatsData.postValue(chatMap);
                                         subscribeToChats(chatsData, chatMap.keySet());
                                     }
                                     else
@@ -57,8 +64,9 @@ public class ChatsRepo extends AbstractRepo{
                         }
                     }
                     @Override
-                    public void onFailure(Call<Map<Long, Chat>> call, Throwable t) {
+                    public void onFailure(Call<List<Chat>> call, Throwable t) {
                         Log.e("ChatsRepo", "Error fetching all chats");
+                        Log.e("ChatsRepo", t.getLocalizedMessage());
                     }
                 }
         );
@@ -70,7 +78,7 @@ public class ChatsRepo extends AbstractRepo{
     private void subscribeToIncomingChats(MutableLiveData<Map<Long,Chat>> chatsData)
     {
         long userid = GleamyApp.getApp().getUser().getId();
-        webClient.observeSubscription("/topic/users/" + userid + "/chats",
+        webClient.observeSubscription("/topics/users/" + userid + "/chats",
                 incomingChat -> {
                     Chat chat = webClient.deserializePayload(incomingChat, Chat.class);
                     chatsData.getValue().put(chat.getId(), chat);
@@ -82,7 +90,7 @@ public class ChatsRepo extends AbstractRepo{
     private void subscribeToChat(MutableLiveData<Map<Long, Chat>> chatsData, long chatid)
     {
         webClient.observeSubscription(
-                "/topic/chats/"+ chatid,
+                "/topics/chats/"+ chatid,
                 incomingMessage -> {
                     Message msg = webClient.deserializePayload(incomingMessage, Message.class);
                     Map<Long, Chat> chats = chatsData.getValue();
@@ -118,16 +126,21 @@ public class ChatsRepo extends AbstractRepo{
     }
     public void postChat(MutableLiveData<String> statusData, Chat chat)
     {
-        Call<Map<String, String>> request = chatApi.addChat(chat);
+        Call<Chat> request = chatApi.addChat(chat);
         request.enqueue(
                 new Callback<>() {
                     @Override
-                    public void onResponse(Call<Map<String, String>> call, Response<Map<String, String>> response) {
-                        statusData.postValue("OK");
+                    public void onResponse(Call<Chat> call, Response<Chat> response) {
+                        switch (response.code())
+                        {
+                            case 200 -> statusData.postValue("OK");
+                            default -> statusData.postValue("ERROR");
+                        }
+
                     }
 
                     @Override
-                    public void onFailure(Call<Map<String, String>> call, Throwable t) {
+                    public void onFailure(Call<Chat> call, Throwable t) {
                         statusData.postValue("ERROR");
                     }
                 }
@@ -136,5 +149,26 @@ public class ChatsRepo extends AbstractRepo{
     public void logout()
     {
         webClient.disconnectFromStomp();
+    }
+    public void fetchMemberAvatars(MutableLiveData<ActionModel<byte[]>> avatarData, List<Long> memberIds)
+    {
+        memberIds.forEach(
+                memberId -> {
+                    Call<ActionModel<byte[]>> request = userApi.getUserAvatar(memberId);
+                    request.enqueue(new Callback<>() {
+                        @Override
+                        public void onResponse(Call<ActionModel<byte[]>> call, Response<ActionModel<byte[]>> response) {
+                            avatarData.postValue(response.body());
+                        }
+
+                        @Override
+                        public void onFailure(Call<ActionModel<byte[]>> call, Throwable t) {
+                            Log.e("Message Repository", "Error fetching user avatar");
+                        }
+                    });
+                }
+        );
+
+
     }
 }

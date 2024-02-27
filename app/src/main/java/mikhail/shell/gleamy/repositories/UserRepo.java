@@ -5,9 +5,11 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
 import mikhail.shell.gleamy.api.UserApi;
 import mikhail.shell.gleamy.models.User;
@@ -31,18 +33,24 @@ public class UserRepo extends  AbstractRepo{
     }
     public void getUsersByLogin(MutableLiveData<Map<Long, User>> usersData, String login)
     {
-        Call<Map<Long, User>> request = userApi.getUsersByLogin(login);
+        Call<List<User>> request = userApi.getUsersByLogin(login);
         request.enqueue(
                 new Callback<>() {
                     @Override
-                    public void onResponse(Call<Map<Long, User>> call, Response<Map<Long, User>> response) {
+                    public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                         switch (response.code())
                         {
-                            case 200 -> usersData.postValue(response.body());
+                            case 200 -> {
+                                List<User> userList = response.body();
+                                Map<Long, User> userMap = userList.stream()
+                                        .collect(Collectors.toMap(User::getId, Function.identity()));
+                                usersData.postValue(userMap);
+                            }
+                            default -> usersData.postValue(null);
                         }
                     }
                     @Override
-                    public void onFailure(Call<Map<Long, User>> call, Throwable t) {
+                    public void onFailure(Call<List<User>> call, Throwable t) {
                         usersData.postValue(null);
                     }
                 }

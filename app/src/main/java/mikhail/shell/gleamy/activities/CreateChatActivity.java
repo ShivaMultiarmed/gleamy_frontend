@@ -90,11 +90,11 @@ public class CreateChatActivity extends AppCompatActivity {
         clear();
         users.values().forEach(this::displayUser);
     }
-    private UserView createUser(User info)
+    private UserView createUser(User user)
     {
         UserView userView = (UserView)  LayoutInflater.from(this).inflate(R.layout.user_view, null);
         userView.init();
-        userView.setUser(info);
+        userView.setUser(user);
         setActive(userView);
         return userView;
     }
@@ -118,11 +118,11 @@ public class CreateChatActivity extends AppCompatActivity {
         Chat chat = viewModel.getChat();
         chooseListener = view->{
             UserView userView = (UserView) view;
-            long userid = userView.getUser().getId();
-            if (!chat.hasMember(userid))
-                chat.addMember(userid);
+            User user = userView.getUser();
+            if (!chat.hasMember(user))
+                chat.addMember(user);
             else
-                chat.removeMember(userid);
+                chat.removeMember(user.getId());
             setActive(userView);
         };
         users.values().forEach(userView -> userView.setOnClickListener(chooseListener));

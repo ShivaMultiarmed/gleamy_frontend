@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -32,8 +33,8 @@ public class WebClient {
     private  final  static String TAG = "WebClient";
     private static WebClient webClient;
     private final static int PORT = 8080, HEARTBEAT = 1000;
-    private final static String HOST = "158.160.22.54",
-             CONTEXT_PATH = "/gleamy", WS_ENDPOINT = "/websocket";
+    private final static String HOST = "192.168.1.107",//"158.160.22.54",
+             CONTEXT_PATH = "", WS_ENDPOINT = "/websocket";
     private enum StompType
     {
         RECEIVEDMESSAGE, NEWCHAT
@@ -67,7 +68,11 @@ public class WebClient {
     private void initOkHttpClient()
     {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.addInterceptor(new HttpLoggingInterceptor());
+        builder.connectTimeout(30, TimeUnit.SECONDS);
+        builder.callTimeout(30, TimeUnit.SECONDS);
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        builder.addInterceptor(interceptor);
         okHttpClient = builder.build();
     }
     private void initStompClient()
@@ -147,7 +152,7 @@ public class WebClient {
 
     private void subscribeToUserTopic(long userid)
     {
-        stompClient.topic("/topic/users/" + userid)
+        stompClient.topic("/topics/users/" + userid)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(createMessageHandler());
@@ -235,7 +240,6 @@ public class WebClient {
     private void resetSubscriptions()
     {
         subscriptionsManager.getConsumers().forEach(webClient::subscribe);
-        Log.i(TAG, "subscriptions are reset");
     }
     public void removeSubscriptions()
     {
