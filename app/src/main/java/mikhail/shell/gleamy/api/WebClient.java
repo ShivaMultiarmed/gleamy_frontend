@@ -17,6 +17,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import mikhail.shell.gleamy.api.json.adapters.ByteArrayAdapter;
 import mikhail.shell.gleamy.api.json.adapters.DateTimeAdapter;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.models.Message;
@@ -33,12 +34,8 @@ public class WebClient {
     private  final  static String TAG = "WebClient";
     private static WebClient webClient;
     private final static int PORT = 8080, HEARTBEAT = 1000;
-    private final static String HOST = "192.168.1.107",//"158.160.22.54",
-             CONTEXT_PATH = "", WS_ENDPOINT = "/websocket";
-    private enum StompType
-    {
-        RECEIVEDMESSAGE, NEWCHAT
-    }
+    private final static String HOST = "158.160.22.54", //"192.168.1.107",
+             CONTEXT_PATH = "/gleamy", API_PATH = "/api/v1", WS_ENDPOINT = "/websocket";
     private Gson gson;
     private OkHttpClient okHttpClient;
     private StompClient stompClient;
@@ -87,6 +84,7 @@ public class WebClient {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.registerTypeAdapter(LocalDateTime.class, new DateTimeAdapter());
         }
+        builder.registerTypeHierarchyAdapter(byte[].class, new ByteArrayAdapter());
         gson = builder.create();
     }
     private void initSubscriptionsManager()
@@ -96,7 +94,7 @@ public class WebClient {
     private void initRetrofit()
     {
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://" + HOST + ":" + PORT + CONTEXT_PATH + "/")
+                .baseUrl("http://" + HOST + ":" + PORT + CONTEXT_PATH + API_PATH+"/")
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
@@ -177,7 +175,7 @@ public class WebClient {
     {
         String body = msg.getPayload();
         JsonObject object = gson.fromJson(body, JsonObject.class);
-        JsonElement element = object.get("payload");
+        JsonElement element = object.get("model");
         T result = gson.fromJson(element, type);
         return result;
     }

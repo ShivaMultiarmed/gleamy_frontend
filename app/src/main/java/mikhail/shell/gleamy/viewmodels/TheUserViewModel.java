@@ -25,7 +25,7 @@ public class TheUserViewModel extends ViewModel {
         this.userid = userid;
 
         Context appContext = GleamyApp.getApp().getApplicationContext();
-        userRepo = UserRepo.getInstance(appContext); // Make single instance !!!
+        userRepo = UserRepo.getInstance(appContext);
     }
     public void getUser(Consumer<User> observer)
     {

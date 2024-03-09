@@ -12,9 +12,9 @@ import retrofit2.http.Path;
 
 public interface MsgApi
 {
-    @GET("/api/v1/messages/fromchat/{chatid}")
+    @GET("messages/fromchat/{chatid}")
     Call<List<Message>> getChatMsgs(@Path("chatid") long chatid);
 
-    @POST("/api/v1/messages/add")
+    @POST("messages/add")
     Call<Message> sendMessage(@Body Message msg);
 }

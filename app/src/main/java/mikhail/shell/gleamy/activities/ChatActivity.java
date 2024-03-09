@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import mikhail.shell.gleamy.GleamyApp;
@@ -28,6 +29,7 @@ import mikhail.shell.gleamy.viewmodels.ChatViewModel;
 public class ChatActivity extends AppCompatActivity {
     private ChatActivityBinding B;
     private Map<Long, MessageView> msgs;
+    private Map<Long, byte[]> avatars;
     private ChatViewModel chatViewModel;
     private Message lastMessage;
     @Override
@@ -40,6 +42,7 @@ public class ChatActivity extends AppCompatActivity {
         getBundle();
 
         msgs = new TreeMap<>();
+        avatars = new TreeMap<>();
         initChat();
         setSendListener();
     }
@@ -52,6 +55,7 @@ public class ChatActivity extends AppCompatActivity {
     {
         chatViewModel.fetchAllMessages(this,
                 msgsMap -> {
+
                     addAllMessages(new ArrayList<>(msgsMap.values()));
                     fetchAllAvatars();
 
@@ -59,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     chatViewModel.observeIncomingMessage(this,
                             (message) -> {
-                                Message msg = message.getObject();
+                                Message msg = message.getModel();
                                 if (msg!=null)
                                     if (!msgs.containsKey(msg.getMsgid()))
                                     {
@@ -94,6 +98,8 @@ public class ChatActivity extends AppCompatActivity {
         displayMessage(messageView);
         msgs.put(msg.getMsgid(), messageView);
         lastMessage = msg;
+        if (messageView instanceof ReceivedMessageView && avatars.containsKey(messageView.getMsgInfo().getUserid()))
+            ((ReceivedMessageView) messageView).setAvatar(avatars.get(messageView.getMsgInfo().getUserid()));
     }
 
     private MessageView createMessage(Message message)
@@ -163,17 +169,29 @@ public class ChatActivity extends AppCompatActivity {
     private void fetchAllAvatars()
     {
         chatViewModel.fetchAllAvatarsByChatId(this, incomingAva -> {
-            msgs.values().stream().filter(
-                    msgView ->
-                    {
-                        long userid = msgView.getMsgInfo().getUserid();
-                        List<User> userList = chatViewModel.getChatData().getValue().getUsers();
-                        User user = userList.stream().filter(curUser -> curUser.getId() == userid).findAny().get();
-                        return user.getAvatar().equals(incomingAva.getDetails().get("filename"));
-                    }
-            ).forEachOrdered(
-                    msgView -> ((ReceivedMessageView) msgView).setAvatar(incomingAva.getObject())
-            );
+            if (incomingAva != null)
+                msgs.values().stream().filter(
+                        msgView ->
+                        {
+                            long userid = msgView.getMsgInfo().getUserid();
+                            long ownUserid = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
+                            List<User> userList = chatViewModel.getChatData().getValue().getUsers();
+                            Optional<User> optionalUser = userList.stream().filter(curUser -> curUser.getId() == userid).findAny();
+                            if (optionalUser.isPresent())
+                            {
+                                String avatar = optionalUser.get().getAvatar();
+                                return avatar != null ? avatar.equals(incomingAva.getDetails().get("filename")) : false;
+                            }
+                            else
+                                return false;
+                        }
+                ).forEachOrdered(
+                        msgView -> {
+                            avatars.put(msgView.getMsgInfo().getUserid(), incomingAva.getModel());
+                            if (msgView instanceof ReceivedMessageView)
+                                ((ReceivedMessageView) msgView).setAvatar(incomingAva.getModel());
+                        }
+                );
         });
     }
 }

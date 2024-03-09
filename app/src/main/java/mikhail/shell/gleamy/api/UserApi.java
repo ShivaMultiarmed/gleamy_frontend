@@ -12,12 +12,12 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface UserApi {
-    @GET("/api/v1/users/search")
+    @GET("users/search")
     Call<List<User>> getUsersByLogin(@Query("login") String login);
-    @GET("/api/v1/users/{id}/avatar")
+    @GET("users/{id}/avatar")
     Call<ActionModel<byte[]>> getUserAvatar(@Path("id") long userid);
-    @GET("/gleamy/users/avatars")
+    @GET("users/avatars")
     Call<List<byte[]>> getUsersAvatars(@Body List<Long> usersids);
-    @GET("/api/v1/users/{id}")
+    @GET("users/{id}")
     Call<User> getUserById(@Path("id") Long userid);
 }

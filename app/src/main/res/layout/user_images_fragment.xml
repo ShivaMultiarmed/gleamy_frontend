@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.UserImagesFragment"
-    android:numColumns="4"
-    android:orientation="vertical">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-        <ImageView
-            android:background="#649234"
-             android:layout_height="100dp"
-             android:layout_width="100dp"
-            android:layout_gravity="center"/>
-</FrameLayout>
+        <data></data>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/userImagesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:visibility="visible"
+            tools:context=".fragments.UserImagesFragment">
+
+
+        </androidx.recyclerview.widget.RecyclerView>
+</layout>

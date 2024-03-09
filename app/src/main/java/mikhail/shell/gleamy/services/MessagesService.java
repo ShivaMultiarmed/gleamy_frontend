@@ -7,7 +7,6 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.util.Log;
@@ -42,14 +41,13 @@ public class MessagesService extends Service {
     public void onCreate() {
         super.onCreate();
         Context appContext = GleamyApp.getApp().getApplicationContext();
-        messagesRepo = MessagesRepo.getInstance(appContext); // make a single instance !
-        chatsRepo = ChatsRepo.getInstance(appContext); // make a single instance !
+        messagesRepo = MessagesRepo.getInstance(appContext);
+        chatsRepo = ChatsRepo.getInstance(appContext);
         msgData = new MutableLiveData<>();
         initMessageObservers();
         observeIncomingMessages();
         notificationManager = getSystemService(NotificationManager.class);
         initPushNotificationsChannel();
-        Log.i(TAG, "message service is created.");
     }
 
     @Nullable
@@ -78,8 +76,10 @@ public class MessagesService extends Service {
 
     private void observeIncomingMessages() {
         msgObserver = messageActionModel -> {
-            Message msg = messageActionModel.getObject();
-            displayPushNotification(msg);
+            Message msg = messageActionModel.getModel();
+            long ownUserid = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
+            if (ownUserid != 0 && msg.getUserid() != ownUserid)
+                displayPushNotification(msg);
         };
         msgData.observeForever(msgObserver);
     }

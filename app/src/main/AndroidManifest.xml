@@ -47,9 +47,6 @@
         <activity
             android:name=".activities.SignUpActivity"
             android:exported="false" />
-        <activity
-            android:name=".activities.UserActivity"
-            android:exported="false" />
 
         <service
             android:name=".services.MessagesService"

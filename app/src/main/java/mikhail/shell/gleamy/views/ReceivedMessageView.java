@@ -2,7 +2,15 @@ package mikhail.shell.gleamy.views;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -54,6 +62,27 @@ public class ReceivedMessageView extends MessageView {
     }
     public void setAvatar(byte[] imageBytes)
     {
-        B.userAva.setImageBitmap(BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+        Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        Drawable circleImage = getCircularBitmapDrawable(bitmap);
+        B.userAva.setImageDrawable(circleImage);
+    }
+    private Drawable getCircularBitmapDrawable(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final OvalShape oval = new OvalShape();
+        oval.resize(bitmap.getWidth(), bitmap.getHeight());
+
+        final ShapeDrawable shapeDrawable = new ShapeDrawable(oval);
+        shapeDrawable.getPaint().setColor(color);
+        shapeDrawable.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        shapeDrawable.draw(canvas);
+
+        paint.setXfermode(null);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+
+        return new BitmapDrawable(getResources(), output);
     }
 }

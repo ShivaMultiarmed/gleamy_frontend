@@ -1,23 +1,21 @@
 package mikhail.shell.gleamy.models;
 
-import java.io.Serializable;
-import java.lang.reflect.MalformedParameterizedTypeException;
 import java.util.Map;
 
 public class ActionModel<T> {
     private String action;
-    private T object;
+    private T model;
     private Map<String, String> details;
-    public ActionModel(String action, T object, Map<String, String> details)
+    public ActionModel(String action, T model, Map<String, String> details)
     {
         this.action = action;
-        this.object = object;
+        this.model = model;
         this.details = details;
     }
 
-    public ActionModel(String action, T object)
+    public ActionModel(String action, T model)
     {
-        this(action, object, null);
+        this(action, model, null);
     }
     public String getAction() {
         return action;
@@ -27,12 +25,12 @@ public class ActionModel<T> {
         this.action = action;
     }
 
-    public T getObject() {
-        return object;
+    public T getModel() {
+        return model;
     }
 
-    public void setObject(T object) {
-        this.object = object;
+    public void setModel(T model) {
+        this.model = model;
     }
     public Map<?,?> getDetails()
     {

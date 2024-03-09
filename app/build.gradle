@@ -51,6 +51,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
     implementation 'androidx.fragment:fragment:1.6.2'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.28'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
