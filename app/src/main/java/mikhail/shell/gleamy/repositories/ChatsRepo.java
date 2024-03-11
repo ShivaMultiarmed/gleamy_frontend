@@ -52,7 +52,10 @@ public class ChatsRepo extends AbstractRepo{
                                 List<Chat> chatList  = response.body();
                                 if(chatList != null) {
                                     if (!chatList.isEmpty()) {
-                                        Map chatMap = chatList.stream().collect(Collectors.toMap(Chat::getId, Function.identity()));
+                                        Map chatMap = chatList.stream().collect(
+                                                Collectors.toMap(Chat::getId, Function.identity(),
+                                                (existing, replacement) -> existing,
+                                                LinkedHashMap::new));
                                         chatsData.postValue(chatMap);
                                         subscribeToChats(chatsData, chatMap.keySet());
                                     }

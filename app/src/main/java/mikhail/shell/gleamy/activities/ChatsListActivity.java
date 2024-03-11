@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -99,6 +100,12 @@ public class ChatsListActivity extends AppCompatActivity {
     {
         if (!chats.isEmpty())
             chats.values().forEach(this::addChat);
+
+        ChatView chatView = this.chats.values().stream()
+                .skip(this.chats.size()-1)
+                .findFirst().orElse(null); // first chatview that should be at the bottom
+        if (chatView != null)
+            lowerChat(chatView.getChat());
     }
     private ChatView createChatView(Chat chat)
     {
@@ -106,9 +113,9 @@ public class ChatsListActivity extends AppCompatActivity {
         chatView.setOnClickListener(openChatListener);
         return chatView;
     }
-    private void displayChat(ChatView chat)
+    private void displayChat(ChatView chatView)
     {
-        B.chatsListContent.addView(chat, 0);
+        B.chatsListContent.addView(chatView);
     }
     public void addChat(Chat chat)
     {
@@ -166,13 +173,20 @@ public class ChatsListActivity extends AppCompatActivity {
             openChat(chatView.getInfo());
         }
     }
-    public void elevateChat(Chat chat)
+    void elevateChat(Chat chat)
     {
         long chatid = chat.getId();
         ChatView chatView = getChatView(chatid);
         chatView.setChat(chat);
         B.chatsListContent.removeView(chatView);
         B.chatsListContent.addView(chatView, 0);
+    }
+    void lowerChat(Chat chat)
+    {
+        long chatid = chat.getId();
+        ChatView chatView = getChatView(chatid);
+        B.chatsListContent.removeView(chatView);
+        B.chatsListContent.addView(chatView);
     }
     public ChatView getChatView(long chatid)
     {

@@ -34,7 +34,7 @@ public class WebClient {
     private  final  static String TAG = "WebClient";
     private static WebClient webClient;
     private final static int PORT = 8080, HEARTBEAT = 1000;
-    private final static String HOST = "158.160.22.54", //"192.168.1.107",
+    private final static String HOST =  "158.160.22.54",//"192.168.1.107",
              CONTEXT_PATH = "/gleamy", API_PATH = "/api/v1", WS_ENDPOINT = "/websocket";
     private Gson gson;
     private OkHttpClient okHttpClient;

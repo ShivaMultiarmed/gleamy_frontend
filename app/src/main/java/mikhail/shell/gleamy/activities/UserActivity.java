@@ -5,11 +5,18 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +55,7 @@ public class UserActivity extends AppCompatActivity {
         userViewModel.getUser(user -> {
             Log.i("UserActivity", user.toString());
             B.setUser(user);
+            userViewModel.getAvatar(this, this::setAvatar);
         });
     }
     private <T extends Fragment> View.OnClickListener changeTabListener()
@@ -67,5 +75,37 @@ public class UserActivity extends AppCompatActivity {
     protected void onDestroy()
     {
         super.onDestroy();
+    }
+
+    private void setAvatar(byte[] imageBytes)
+    {
+        if (imageBytes != null)
+        {
+            Bitmap bitmap = getCircleBitmap(imageBytes);
+            B.userPageAvatar.setImageBitmap(bitmap);
+        }
+    }
+    private Bitmap getCircleBitmap(byte[] imageBytes) {
+
+        InputStream inputStream = new ByteArrayInputStream(imageBytes);
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+        Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(circleBitmap);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+
+        int radius = Math.min(bitmap.getWidth(), bitmap.getHeight()) / 2;
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2, radius, paint);
+        paint.setXfermode(new android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return circleBitmap;
     }
 }

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import io.reactivex.subjects.PublishSubject;
 import mikhail.shell.gleamy.api.UserApi;
+import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,6 +72,28 @@ public class UserRepo extends  AbstractRepo{
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 Log.e("UserRepo", "Error while fetching a user.");
+            }
+        });
+    }
+    public void getAvatarByUserId(MutableLiveData<byte[]> avatarData, Long userid)
+    {
+        Call<ActionModel<byte[]>> request = userApi.getUserAvatar(userid);
+        request.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<ActionModel<byte[]>> call, Response<ActionModel<byte[]>> response) {
+                ActionModel<byte[]> actionModel = response.body();
+                if (actionModel!=null)
+                {
+                    byte[] imageBytes = actionModel.getModel();
+                    avatarData.postValue(imageBytes);
+                }
+                else
+                    avatarData.postValue(null);
+            }
+
+            @Override
+            public void onFailure(Call<ActionModel<byte[]>> call, Throwable t) {
+                avatarData.postValue(null);
             }
         });
     }

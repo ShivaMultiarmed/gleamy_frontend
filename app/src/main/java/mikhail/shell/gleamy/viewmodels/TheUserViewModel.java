@@ -1,12 +1,13 @@
 package mikhail.shell.gleamy.viewmodels;
 
 import android.content.Context;
-import android.database.Observable;
 
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
@@ -34,6 +35,12 @@ public class TheUserViewModel extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
         userRepo.getUserById(userObservable, userid);
+    }
+    public void getAvatar(LifecycleOwner subscriber, Observer<byte[]> observer)
+    {
+        MutableLiveData<byte[]> avatarData = new MutableLiveData<>();
+        userRepo.getAvatarByUserId(avatarData, userid);
+        avatarData.observe(subscriber, observer);
     }
     public static class UserViewModelFactory implements ViewModelProvider.Factory
     {

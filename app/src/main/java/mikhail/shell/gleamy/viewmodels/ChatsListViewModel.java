@@ -53,7 +53,7 @@ public class ChatsListViewModel extends ViewModel {
     {
         try {
             Set<Long> chatids = getAllChats().keySet();
-            long chatid = chatids.stream().skip(chatids.size()-1).findFirst().get();
+            long chatid = chatids.stream().skip(chatids.size()-1).findFirst().get(); // last chat is the first because chats are retrieved reversed
             return getAllChats().get(chatid);
         }
         catch (IllegalArgumentException e)
