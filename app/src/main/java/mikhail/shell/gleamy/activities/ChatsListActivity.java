@@ -7,15 +7,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,6 +31,7 @@ import java.util.Map;
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.databinding.ChatsListActivityBinding;
 import mikhail.shell.gleamy.models.Chat;
+import mikhail.shell.gleamy.viewmodels.TheUserViewModel;
 import mikhail.shell.gleamy.views.ChatView;
 import mikhail.shell.gleamy.viewmodels.ChatsListViewModel;
 import mikhail.shell.gleamy.viewmodels.UserViewModel;
@@ -34,6 +43,7 @@ public class ChatsListActivity extends AppCompatActivity {
     private OpenChatListener openChatListener;
     private ChatsListViewModel chatsListViewModel;
     private UserViewModel userViewModel;
+    private TheUserViewModel theUserViewModel;
     private ActivityResultLauncher createChatLauncher;
 
     @Override
@@ -74,6 +84,11 @@ public class ChatsListActivity extends AppCompatActivity {
         chatsListViewModel = ViewModelProviders.of(this).get(ChatsListViewModel.class);
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
+        long userid = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
+        TheUserViewModel.UserViewModelFactory factory = new TheUserViewModel.UserViewModelFactory(userid);
+        theUserViewModel = new ViewModelProvider(this, factory)
+                .get(TheUserViewModel.class);
+
         chatsListViewModel.getChatsLiveData().observe(this,
                 chatMap ->
                 {
@@ -100,6 +115,10 @@ public class ChatsListActivity extends AppCompatActivity {
     private void initViews()
     {
         B.addChatBtn.setOnClickListener(v-> createChat());
+        theUserViewModel.getAvatar(this, bytes->{
+            if (bytes != null)
+                B.profileBtn.setImageBitmap(getCircleBitmap(bytes));
+        });
         B.logoutbtn.setOnClickListener(v -> logout());
         openChatListener = new OpenChatListener();
     }
@@ -195,11 +214,11 @@ public class ChatsListActivity extends AppCompatActivity {
         B.chatsListContent.removeView(chatView);
         B.chatsListContent.addView(chatView);
     }
-    public ChatView getChatView(long chatid)
+    ChatView getChatView(long chatid)
     {
         return chats.get(chatid);
     }
-    public Chat getChat(long chatid)
+    Chat getChat(long chatid)
     {
         return getChatView(chatid).getInfo();
     }
@@ -239,5 +258,28 @@ public class ChatsListActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
         finish();
+    }
+    private Bitmap getCircleBitmap(byte[] imageBytes) {
+
+        InputStream inputStream = new ByteArrayInputStream(imageBytes);
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+        Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(circleBitmap);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+
+        int radius = Math.min(bitmap.getWidth(), bitmap.getHeight()) / 2;
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2, radius, paint);
+        paint.setXfermode(new android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return circleBitmap;
     }
 }

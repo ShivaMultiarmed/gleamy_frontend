@@ -133,4 +133,25 @@ public class UserRepo extends  AbstractRepo{
             }
         });
     }
+    public void removeAvatarByUserId(MutableLiveData<Boolean> avatarData, Long userid)
+    {
+        Call<Map<String, Object>> request = userApi.removeAvatarByUserId(userid);
+        request.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.code() == 200)
+                {
+                    Boolean result = (boolean) response.body().get("result");
+                    avatarData.postValue(result);
+                }
+                else
+                    avatarData.postValue(false);
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                avatarData.postValue(null);
+            }
+        });
+    }
 }

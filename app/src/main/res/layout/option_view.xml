@@ -1,0 +1,16 @@
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <mikhail.shell.gleamy.views.OptionView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:background="@color/input_background">
+
+        <TextView
+            android:id="@+id/optionText"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:textColor="@color/primary_text"/>
+    </mikhail.shell.gleamy.views.OptionView>
+</layout>

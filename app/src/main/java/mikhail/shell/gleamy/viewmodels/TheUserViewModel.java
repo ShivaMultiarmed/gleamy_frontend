@@ -50,6 +50,12 @@ public class TheUserViewModel extends ViewModel {
         userRepo.editAvatarByUserId(avatarData, userid, extension, content);
         avatarData.observe(subscriber, observer);
     }
+    public void removeAvatar(LifecycleOwner subscriber, Long userid, Observer<Boolean> observer)
+    {
+        MutableLiveData<Boolean> avatarData = new MutableLiveData<>();
+        userRepo.removeAvatarByUserId(avatarData, userid);
+        avatarData.observe(subscriber, observer);
+    }
     public static class UserViewModelFactory implements ViewModelProvider.Factory
     {
         private final long userid;

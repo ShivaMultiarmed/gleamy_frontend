@@ -3,6 +3,7 @@ package mikhail.shell.gleamy.activities;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
@@ -21,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
@@ -37,6 +39,8 @@ import mikhail.shell.gleamy.databinding.ActivityUserBinding;
 import mikhail.shell.gleamy.fragments.UserImagesFragment;
 import mikhail.shell.gleamy.fragments.UserVideosFragment;
 import mikhail.shell.gleamy.viewmodels.TheUserViewModel;
+import mikhail.shell.gleamy.views.DialogView;
+import mikhail.shell.gleamy.views.OptionView;
 import okhttp3.RequestBody;
 
 public class UserActivity extends AppCompatActivity {
@@ -69,7 +73,7 @@ public class UserActivity extends AppCompatActivity {
         B.userPageAvatar.setOnLongClickListener(avatarView -> {
             long ownUserId = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
             if (userid == ownUserId && ownUserId != 0)
-                openImageSelector();
+                openImageDialog();
             return true;
         });
 
@@ -185,5 +189,39 @@ public class UserActivity extends AppCompatActivity {
     private void openImageSelector()
     {
         imagePickerLauncher.launch("image/*");
+    }
+    private void openImageDialog()
+    {
+        DialogView dialogLayout = (DialogView) getLayoutInflater().inflate(R.layout.dialog_view, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        OptionView optionView1 = new OptionView(this);
+        optionView1.setText("Обновить фото");
+
+        dialogLayout.addView(optionView1);
+
+        OptionView optionView2 = new OptionView(this);
+        optionView2.setText("Удалить фото");
+
+        dialogLayout.addView(optionView2);
+
+        builder.setView(dialogLayout);
+
+        AlertDialog dialog = builder.create();
+
+        optionView1.setOnClickListener(btn -> {
+            openImageSelector();
+            dialog.dismiss();
+        });
+
+        long userid = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
+        optionView2.setOnClickListener(btn -> userViewModel.removeAvatar(this,userid, result -> {
+            if (result)
+                B.userPageAvatar.setImageBitmap(null);
+            dialog.dismiss();
+        }));
+
+        dialog.show();
     }
 }

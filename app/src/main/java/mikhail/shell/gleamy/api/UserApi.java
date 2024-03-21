@@ -8,6 +8,7 @@ import mikhail.shell.gleamy.models.User;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
@@ -27,4 +28,6 @@ public interface UserApi {
     @Multipart
     @PATCH("users/{userid}/avatar")
     Call<Map<String, Object>> editAvatarByUserId(@Path("userid") Long userid, @Part MultipartBody.Part avatar);
+    @DELETE("users/{userid}/avatar")
+    Call<Map<String, Object>> removeAvatarByUserId(@Path("userid") Long userid);
 }
