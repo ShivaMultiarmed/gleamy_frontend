@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -14,6 +15,9 @@ import io.reactivex.subjects.PublishSubject;
 import mikhail.shell.gleamy.api.UserApi;
 import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.User;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -94,6 +98,38 @@ public class UserRepo extends  AbstractRepo{
             @Override
             public void onFailure(Call<ActionModel<byte[]>> call, Throwable t) {
                 avatarData.postValue(null);
+            }
+        });
+    }
+    private MultipartBody.Part convertFile(String extension, byte[] fileContent)
+    {
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("image/*"), fileContent);
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("avatar", "avatar." + extension, requestFile);
+        return body;
+    }
+    public void editAvatarByUserId(MutableLiveData<String> avatarData, Long userid, String extension, byte[] fileContent)
+    {
+        Call<Map<String, Object>> request = userApi.editAvatarByUserId(userid, convertFile(extension, fileContent));
+        request.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                String value =
+                    switch (response.code())
+                    {
+                        case 200 -> (String) response.body().getOrDefault("filename", null);
+                        case 404 -> "USERNOTFOUND";
+                        case 400 -> "FILEERROR";
+                        case 500 -> "UPLOADERROR";
+                        default -> "ERROR";
+                    };
+                avatarData.postValue(value);
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                avatarData.postValue("ERROR");
             }
         });
     }

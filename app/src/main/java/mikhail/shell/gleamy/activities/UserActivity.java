@@ -1,21 +1,33 @@
 package mikhail.shell.gleamy.activities;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +37,7 @@ import mikhail.shell.gleamy.databinding.ActivityUserBinding;
 import mikhail.shell.gleamy.fragments.UserImagesFragment;
 import mikhail.shell.gleamy.fragments.UserVideosFragment;
 import mikhail.shell.gleamy.viewmodels.TheUserViewModel;
+import okhttp3.RequestBody;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -36,6 +49,7 @@ public class UserActivity extends AppCompatActivity {
         tabLayouts.put(R.id.userImgsTab, UserImagesFragment.class);
         tabLayouts.put(R.id.userVidsTab, UserVideosFragment.class);
     }
+    private ActivityResultLauncher<String> imagePickerLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +62,67 @@ public class UserActivity extends AppCompatActivity {
                 .get(TheUserViewModel.class);
         observeUser();
 
+        B.userPageAvatar.setOnClickListener( avatarView -> {
+            Toast.makeText(this, "Openning an avatar", Toast.LENGTH_SHORT).show();
+        });
+
+        B.userPageAvatar.setOnLongClickListener(avatarView -> {
+            long ownUserId = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
+            if (userid == ownUserId && ownUserId != 0)
+                openImageSelector();
+            return true;
+        });
+
+        initImagePickerLauncher();
+
         initTabs(changeTabListener());
+    }
+    private void initImagePickerLauncher()
+    {
+        imagePickerLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if(uri != null)
+                    {
+                        try{
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                                byte[] bytes = getFileContent(uri);
+                                String extension = getExtension(uri);
+                                userViewModel.editAvatar(this, extension, bytes,
+                                        response -> {
+                                            Bitmap bitmap = getCircleBitmap(bytes);
+                                            B.userPageAvatar.setImageBitmap(bitmap);
+                                        }
+                                );
+                            }
+                        }catch(FileNotFoundException e)
+                        {
+                            Log.e("UserActivity", "File not found.");
+                        }
+                        catch (IOException e)
+                        {
+                            Log.e("UserActivity", "File not read.");
+                        }
+
+                    }
+                    else
+                        Log.i("UserActivity", "None of files was chosen.");
+                }
+        );
+    }
+    private byte[] getFileContent(Uri uri) throws IOException {
+        InputStream inputStream = getContentResolver().openInputStream(uri);
+        byte[] content = new byte[0];
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            content = inputStream.readAllBytes();
+        }
+        inputStream.close();
+        return content;
+    }
+    private String getExtension(Uri uri)
+    {
+        String mimeType = getContentResolver().getType(uri);
+        return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
     }
     private void observeUser()
     {
@@ -107,5 +181,9 @@ public class UserActivity extends AppCompatActivity {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return circleBitmap;
+    }
+    private void openImageSelector()
+    {
+        imagePickerLauncher.launch("image/*");
     }
 }

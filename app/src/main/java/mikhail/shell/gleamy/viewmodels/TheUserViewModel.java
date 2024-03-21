@@ -8,6 +8,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.File;
+
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
@@ -42,6 +44,12 @@ public class TheUserViewModel extends ViewModel {
         userRepo.getAvatarByUserId(avatarData, userid);
         avatarData.observe(subscriber, observer);
     }
+    public void editAvatar(LifecycleOwner subscriber, String extension, byte[] content, Observer<String> observer)
+    {
+        MutableLiveData<String> avatarData = new MutableLiveData<>();
+        userRepo.editAvatarByUserId(avatarData, userid, extension, content);
+        avatarData.observe(subscriber, observer);
+    }
     public static class UserViewModelFactory implements ViewModelProvider.Factory
     {
         private final long userid;
@@ -52,4 +60,5 @@ public class TheUserViewModel extends ViewModel {
         @Override
         public <T extends ViewModel> T create(Class<T> type) { return (T) new TheUserViewModel(userid);}
     }
+
 }

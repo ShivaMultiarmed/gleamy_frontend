@@ -50,6 +50,13 @@ public class ChatsListActivity extends AppCompatActivity {
         chatsListViewModel.fetchAllChatsFromREST();
 
         initCreateChatLauncher();
+
+        B.profileBtn.setOnClickListener(btn -> {
+            long userid = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
+            Intent intent = new Intent(this, UserActivity.class);
+            intent.putExtra("userid", userid);
+            startActivity(intent);
+        });
     }
     @Override
     protected void onStart()

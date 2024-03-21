@@ -28,6 +28,15 @@
             android:textStyle="bold" />
 
         <ImageView
+            android:id="@+id/profileBtn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+
+            android:layout_marginRight="20dp"
+            app:srcCompat="@android:drawable/ic_menu_directions"
+            tools:srcCompat="@tools:sample/avatars" />
+        <ImageView
             android:id="@+id/logoutbtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
