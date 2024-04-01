@@ -8,19 +8,17 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.io.File;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.models.User;
-import mikhail.shell.gleamy.repositories.UserRepo;
+import mikhail.shell.gleamy.repositories.UserRepository;
 
 public class TheUserViewModel extends ViewModel {
     private final PublishSubject<User> userObservable;
-    private final UserRepo userRepo;
+    private final UserRepository userRepo;
     private final long userid;
     public TheUserViewModel(long userid)
     {
@@ -28,7 +26,7 @@ public class TheUserViewModel extends ViewModel {
         this.userid = userid;
 
         Context appContext = GleamyApp.getApp().getApplicationContext();
-        userRepo = UserRepo.getInstance(appContext);
+        userRepo = UserRepository.getInstance(appContext);
     }
     public void getUser(Consumer<User> observer)
     {

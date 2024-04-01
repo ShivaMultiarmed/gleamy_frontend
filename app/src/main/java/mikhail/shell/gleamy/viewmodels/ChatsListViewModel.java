@@ -5,33 +5,23 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 import mikhail.shell.gleamy.GleamyApp;
-import mikhail.shell.gleamy.api.ChatApi;
-import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.models.Chat;
-import mikhail.shell.gleamy.models.Message;
-import mikhail.shell.gleamy.models.User;
-import mikhail.shell.gleamy.repositories.ChatsRepo;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import mikhail.shell.gleamy.repositories.ChatsRepository;
 
 public class ChatsListViewModel extends ViewModel {
     private final static String TAG = "CHATS_VIEW_MODEL";
     private final MutableLiveData<Map<Long, Chat>> chatsLiveData;
-    private ChatsRepo chatsRepo;
+    private ChatsRepository chatsRepo;
 
     public ChatsListViewModel() {
         Context appContext  = GleamyApp.getApp().getApplicationContext();
-        chatsRepo = ChatsRepo.getInstance(appContext);
+        chatsRepo = ChatsRepository.getInstance(appContext);
         chatsLiveData = new MutableLiveData<>();
     }
     public LiveData<Map<Long, Chat>> getChatsLiveData() {

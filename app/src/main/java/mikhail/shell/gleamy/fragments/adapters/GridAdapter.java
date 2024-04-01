@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 import mikhail.shell.gleamy.R;
 
 public class GridAdapter<T extends View> extends RecyclerView.Adapter<GridAdapter.ViewHolder<T>> {
-    private final Map<Long, T> data;
+    private final Map<String, T> data;
     private final Context context;
-    public GridAdapter(Context context, Map<Long, T> data)
+    public GridAdapter(Context context, Map<String, T> data)
     {
         this.context = context;
         this.data = data;
@@ -42,7 +42,6 @@ public class GridAdapter<T extends View> extends RecyclerView.Adapter<GridAdapte
         T view = list.get(position);
         holder.card.addView(view);
     }
-
     @Override
     public int getItemCount() {
         return data.size();
@@ -58,5 +57,10 @@ public class GridAdapter<T extends View> extends RecyclerView.Adapter<GridAdapte
         {
             view = content;
         }
+    }
+    public void addView(String uuid, T view)
+    {
+        data.put(uuid, view); // deal with uuid
+        notifyItemInserted(0);
     }
 }

@@ -4,11 +4,11 @@ import android.content.Context;
 
 import mikhail.shell.gleamy.api.WebClient;
 
-public abstract class AbstractRepo {
+public abstract class AbstractRepository {
     protected final WebClient webClient;
     protected final Context appContext;
 
-    public AbstractRepo(Context context)
+    public AbstractRepository(Context context)
     {
         appContext = context.getApplicationContext();
         webClient = WebClient.getInstance(context);

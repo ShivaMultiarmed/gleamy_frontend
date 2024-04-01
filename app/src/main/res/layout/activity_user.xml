@@ -73,15 +73,14 @@
                     android:textStyle="normal"/>
             </LinearLayout>
         </LinearLayout>
-        <FrameLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/userContent"
             android:layout_height="0dp"
             android:layout_width="match_parent"
             android:layout_weight="1">
 
 
-        </FrameLayout>
+        </androidx.fragment.app.FragmentContainerView>
         <LinearLayout
             android:id="@+id/tabsBar"
             android:orientation="horizontal"

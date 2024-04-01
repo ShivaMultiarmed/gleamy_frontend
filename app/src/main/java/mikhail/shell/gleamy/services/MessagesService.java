@@ -25,14 +25,14 @@ import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.models.Message;
-import mikhail.shell.gleamy.repositories.ChatsRepo;
-import mikhail.shell.gleamy.repositories.MessagesRepo;
+import mikhail.shell.gleamy.repositories.ChatsRepository;
+import mikhail.shell.gleamy.repositories.MessagesRepository;
 
 public class MessagesService extends Service {
     private final static String CHANNEL_ID = "messagesChannel", TAG = "MessageService";
     private static int NOTIFICATION_ID = 0;
-    private MessagesRepo messagesRepo;
-    private ChatsRepo chatsRepo;
+    private MessagesRepository messagesRepo;
+    private ChatsRepository chatsRepo;
     private MutableLiveData<ActionModel<Message>> msgData;
     private Observer<ActionModel<Message>> msgObserver;
     private NotificationManager notificationManager;
@@ -41,8 +41,8 @@ public class MessagesService extends Service {
     public void onCreate() {
         super.onCreate();
         Context appContext = GleamyApp.getApp().getApplicationContext();
-        messagesRepo = MessagesRepo.getInstance(appContext);
-        chatsRepo = ChatsRepo.getInstance(appContext);
+        messagesRepo = MessagesRepository.getInstance(appContext);
+        chatsRepo = ChatsRepository.getInstance(appContext);
         msgData = new MutableLiveData<>();
         initMessageObservers();
         observeIncomingMessages();

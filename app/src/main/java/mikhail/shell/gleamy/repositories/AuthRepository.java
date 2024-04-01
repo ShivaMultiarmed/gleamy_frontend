@@ -5,8 +5,6 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import java.util.Map;
-
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.api.AuthApi;
 import mikhail.shell.gleamy.models.User;
@@ -14,17 +12,17 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AuthRepo extends AbstractRepo {
+public class AuthRepository extends AbstractRepository {
     private AuthApi authApi;
-    private static AuthRepo instance;
-    private AuthRepo(Context context) {
+    private static AuthRepository instance;
+    private AuthRepository(Context context) {
         super(context);
         authApi = webClient.createApi(AuthApi.class);
     }
-    public static AuthRepo getInstance(Context context)
+    public static AuthRepository getInstance(Context context)
     {
         if (instance == null)
-            instance = new AuthRepo(context);
+            instance = new AuthRepository(context);
         return instance;
     }
     public void signUp(MutableLiveData<String> signupData, String login, String password, String email) {
@@ -49,7 +47,7 @@ public class AuthRepo extends AbstractRepo {
             }
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Log.e("AuthRepo", "Error while signing up.");
+                Log.e("AuthRepository", "Error while signing up.");
             }
         });
     }

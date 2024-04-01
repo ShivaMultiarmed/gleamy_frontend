@@ -5,7 +5,6 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -22,18 +21,18 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class UserRepo extends  AbstractRepo{
+public class UserRepository extends AbstractRepository {
     private final UserApi userApi;
-    private static UserRepo instance;
-    private UserRepo(Context context)
+    private static UserRepository instance;
+    private UserRepository(Context context)
     {
         super(context);
         userApi = webClient.createApi(UserApi.class);
     }
-    public static UserRepo getInstance(Context context)
+    public static UserRepository getInstance(Context context)
     {
         if (instance == null)
-            instance = new UserRepo(context);
+            instance = new UserRepository(context);
         return instance;
     }
     public void getUsersByLogin(MutableLiveData<Map<Long, User>> usersData, String login)
@@ -75,7 +74,7 @@ public class UserRepo extends  AbstractRepo{
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Log.e("UserRepo", "Error while fetching a user.");
+                Log.e("UserRepository", "Error while fetching a user.");
             }
         });
     }

@@ -13,23 +13,20 @@ import java.util.Map;
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.models.User;
-import mikhail.shell.gleamy.repositories.ChatsRepo;
-import mikhail.shell.gleamy.repositories.UserRepo;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import mikhail.shell.gleamy.repositories.ChatsRepository;
+import mikhail.shell.gleamy.repositories.UserRepository;
 
 public class CreateChatViewModel extends ViewModel {
     private final MutableLiveData<Map<Long, User>> usersData;
     private final MutableLiveData<String> statusData;
     private final Chat chat;
-    private final ChatsRepo chatsRepo;
-    private final UserRepo usersRepo;
+    private final ChatsRepository chatsRepo;
+    private final UserRepository usersRepo;
     public CreateChatViewModel(User user)
     {
         Context appContext = GleamyApp.getApp().getApplicationContext();
-        chatsRepo = ChatsRepo.getInstance(appContext);
-        usersRepo = UserRepo.getInstance(appContext);
+        chatsRepo = ChatsRepository.getInstance(appContext);
+        usersRepo = UserRepository.getInstance(appContext);
 
         chat = new Chat();
         chat.addMember(user);

@@ -4,8 +4,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Media implements Serializable {
-    public String uuid;
-    public String type, extension;
+    public enum Type { IMAGE, VIDEO, AUDIO }
+    public String uuid, extension;
+    public Type type;
     public Long userid;
     public LocalDateTime date_time;
 }

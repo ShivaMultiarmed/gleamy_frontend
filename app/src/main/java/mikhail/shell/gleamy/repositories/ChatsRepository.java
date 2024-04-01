@@ -23,20 +23,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ChatsRepo extends AbstractRepo{
+public class ChatsRepository extends AbstractRepository {
     private final ChatApi chatApi;
     private final UserApi userApi;
-    private static ChatsRepo instance;
-    private ChatsRepo(Context context)
+    private static ChatsRepository instance;
+    private ChatsRepository(Context context)
     {
         super(context);
         chatApi = webClient.createApi(ChatApi.class);
         userApi = webClient.createApi(UserApi.class);
     }
-    public static ChatsRepo getInstance(Context context)
+    public static ChatsRepository getInstance(Context context)
     {
         if (instance == null)
-            instance = new ChatsRepo(context);
+            instance = new ChatsRepository(context);
         return instance;
     }
     public void fetchAllChats(MutableLiveData<Map<Long,Chat>> chatsData, long userid)
@@ -68,8 +68,8 @@ public class ChatsRepo extends AbstractRepo{
                     }
                     @Override
                     public void onFailure(Call<List<Chat>> call, Throwable t) {
-                        Log.e("ChatsRepo", "Error fetching all chats");
-                        Log.e("ChatsRepo", t.getLocalizedMessage());
+                        Log.e("ChatsRepository", "Error fetching all chats");
+                        Log.e("ChatsRepository", t.getLocalizedMessage());
                     }
                 }
         );

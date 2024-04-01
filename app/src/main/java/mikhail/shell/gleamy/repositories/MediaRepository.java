@@ -13,7 +13,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MediaRepository extends AbstractRepo {
+public class MediaRepository extends AbstractRepository {
     private static MediaRepository repository;
     private MediaApi mediaApi;
     private MediaRepository(Context context) {
@@ -30,9 +30,9 @@ public class MediaRepository extends AbstractRepo {
             repository = new MediaRepository(context);
         return repository;
     }
-    public void fetchMediaPortionByUserId(Long userid, Long portion_num, MutableLiveData<List<Media>> mediaData)
+    public void fetchMediaPortionByUserId(Long userid, Media.Type type, Long portion_num, MutableLiveData<List<Media>> mediaData)
     {
-        Call<List<Media>> request = mediaApi.getMediaPortionByUserId(userid, portion_num);
+        Call<List<Media>> request = mediaApi.getMediaPortionByUserId(userid, portion_num, type);
         request.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Media>> call, @NonNull Response<List<Media>> response) {

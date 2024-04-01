@@ -1,7 +1,6 @@
 package mikhail.shell.gleamy.repositories;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 import java.util.LinkedHashMap;
@@ -15,20 +14,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MessagesRepo extends AbstractRepo {
-    private final static String TAG = MessagesRepo.class.getName();
-    private static MessagesRepo instance;
+public class MessagesRepository extends AbstractRepository {
+    private final static String TAG = MessagesRepository.class.getName();
+    private static MessagesRepository instance;
     private MsgApi msgApi;
     private UserApi userApi;
 
-    private MessagesRepo(Context context) {
+    private MessagesRepository(Context context) {
         super(context);
         msgApi = webClient.createApi(MsgApi.class);
     }
-    public static MessagesRepo getInstance(Context context)
+    public static MessagesRepository getInstance(Context context)
     {
         if (instance == null)
-            instance = new MessagesRepo(context);
+            instance = new MessagesRepository(context);
         return instance;
     }
     public void fetchAllMessages(MutableLiveData<Map<Long, Message>> msgsData, long chatid)

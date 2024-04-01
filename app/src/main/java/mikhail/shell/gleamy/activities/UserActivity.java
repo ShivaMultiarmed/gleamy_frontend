@@ -1,15 +1,12 @@
 package mikhail.shell.gleamy.activities;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -17,18 +14,13 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.FileUtils;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -38,11 +30,11 @@ import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.ActivityUserBinding;
 import mikhail.shell.gleamy.fragments.UserImagesFragment;
 import mikhail.shell.gleamy.fragments.UserVideosFragment;
+import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.viewmodels.MediaViewModel;
 import mikhail.shell.gleamy.viewmodels.TheUserViewModel;
 import mikhail.shell.gleamy.views.DialogView;
 import mikhail.shell.gleamy.views.OptionView;
-import okhttp3.RequestBody;
 
 public class UserActivity extends AppCompatActivity {
 
@@ -69,6 +61,7 @@ public class UserActivity extends AppCompatActivity {
 
         observeUser();
 
+
         B.userPageAvatar.setOnClickListener( avatarView -> {
             Toast.makeText(this, "Openning an avatar", Toast.LENGTH_SHORT).show();
         });
@@ -91,8 +84,6 @@ public class UserActivity extends AppCompatActivity {
         userViewModel = new ViewModelProvider(this, userViewModelFactory)
                 .get(TheUserViewModel.class);
 
-        MediaViewModel.Factory mediaViewModelFactory = new MediaViewModel.Factory(userid);
-        mediaViewModel = new ViewModelProvider(this, mediaViewModelFactory).get(MediaViewModel.class);
     }
     private void initImagePickerLauncher()
     {
@@ -151,10 +142,13 @@ public class UserActivity extends AppCompatActivity {
     }
     private <T extends Fragment> View.OnClickListener changeTabListener()
     {
-        return tab ->getSupportFragmentManager()
+        final int containerid = R.id.userContent;
+        int anotherid =  B.userContent.getId();
+        Log.d("UserActivity",String.valueOf(anotherid));
+        return tab -> getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
-                .replace(B.userContent.getId(), tabLayouts.get(tab.getId()), null)
+                .add(containerid, tabLayouts.get(tab.getId()), null)
                 .commit();
     }
     private void initTabs(View.OnClickListener listener)

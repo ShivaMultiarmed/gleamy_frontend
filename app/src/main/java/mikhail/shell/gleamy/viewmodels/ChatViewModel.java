@@ -1,6 +1,5 @@
 package mikhail.shell.gleamy.viewmodels;
 
-import android.app.Notification;
 import android.content.Context;
 import android.os.Build;
 
@@ -12,20 +11,17 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.reactivex.Observable;
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.Chat;
 import mikhail.shell.gleamy.models.Message;
 import mikhail.shell.gleamy.models.User;
-import mikhail.shell.gleamy.repositories.ChatsRepo;
-import mikhail.shell.gleamy.repositories.MessagesRepo;
+import mikhail.shell.gleamy.repositories.ChatsRepository;
+import mikhail.shell.gleamy.repositories.MessagesRepository;
 
 public class ChatViewModel extends ViewModel {
     private final static String TAG = ChatViewModel.class.getName();
@@ -34,8 +30,8 @@ public class ChatViewModel extends ViewModel {
     private MutableLiveData<ActionModel<User>> memberData;
     private MutableLiveData<ActionModel<byte[]>> avatarData;
     private MutableLiveData<Message> lastMsgData;
-    private MessagesRepo msgsRepo;
-    private ChatsRepo chatsRepo;
+    private MessagesRepository msgsRepo;
+    private ChatsRepository chatsRepo;
     public ChatViewModel(Chat chat)
     {
         initLiveData(chat);
@@ -44,8 +40,8 @@ public class ChatViewModel extends ViewModel {
     private void initRepos()
     {
         Context appContext = GleamyApp.getApp().getApplicationContext();
-        msgsRepo = MessagesRepo.getInstance(appContext);
-        chatsRepo = ChatsRepo.getInstance(appContext);
+        msgsRepo = MessagesRepository.getInstance(appContext);
+        chatsRepo = ChatsRepository.getInstance(appContext);
     }
     private void initLiveData(Chat chat)
     {
