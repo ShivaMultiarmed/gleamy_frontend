@@ -38,6 +38,7 @@ import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.ActivityUserBinding;
 import mikhail.shell.gleamy.fragments.UserImagesFragment;
 import mikhail.shell.gleamy.fragments.UserVideosFragment;
+import mikhail.shell.gleamy.viewmodels.MediaViewModel;
 import mikhail.shell.gleamy.viewmodels.TheUserViewModel;
 import mikhail.shell.gleamy.views.DialogView;
 import mikhail.shell.gleamy.views.OptionView;
@@ -47,6 +48,8 @@ public class UserActivity extends AppCompatActivity {
 
     private ActivityUserBinding B;
     private TheUserViewModel userViewModel;
+    private MediaViewModel mediaViewModel;
+    private Long userid;
     private final static Map<Integer, Class<? extends Fragment>> tabLayouts = new HashMap<>();
     static
     {
@@ -60,10 +63,10 @@ public class UserActivity extends AppCompatActivity {
         B = ActivityUserBinding.inflate(getLayoutInflater());
         setContentView(B.getRoot());
 
-        long userid = getIntent().getLongExtra("userid", 0);
-        TheUserViewModel.UserViewModelFactory factory = new TheUserViewModel.UserViewModelFactory(userid);
-        userViewModel = new ViewModelProvider(this, factory)
-                .get(TheUserViewModel.class);
+        userid = getIntent().getLongExtra("userid", 0);
+
+        initViewModels();
+
         observeUser();
 
         B.userPageAvatar.setOnClickListener( avatarView -> {
@@ -80,6 +83,16 @@ public class UserActivity extends AppCompatActivity {
         initImagePickerLauncher();
 
         initTabs(changeTabListener());
+    }
+    private void initViewModels()
+    {
+
+        TheUserViewModel.UserViewModelFactory userViewModelFactory = new TheUserViewModel.UserViewModelFactory(userid);
+        userViewModel = new ViewModelProvider(this, userViewModelFactory)
+                .get(TheUserViewModel.class);
+
+        MediaViewModel.Factory mediaViewModelFactory = new MediaViewModel.Factory(userid);
+        mediaViewModel = new ViewModelProvider(this, mediaViewModelFactory).get(MediaViewModel.class);
     }
     private void initImagePickerLauncher()
     {
