@@ -5,10 +5,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
+import java.io.IOException;
 import java.util.List;
 
 import mikhail.shell.gleamy.api.MediaApi;
 import mikhail.shell.gleamy.models.Media;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,8 +38,9 @@ public class MediaRepository extends AbstractRepository {
         request.enqueue(new Callback<>() {
             @Override
             public void onResponse(@NonNull Call<List<Media>> call, @NonNull Response<List<Media>> response) {
-                if (response.isSuccessful())
+                if (response.code() == 200)
                     mediaData.postValue(response.body());
+                response.raw().toString();
             }
 
             @Override
@@ -48,16 +51,21 @@ public class MediaRepository extends AbstractRepository {
     }
     public void fetchMediaById(String mediaid, MutableLiveData<byte[]> mediaData)
     {
-        Call<byte[]> request = mediaApi.getMediaById(mediaid);
+        Call<ResponseBody> request = mediaApi.getMediaById(mediaid);
         request.enqueue(new Callback<>() {
             @Override
-            public void onResponse(@NonNull Call<byte[]> call, @NonNull Response<byte[]> response) {
-                if (response.isSuccessful())
-                    mediaData.postValue(response.body());
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.code() == 200) {
+                    try {
+                        mediaData.postValue(response.body().bytes());
+                    } catch (IOException e) {
+                        mediaData.postValue(null);
+                    }
+                }
             }
 
             @Override
-            public void onFailure(@NonNull Call<byte[]> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 mediaData.postValue(null);
             }
         });

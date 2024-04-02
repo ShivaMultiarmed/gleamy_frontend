@@ -31,8 +31,15 @@ import mikhail.shell.gleamy.models.Media;
 public class UserImagesFragment extends UserMediaFragment {
     private UserImagesFragmentBinding B;
     private final static int COL_NUM = 3;
+    private GridAdapter<ImageView> gridAdapter;
+    private GridLayoutManager layoutManager;
     public UserImagesFragment() {
         super();
+    }
+    private void initLayout()
+    {
+        gridAdapter = new GridAdapter<>(getActivity(), new HashMap<>());
+        layoutManager = new GridLayoutManager(getActivity(), COL_NUM);
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,31 +55,14 @@ public class UserImagesFragment extends UserMediaFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initLayout();
+
         fetchMediaPortion(1L);
 
         //B.userImagesContainer.measure(0,0);
 
-        Map<String, ImageView> data = new HashMap<>();
-        LongStream.range(0, 10).forEach(num -> {
-            ImageView img = new ImageView(getContext());
-            squareUpView(img);
-            img.setImageResource(R.drawable.pic);
-            data.put(String.valueOf(num), img);
-        });
-
-        GridAdapter<ImageView> gridAdapter = new GridAdapter<>(getActivity(), data);
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), COL_NUM);
-
         B.userImagesContainer.setLayoutManager(layoutManager);
         B.userImagesContainer.setAdapter(gridAdapter);
-
-        /*
-        Map<Long, ImageView> data = new HashMap<>();
-        LongStream.range(0, 10).forEach(num -> {
-            ImageView image = new ImageView(getContext());
-            image.setImageResource(R.drawable.sent_msg);
-            data.put(num, image);
-        });*/
     }
     @Override
     public void onDestroy()
@@ -82,7 +72,21 @@ public class UserImagesFragment extends UserMediaFragment {
     @Override
     protected void fetchMediaPortion(Long portion_num)
     {
-        mediaViewModel.fetchMediaPortion(Media.Type.IMAGE, portion_num, mediaList -> mediaList.forEach(this::fetchOneMedia));
+        mediaViewModel.fetchMediaPortion(Media.Type.IMAGE, portion_num, mediaList -> {
+            final Map<String, Media> mediaPortion = new HashMap<>();
+            mediaList.forEach(media -> {
+                mediaPortion.put(media.uuid, media);
+                fetchOneMedia(media);
+            });
+        });
+    }
+    private ImageView createImageViewFromBytes(byte[] bytes)
+    {
+        ImageView img = new ImageView(getContext());
+        squareUpView(img);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        img.setImageBitmap(bitmap);
+        return img;
     }
     @Override
     protected void observeMedia()
@@ -95,8 +99,7 @@ public class UserImagesFragment extends UserMediaFragment {
     }
     @Override
     protected void displayMedia(Media media, byte[] bytes) {
-        ImageView imageView = new ImageView(getContext());
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        imageView.setImageBitmap(bitmap);
+        ImageView imageView = createImageViewFromBytes(bytes);
+        gridAdapter.addView(media.uuid, imageView);
     }
 }

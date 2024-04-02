@@ -60,7 +60,7 @@ public class GridAdapter<T extends View> extends RecyclerView.Adapter<GridAdapte
     }
     public void addView(String uuid, T view)
     {
-        data.put(uuid, view); // deal with uuid
-        notifyItemInserted(0);
+        data.put(uuid, view);
+        notifyItemInserted(data.size() - 1);
     }
 }
