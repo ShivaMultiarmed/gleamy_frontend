@@ -28,18 +28,11 @@ import mikhail.shell.gleamy.databinding.UserImagesFragmentBinding;
 import mikhail.shell.gleamy.fragments.adapters.GridAdapter;
 import mikhail.shell.gleamy.models.Media;
 
-public class UserImagesFragment extends UserMediaFragment {
+public class UserImagesFragment extends GridMediaFragment<ImageView>{
     private UserImagesFragmentBinding B;
-    private final static int COL_NUM = 3;
-    private GridAdapter<ImageView> gridAdapter;
-    private GridLayoutManager layoutManager;
     public UserImagesFragment() {
         super();
-    }
-    private void initLayout()
-    {
-        gridAdapter = new GridAdapter<>(getActivity(), new HashMap<>());
-        layoutManager = new GridLayoutManager(getActivity(), COL_NUM);
+        MEDIA_TYPE = Media.Type.IMAGE;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,31 +47,21 @@ public class UserImagesFragment extends UserMediaFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        initLayout();
-
-        fetchMediaPortion(1L);
-
         //B.userImagesContainer.measure(0,0);
+    }
+
+    @Override
+    protected void initLayoutSettings() {
+        super.initLayoutSettings();
 
         B.userImagesContainer.setLayoutManager(layoutManager);
         B.userImagesContainer.setAdapter(gridAdapter);
     }
+
     @Override
     public void onDestroy()
     {
         super.onDestroy();
-    }
-    @Override
-    protected void fetchMediaPortion(Long portion_num)
-    {
-        mediaViewModel.fetchMediaPortion(Media.Type.IMAGE, portion_num, mediaList -> {
-            final Map<String, Media> mediaPortion = new HashMap<>();
-            mediaList.forEach(media -> {
-                mediaPortion.put(media.uuid, media);
-                fetchOneMedia(media);
-            });
-        });
     }
     private ImageView createImageViewFromBytes(byte[] bytes)
     {
@@ -87,15 +70,6 @@ public class UserImagesFragment extends UserMediaFragment {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         img.setImageBitmap(bitmap);
         return img;
-    }
-    @Override
-    protected void observeMedia()
-    {
-        mediaViewModel.observeIncomingMedia(mediaActionModel -> {
-            Media media = mediaActionModel.getModel();
-            if (media.type.equals(Media.Type.IMAGE))
-                fetchOneMedia(media);
-        });
     }
     @Override
     protected void displayMedia(Media media, byte[] bytes) {

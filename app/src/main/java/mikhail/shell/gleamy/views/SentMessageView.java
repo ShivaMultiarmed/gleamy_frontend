@@ -18,15 +18,11 @@ public class SentMessageView extends MessageView {
     {
         super(context, message);
     }
-    public SentMessageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
     @Override
     protected void init(Message message)
     {
-        B = DataBindingUtil.inflate(
+        B = SentMsgBinding.inflate(
                 LayoutInflater.from(getContext()),
-                R.layout.sent_msg,
                 this,
                 true
         );

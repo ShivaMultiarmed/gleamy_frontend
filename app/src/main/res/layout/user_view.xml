@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mikhail.shell.gleamy.views.UserView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,11 +9,12 @@
     android:background="@drawable/bordertop">
 
     <ImageView
+        android:id="@+id/userAva"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="left"
         android:background="@drawable/img_bg"
-        android:id="@+id/userAva"/>
+        app:srcCompat="@drawable/default_user_icon_24" />
 
 
 
@@ -28,4 +31,4 @@
 
 
 
-</mikhail.shell.gleamy.views.UserView>
+</LinearLayout>

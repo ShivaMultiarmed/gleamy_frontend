@@ -46,9 +46,7 @@ public class MediaViewModel extends ViewModel {
         mediaData.observe(lifecycleOwner, observer);
     }
     public void postMedia(Media media, byte[] bytes)
-    {
-
-    }
+    { }
     public static class Factory implements ViewModelProvider.Factory
     {
         private final LifecycleOwner lifecycleOwner;

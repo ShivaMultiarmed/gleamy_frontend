@@ -42,7 +42,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:background="@drawable/img_bg"
-                app:srcCompat="@android:drawable/ic_menu_my_calendar"
+                app:srcCompat="@drawable/default_user_icon_42"
                 android:scaleType="centerCrop"/>
 
             <LinearLayout

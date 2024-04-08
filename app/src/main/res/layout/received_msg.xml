@@ -7,7 +7,7 @@
             type="mikhail.shell.gleamy.models.Message" />
     </data>
 
-    <mikhail.shell.gleamy.views.ReceivedMessageView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -21,7 +21,7 @@
             android:layout_marginTop="16dp"
             android:background="@drawable/img_bg"
             android:scaleType="centerCrop"
-            app:srcCompat="@android:drawable/ic_menu_my_calendar" />
+            app:srcCompat="@drawable/default_user_icon_12" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -66,5 +66,5 @@
                 android:textColor="@color/primary"
                 android:textSize="12sp" />
         </LinearLayout>
-    </mikhail.shell.gleamy.views.ReceivedMessageView>
+    </LinearLayout>
 </layout>

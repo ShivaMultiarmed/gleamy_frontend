@@ -5,13 +5,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.VideoView;
 
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.views.Tab;
 
-public class UserVideosFragment extends UserMediaFragment {
+public class UserVideosFragment extends GridMediaFragment<VideoView> {
+
     public UserVideosFragment() {
         super();
+        MEDIA_TYPE = Media.Type.VIDEO;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,15 +32,7 @@ public class UserVideosFragment extends UserMediaFragment {
         super.onDestroy();
     }
     @Override
-    protected void fetchMediaPortion(Long portion_num) {
-
-    }
-    @Override
-    protected void observeMedia() {
-
-    }
-    @Override
     protected void displayMedia(Media media, byte[] bytes) {
-
+        // TO DO
     }
 }

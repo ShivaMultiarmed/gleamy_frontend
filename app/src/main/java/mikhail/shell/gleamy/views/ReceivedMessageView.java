@@ -34,15 +34,11 @@ public class ReceivedMessageView extends MessageView {
     {
         super(context, message);
     }
-    public ReceivedMessageView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
     @Override
     protected void init(Message message)
     {
-        B = DataBindingUtil.inflate(
+        B = ReceivedMsgBinding.inflate(
                 LayoutInflater.from(getContext()),
-                R.layout.received_msg,
                 this,
                 true
         );
