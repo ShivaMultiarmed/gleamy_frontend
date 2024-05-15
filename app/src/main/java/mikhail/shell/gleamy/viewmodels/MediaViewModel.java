@@ -45,8 +45,18 @@ public class MediaViewModel extends ViewModel {
     {
         mediaData.observe(lifecycleOwner, observer);
     }
-    public void postMedia(Media media, byte[] bytes)
-    { }
+    public void postMedia(Media media, byte[] bytes, Observer<Media> observer)
+    {
+        MutableLiveData<Media> mediaData = new MutableLiveData<>();
+        mediaData.observe(lifecycleOwner, observer);
+        mediaRepository.postMedia(media, bytes, mediaData);
+    }
+    public void removeMedia(String uuid, Observer<Boolean> observer)
+    {
+        MutableLiveData<Boolean> removeData = new MutableLiveData<>();
+        removeData.observe(lifecycleOwner, observer);
+        mediaRepository.removeMedia(uuid, removeData);
+    }
     public static class Factory implements ViewModelProvider.Factory
     {
         private final LifecycleOwner lifecycleOwner;

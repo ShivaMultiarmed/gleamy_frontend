@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +30,7 @@ import java.util.Map;
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.ActivityUserBinding;
 import mikhail.shell.gleamy.fragments.UserImagesFragment;
+import mikhail.shell.gleamy.fragments.UserMediaFragment;
 import mikhail.shell.gleamy.fragments.UserVideosFragment;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.viewmodels.MediaViewModel;
@@ -42,12 +44,6 @@ public class UserActivity extends AppCompatActivity {
     private TheUserViewModel userViewModel;
     private MediaViewModel mediaViewModel;
     private Long userid;
-    private final static Map<Integer, Class<? extends Fragment>> tabLayouts = new HashMap<>();
-    static
-    {
-        tabLayouts.put(R.id.userImgsTab, UserImagesFragment.class);
-        tabLayouts.put(R.id.userVidsTab, UserVideosFragment.class);
-    }
     private ActivityResultLauncher<String> imagePickerLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,8 +144,19 @@ public class UserActivity extends AppCompatActivity {
         return tab -> getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
-                .add(containerid, tabLayouts.get(tab.getId()), null)
+                .add(containerid, getFragment(tab.getId()), null)
                 .commit();
+    }
+    private UserMediaFragment<?> getFragment(int containerid)
+    {
+        boolean isPrivileged = userid == getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
+        return
+                switch(containerid)
+                {
+                    case R.id.userImgsTab -> new UserImagesFragment(userid, isPrivileged);
+                    case R.id.userVidsTab -> new UserVideosFragment(userid, isPrivileged);
+                    default -> null;
+                };
     }
     private void initTabs(View.OnClickListener listener)
     {
@@ -199,7 +206,7 @@ public class UserActivity extends AppCompatActivity {
     }
     private void openImageDialog()
     {
-        DialogView dialogLayout = (DialogView) getLayoutInflater().inflate(R.layout.dialog_view, null);
+        LinearLayout dialogLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.dialog_view, null);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -225,7 +232,11 @@ public class UserActivity extends AppCompatActivity {
         long userid = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
         optionView2.setOnClickListener(btn -> userViewModel.removeAvatar(this,userid, result -> {
             if (result)
+            {
                 B.userPageAvatar.setImageBitmap(null);
+                B.userPageAvatar.setBackgroundResource(R.drawable.default_user_icon_42);
+            }
+
             dialog.dismiss();
         }));
 

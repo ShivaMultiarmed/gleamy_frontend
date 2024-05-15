@@ -21,7 +21,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:gravity="center_vertical"
@@ -29,18 +29,27 @@
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/profileSettings"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="right|center"
+
+                android:layout_marginRight="20dp"
+                app:srcCompat="@drawable/baseline_settings_24" />
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:padding="20dp">
 
             <ImageView
                 android:id="@+id/userPageAvatar"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
                 android:background="@drawable/img_bg"
                 app:srcCompat="@drawable/default_user_icon_42"
                 android:scaleType="centerCrop"/>
@@ -49,27 +58,23 @@
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
                 android:layout_marginLeft="20dp"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:text="@{user.login}"
-                    android:textSize="20dp"
+                    android:textSize="21dp"
+                    android:layout_marginTop="7dp"
                     android:textStyle="normal"
+                    android:textAlignment="center"
                     android:layout_marginBottom="10dp"/>
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:text='@{"E-mail: "  + user.email}'
-                    android:textSize="17dp"
-                    android:textStyle="normal"/>
-                <TextView
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:text='@{"Пол: "}'
-                    android:textSize="17dp"
+                    android:text='@{user.email}'
+                    android:textSize="16dp"
+                    android:textAlignment="center"
                     android:textStyle="normal"/>
             </LinearLayout>
         </LinearLayout>
@@ -83,26 +88,43 @@
         </androidx.fragment.app.FragmentContainerView>
         <LinearLayout
             android:id="@+id/tabsBar"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="100dp"
+            android:orientation="horizontal"
             android:padding="20dp">
 
             <ImageView
                 android:id="@+id/userImgsTab"
-                android:layout_width="50dp"
+                android:minWidth="50dp"
+                android:layout_width="0dp"
                 android:layout_height="50dp"
+                android:layout_weight="1"
                 android:background="@drawable/input_bg"
-                tools:srcCompat="@android:drawable/ic_menu_crop"
+                app:srcCompat="@drawable/image_tab_36"
+                tools:srcCompat="@drawable/image_tab_36"
                  />
 
             <ImageView
                 android:id="@+id/userVidsTab"
-                android:layout_width="50dp"
+                android:minWidth="50dp"
+                android:layout_width="0dp"
                 android:layout_height="50dp"
+                android:layout_weight="1"
                 android:layout_marginLeft="20dp"
                 android:background="@drawable/input_bg"
-                tools:srcCompat="@android:drawable/ic_menu_slideshow" />
+                app:srcCompat="@drawable/video_tab_36"
+                tools:srcCompat="@drawable/video_tab_36" />
+
+            <ImageView
+                android:id="@+id/userAudioTab"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/input_bg"
+                android:minWidth="50dp"
+                app:srcCompat="@drawable/audio_tab_36"
+                tools:srcCompat="@drawable/audio_tab_36" />
         </LinearLayout>
     </LinearLayout>
 </layout>

@@ -30,8 +30,8 @@ import mikhail.shell.gleamy.models.Media;
 
 public class UserImagesFragment extends GridMediaFragment<ImageView>{
     private UserImagesFragmentBinding B;
-    public UserImagesFragment() {
-        super();
+    public UserImagesFragment(Long userid, boolean isPrivileged) {
+        super(userid, isPrivileged);
         MEDIA_TYPE = Media.Type.IMAGE;
     }
     @Override
@@ -75,5 +75,20 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     protected void displayMedia(Media media, byte[] bytes) {
         ImageView imageView = createImageViewFromBytes(bytes);
         gridAdapter.addView(media.uuid, imageView);
+
+        imageView.setOnClickListener(getOnClickListener());
+        imageView.setOnLongClickListener(getOnLongClickListener());
     }
+
+    @Override
+    protected void openMedia(Media media) {
+        // TODO: open media
+    }
+
+    @Override
+    protected void removeOneMedia(String uuid) {
+        super.removeOneMedia(uuid);
+        // TODO: API call, observe to check if actually removed
+    }
+
 }

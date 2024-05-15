@@ -1,5 +1,8 @@
 package mikhail.shell.gleamy.activities;
 
+import static android.widget.ImageView.ScaleType.CENTER_CROP;
+import static android.widget.ImageView.ScaleType.FIT_XY;
+
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
@@ -21,6 +24,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -117,7 +121,11 @@ public class ChatsListActivity extends AppCompatActivity {
         B.addChatBtn.setOnClickListener(v-> createChat());
         theUserViewModel.getAvatar(this, bytes->{
             if (bytes != null)
+            {
                 B.profileBtn.setImageBitmap(getCircleBitmap(bytes));
+                B.profileBtn.setScaleType(CENTER_CROP);
+            }
+
         });
         B.logoutbtn.setOnClickListener(v -> logout());
         openChatListener = new OpenChatListener();

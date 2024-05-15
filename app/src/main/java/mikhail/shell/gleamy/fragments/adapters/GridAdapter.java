@@ -1,10 +1,15 @@
 package mikhail.shell.gleamy.fragments.adapters;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.widget.ImageView.ScaleType.CENTER_CROP;
+import static android.widget.ImageView.ScaleType.FIT_XY;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,25 +38,25 @@ public class GridAdapter<T extends View> extends RecyclerView.Adapter<GridAdapte
     @Override
     public ViewHolder<T> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        CardView card = (CardView) layoutInflater.inflate(R.layout.media_item, null);
-        return new ViewHolder<>(card);
+        FrameLayout cell = (FrameLayout) layoutInflater.inflate(R.layout.media_item, null);
+        return new ViewHolder<>(cell);
     }
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         List<T> list = new ArrayList<>(data.values());
         T view = list.get(position);
-        holder.card.addView(view);
+        holder.cell.addView(view);
     }
     @Override
     public int getItemCount() {
         return data.size();
     }
     public static class ViewHolder<T> extends RecyclerView.ViewHolder {
-        private final CardView card;
+        private final FrameLayout cell;
         private T view;
-        public ViewHolder(CardView card) {
-            super(card);
-            this.card = card;
+        public ViewHolder(FrameLayout cell) {
+            super(cell);
+            this.cell = cell;
         }
         public void setCardContent(T content)
         {
@@ -61,6 +66,15 @@ public class GridAdapter<T extends View> extends RecyclerView.Adapter<GridAdapte
     public void addView(String uuid, T view)
     {
         data.put(uuid, view);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(MATCH_PARENT, 300);
+        view.setLayoutParams(params);
+        ((ImageView) view).setScaleType(CENTER_CROP);
         notifyItemInserted(data.size() - 1);
+    }
+    public void removeView(String uuid)
+    {
+        int position = data.values().stream().collect(Collectors.toList()).indexOf(data.get(uuid));
+        data.remove(uuid);
+        notifyItemRemoved(position);
     }
 }

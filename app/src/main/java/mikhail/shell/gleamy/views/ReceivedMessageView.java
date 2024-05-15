@@ -37,11 +37,7 @@ public class ReceivedMessageView extends MessageView {
     @Override
     protected void init(Message message)
     {
-        B = ReceivedMsgBinding.inflate(
-                LayoutInflater.from(getContext()),
-                this,
-                true
-        );
+        B = ReceivedMsgBinding.inflate(LayoutInflater.from(getContext()),this,true);
         setMsgInfo(message);
         B.userAva.setOnClickListener(view -> goToUserProfile());
     }

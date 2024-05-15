@@ -21,12 +21,9 @@ public class SentMessageView extends MessageView {
     @Override
     protected void init(Message message)
     {
-        B = SentMsgBinding.inflate(
-                LayoutInflater.from(getContext()),
-                this,
-                true
-        );
+        B = SentMsgBinding.inflate(LayoutInflater.from(getContext()),this,true);
         B.setMessage(message);
+        setGravity(Gravity.RIGHT);
     }
     @Override
     public void setMsgInfo(Message message) {

@@ -27,10 +27,9 @@
                 android:id="@+id/chatTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:gravity="center_vertical"
                 android:text="@{chat.title}"
                 android:textColor="@color/white"
                 android:textSize="18sp"
@@ -47,15 +46,12 @@
             <LinearLayout
                 android:id="@+id/chatContent"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp">
-
+                android:padding="20dp">
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="580dp">
+                    android:layout_height="540dp">
 
                     <TextView
                         android:id="@+id/textView"
@@ -69,7 +65,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@drawable/bordertop"
             android:orientation="horizontal">
@@ -77,29 +73,24 @@
             <EditText
                 android:id="@+id/chatTextArea"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/input_bg"
                 android:hint="Сообщение"
                 android:inputType="textMultiLine"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
+                android:padding="10dp"
                 android:textColor="#FF171616"
-                android:textSize="16dp">
+                android:textSize="16dp"
+                android:maxHeight="150dp">
 
             </EditText>
 
             <ImageView
                 android:id="@+id/sendBtn"
                 android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="15dp"
+                android:layout_height="40dp"
+                android:layout_margin="15dp"
                 android:background="@android:drawable/ic_menu_send" />
         </LinearLayout>
     </LinearLayout>

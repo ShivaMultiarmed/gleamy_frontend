@@ -12,9 +12,8 @@ import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.views.Tab;
 
 public class UserVideosFragment extends GridMediaFragment<VideoView> {
-
-    public UserVideosFragment() {
-        super();
+    public UserVideosFragment(Long userid, boolean isPrivileged) {
+        super(userid, isPrivileged);
         MEDIA_TYPE = Media.Type.VIDEO;
     }
     @Override
@@ -34,5 +33,15 @@ public class UserVideosFragment extends GridMediaFragment<VideoView> {
     @Override
     protected void displayMedia(Media media, byte[] bytes) {
         // TO DO
+    }
+
+    @Override
+    protected void removeOneMedia(String uuid) {
+        super.removeOneMedia(uuid);
+    }
+
+    @Override
+    protected void openMedia(Media media) {
+
     }
 }

@@ -10,6 +10,7 @@ import android.view.View;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,13 +96,21 @@ public class ChatActivity extends AppCompatActivity {
     private void addMessage(Message msg)
     {
         MessageView messageView = createMessage(msg);
+        msg.setLogin(getUserById(msg.getUserid()).getLogin());
         displayMessage(messageView);
         msgs.put(msg.getMsgid(), messageView);
         lastMessage = msg;
         if (messageView instanceof ReceivedMessageView && avatars.containsKey(messageView.getMsgInfo().getUserid()))
             ((ReceivedMessageView) messageView).setAvatar(avatars.get(messageView.getMsgInfo().getUserid()));
     }
-
+    private Chat getChat()
+    {
+        return chatViewModel.getChatData().getValue();
+    }
+    private User getUserById(Long userid)
+    {
+        return getChat().getUsers().stream().filter(user -> userid.equals(user.getId())).findFirst().orElse(null);
+    }
     private MessageView createMessage(Message message)
     {
         long userid = GleamyApp.getApp().getUser().getId();
@@ -175,7 +184,7 @@ public class ChatActivity extends AppCompatActivity {
                         {
                             long userid = msgView.getMsgInfo().getUserid();
                             long ownUserid = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
-                            List<User> userList = chatViewModel.getChatData().getValue().getUsers();
+                            Collection<User> userList = chatViewModel.getChatData().getValue().getUsers();
                             Optional<User> optionalUser = userList.stream().filter(curUser -> curUser.getId() == userid).findAny();
                             if (optionalUser.isPresent())
                             {

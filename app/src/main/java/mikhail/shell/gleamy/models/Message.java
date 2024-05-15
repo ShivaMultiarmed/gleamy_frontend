@@ -84,4 +84,12 @@ public class Message implements Serializable {
         }
         return builder.toString();
     }
+    public String getLogin()
+    {
+        return login;
+    }
+    public void setLogin(String login)
+    {
+        this.login = login;
+    }
 }

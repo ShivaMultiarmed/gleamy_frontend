@@ -44,6 +44,7 @@ public class MessagesRepository extends AbstractRepository {
                                 for (Message msg: msgsList)
                                     if (msg.getDateTime() != null)
                                         msgMap.put(msg.getMsgid(), msg);
+
                         msgsData.postValue(msgMap);
                     }
 
