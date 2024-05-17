@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -22,7 +23,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected MediaViewModel mediaViewModel;
     protected final Long userid;
     protected final boolean isPrivileged;
-
+    protected ActivityResultLauncher<String> mediaPicker;
     public UserMediaFragment(Long userid, boolean isPreviliged)
     {
         this.userid = userid;
@@ -36,6 +37,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initMediaViewModel();
         initLayoutSettings();
+        initMediaPicker();
         fetchMediaPortion(1L);
     }
     private void initMediaViewModel()
@@ -89,5 +91,13 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
             removeOneMedia(null);
             return false;
         };
+    }
+    protected void addUploadButton()
+    {
+
+    }
+    protected void initMediaPicker()
+    {
+
     }
 }

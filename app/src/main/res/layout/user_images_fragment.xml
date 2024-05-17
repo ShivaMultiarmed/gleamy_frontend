@@ -7,8 +7,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="10dp"
             tools:context=".fragments.UserImagesFragment">
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/userImagesContainer"
                     android:layout_width="match_parent"
@@ -17,19 +17,5 @@
 
 
                 </androidx.recyclerview.widget.RecyclerView>
-
-                <FrameLayout
-                    android:id="@+id/uploadImageBtn"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="right|bottom"
-                    android:layout_margin="15dp"
-                    android:background="@drawable/dark_circle">
-                        <ImageView
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
-                            android:layout_gravity="center"
-                            app:srcCompat="@drawable/upload_image_24"/>
-                </FrameLayout>
         </FrameLayout>
 </layout>

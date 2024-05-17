@@ -1,0 +1,15 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/uploadImageBtn"
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:layout_gravity="right|bottom"
+    android:layout_margin="15dp"
+    android:background="@drawable/dark_circle">
+    <ImageView
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/upload_image_24"/>
+</FrameLayout>

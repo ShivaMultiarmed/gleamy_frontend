@@ -1,38 +1,38 @@
 package mikhail.shell.gleamy.fragments;
 
+import static mikhail.shell.gleamy.models.Media.Type.IMAGE;
+
+import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.LongStream;
+import java.io.IOException;
 
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.UserImagesFragmentBinding;
-import mikhail.shell.gleamy.fragments.adapters.GridAdapter;
 import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.utils.MediaUtils;
+import mikhail.shell.gleamy.viewmodels.MediaViewModel;
+import mikhail.shell.gleamy.viewmodels.TheUserViewModel;
 
 public class UserImagesFragment extends GridMediaFragment<ImageView>{
     private UserImagesFragmentBinding B;
     public UserImagesFragment(Long userid, boolean isPrivileged) {
         super(userid, isPrivileged);
-        MEDIA_TYPE = Media.Type.IMAGE;
+        MEDIA_TYPE = IMAGE;
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,10 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
 
         B.userImagesContainer.setLayoutManager(layoutManager);
         B.userImagesContainer.setAdapter(gridAdapter);
+        B.userImagesContainer.addItemDecoration(gridDecorator);
+
+        if (isPrivileged)
+            addUploadButton();
     }
 
     @Override
@@ -91,4 +95,43 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
         // TODO: API call, observe to check if actually removed
     }
 
+    @Override
+    protected void addUploadButton() {
+        final ViewGroup root = (ViewGroup) B.getRoot();
+        final FrameLayout uploadBtn = (FrameLayout) LayoutInflater.from(getContext())
+                .inflate(R.layout.image_upload_button, root, false);
+        root.addView(uploadBtn);
+        uploadBtn.setOnClickListener(btn -> mediaPicker.launch("image/*"));
+    }
+    @Override
+    protected RecyclerView getContainer()
+    {
+        return B.userImagesContainer;
+    }
+    @Override
+    protected void initMediaPicker()
+    {
+        mediaPicker = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null)
+                    {
+                        ContentResolver contentResolver = getActivity().getContentResolver();
+                        Media media = new Media.Builder()
+                                .extension(MediaUtils.getExtension(contentResolver, uri))
+                                .type(IMAGE)
+                                .userid(userid)
+                                .build();
+                        try {
+                            byte[] mediaBytes = MediaUtils.getFileContent(contentResolver, uri);
+                            mediaViewModel.postMedia(media, mediaBytes,
+                                    postedMedia -> {}
+                            );
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
+    }
 }

@@ -9,4 +9,39 @@ public class Media implements Serializable {
     public Type type;
     public Long userid;
     public LocalDateTime date_time;
+    public Media()
+    {}
+    public Media(String extension, Type type, Long userid) {
+        this.uuid = uuid;
+        this.extension = extension;
+        this.type = type;
+        this.userid = userid;
+        this.date_time = date_time;
+    }
+    public static class Builder
+    {
+        private String extension;
+        private Type type;
+        private Long userid;
+        public Builder() {}
+        public Builder extension(String extension)
+        {
+            this.extension = extension;
+            return this;
+        }
+        public Builder type(Type type)
+        {
+            this.type = type;
+            return this;
+        }
+        public Builder userid(Long userid)
+        {
+            this.userid = userid;
+            return this;
+        }
+        public Media build()
+        {
+            return new Media(extension, type, userid);
+        }
+    }
 }
