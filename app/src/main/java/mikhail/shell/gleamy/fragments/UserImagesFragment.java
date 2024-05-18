@@ -119,7 +119,7 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
                         ContentResolver contentResolver = getActivity().getContentResolver();
                         Media media = new Media.Builder()
                                 .extension(MediaUtils.getExtension(contentResolver, uri))
-                                .type(IMAGE)
+                                .type(MEDIA_TYPE)
                                 .userid(userid)
                                 .build();
                         try {

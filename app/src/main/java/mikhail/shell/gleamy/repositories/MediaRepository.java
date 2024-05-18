@@ -76,7 +76,7 @@ public class MediaRepository extends AbstractRepository {
     }
     public void postMedia(Media media, byte[] bytes, MutableLiveData<Media> mediaData)
     {
-        RequestBody mediaPart = objectToRequestBody(media);
+        MultipartBody.Part mediaPart = objectToPart(media);
         MultipartBody.Part bytesPart = bytesToPart(bytes);
         Call<Media> request = mediaApi.postMedia(mediaPart, bytesPart);
         request.enqueue(new Callback<>() {
@@ -95,18 +95,19 @@ public class MediaRepository extends AbstractRepository {
         });
     }
     @NonNull
-    private <T> RequestBody objectToRequestBody(T object)
+    private <T> MultipartBody.Part objectToPart(T object)
     {
         String json = webClient.serializeObject(object);
-        MediaType type = MediaType.parse("application/json");
-        return RequestBody.create(json, type);
+        //MediaType type = MediaType.parse("application/json");
+        //RequestBody requestBody = RequestBody.create(json, type);
+        return MultipartBody.Part.createFormData("mediaInfo", json);
     }
     @NonNull
     private MultipartBody.Part bytesToPart(byte[] bytes)
     {
         MediaType type = MediaType.parse("application/octet-stream");
         RequestBody byteRequestBody = RequestBody.create(bytes, type);
-        // TODO: replace something with file extension
+        // TODO: replace "something" with file extension
         return MultipartBody.Part.createFormData("media", "media.something", byteRequestBody);
     }
     public void removeMedia(String uuid, MutableLiveData<Boolean> removeData)

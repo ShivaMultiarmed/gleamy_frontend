@@ -25,7 +25,7 @@ public interface MediaApi {
             @Query("type") Media.Type type);
     @Multipart
     @POST("users/media/post")
-    Call<Media> postMedia(@Part RequestBody media, @Part MultipartBody.Part mediaBytes);
+    Call<Media> postMedia(@Part MultipartBody.Part media, @Part MultipartBody.Part mediaBytes);
     @DELETE("users/media/{mediaid}")
     Call<Boolean> removeMedia(@Path("mediaid") String uuid);
 }
