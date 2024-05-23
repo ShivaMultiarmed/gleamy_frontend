@@ -79,9 +79,7 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     protected void displayMedia(Media media, byte[] bytes) {
         ImageView imageView = createImageViewFromBytes(bytes);
         gridAdapter.addView(media.uuid, imageView);
-
-        imageView.setOnClickListener(getOnClickListener());
-        imageView.setOnLongClickListener(getOnLongClickListener());
+        initListeners(imageView, media);
     }
 
     @Override
@@ -124,9 +122,7 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
                                 .build();
                         try {
                             byte[] mediaBytes = MediaUtils.getFileContent(contentResolver, uri);
-                            mediaViewModel.postMedia(media, mediaBytes,
-                                    postedMedia -> {}
-                            );
+                            postMedia(media, mediaBytes);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }

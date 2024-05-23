@@ -2,10 +2,15 @@
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+        <variable
+            name="media"
+            type="mikhail.shell.gleamy.models.Media"/>
+    </data>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
     </FrameLayout>
 

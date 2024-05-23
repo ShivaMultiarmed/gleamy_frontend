@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.views.MediaCellView;
 
 public class GridAdapter<T extends View> extends RecyclerView.Adapter<GridAdapter.ViewHolder<T>> {
     private final Map<String, T> data;
@@ -37,43 +39,48 @@ public class GridAdapter<T extends View> extends RecyclerView.Adapter<GridAdapte
     @NonNull
     @Override
     public ViewHolder<T> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
-        FrameLayout cell = (FrameLayout) layoutInflater.inflate(R.layout.media_item, null);
+        final MediaCellView cell = new MediaCellView(context, null);
         return new ViewHolder<>(cell);
     }
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        List<T> list = new ArrayList<>(data.values());
-        T view = list.get(position);
-        holder.cell.addView(view);
+        final List<T> list = new ArrayList<>(data.values());
+        final T view = list.get(position);
+        try{
+            holder.cell.addView(view);
+        }
+        catch (IllegalStateException e) {
+            ((MediaCellView) view.getParent()).removeView(view);
+            holder.cell.addView(view);
+        }
     }
     @Override
     public int getItemCount() {
         return data.size();
     }
     public static class ViewHolder<T> extends RecyclerView.ViewHolder {
-        private final FrameLayout cell;
+        private final MediaCellView cell;
         private T view;
-        public ViewHolder(FrameLayout cell) {
+        public ViewHolder(MediaCellView cell) {
             super(cell);
             this.cell = cell;
         }
-        public void setCardContent(T content)
+        public void setContentView(T contentView)
         {
-            view = content;
+            view = contentView;
         }
     }
     public void addView(String uuid, T view)
     {
         data.put(uuid, view);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(MATCH_PARENT, 300);
+        final ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(MATCH_PARENT, 300);
         view.setLayoutParams(params);
         ((ImageView) view).setScaleType(CENTER_CROP);
         notifyItemInserted(data.size() - 1);
     }
     public void removeView(String uuid)
     {
-        int position = data.values().stream().collect(Collectors.toList()).indexOf(data.get(uuid));
+        final int position = data.values().stream().collect(Collectors.toList()).indexOf(data.get(uuid));
         data.remove(uuid);
         notifyItemRemoved(position);
     }

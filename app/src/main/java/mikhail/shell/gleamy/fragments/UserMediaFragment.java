@@ -47,7 +47,6 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     }
     protected void fetchMediaPortion(Long portion_num)
     {
-        View.OnClickListener listener = getOnClickListener();
         mediaViewModel.fetchMediaPortion(MEDIA_TYPE, portion_num, mediaList -> {
             final Map<String, Media> mediaPortion = new HashMap<>();
             mediaList.forEach(media -> {
@@ -69,7 +68,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
         });
     }
     protected abstract void displayMedia(Media media, byte[] bytes);
-    protected final void postOneMedia(Media media, byte[] bytes)
+    protected final void postMedia(Media media, byte[] bytes)
     {
         mediaViewModel.postMedia(media, bytes, responseMedia -> {
             if (responseMedia != null)
@@ -79,19 +78,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
         });
     }
     protected abstract void removeOneMedia(String uuid);
-    protected final View.OnClickListener getOnClickListener()
-    {
-        return view -> {
-            openMedia(null);
-        };
-    }
     protected abstract void openMedia(Media media);
-    protected final View.OnLongClickListener getOnLongClickListener(){
-        return view -> {
-            removeOneMedia(null);
-            return false;
-        };
-    }
     protected void addUploadButton()
     {
 
@@ -99,5 +86,13 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected void initMediaPicker()
     {
 
+    }
+    protected final void initListeners(T view, Media media)
+    {
+        view.setOnClickListener(v -> openMedia(media));
+        view.setOnLongClickListener(v -> {
+            removeOneMedia(null);
+            return false;
+        });
     }
 }

@@ -12,6 +12,9 @@ public class Media implements Serializable {
     public Media()
     {}
     public Media(String extension, Type type, Long userid) {
+        this(null, extension, type, userid, null);
+    }
+    public Media(String uuid, String extension, Type type, Long userid, LocalDateTime date_time) {
         this.uuid = uuid;
         this.extension = extension;
         this.type = type;

@@ -19,13 +19,11 @@ public interface MediaApi {
     @GET("users/media")
     Call<ResponseBody> getMediaById(@Query("uuid") String uuid);
     @GET("users/{userid}/media")
-    Call<List<Media>> getMediaPortionByUserId(
-            @Path("userid") Long userid,
-            @Query("portion_num") Long portion_num,
+    Call<List<Media>> getMediaPortionByUserId(@Path("userid") Long userid, @Query("portion_num") Long portion_num,
             @Query("type") Media.Type type);
     @Multipart
     @POST("users/media/post")
-    Call<Media> postMedia(@Part MultipartBody.Part media, @Part MultipartBody.Part mediaBytes);
+    Call<Media> postMedia(@Part("media") RequestBody media, @Part MultipartBody.Part file);
     @DELETE("users/media/{mediaid}")
     Call<Boolean> removeMedia(@Path("mediaid") String uuid);
 }
