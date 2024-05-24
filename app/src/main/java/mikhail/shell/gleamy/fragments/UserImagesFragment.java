@@ -2,31 +2,25 @@ package mikhail.shell.gleamy.fragments;
 
 import static mikhail.shell.gleamy.models.Media.Type.IMAGE;
 
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import java.io.IOException;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.HashMap;
 
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.UserImagesFragmentBinding;
+import mikhail.shell.gleamy.fragments.adapters.GridAdapter;
 import mikhail.shell.gleamy.models.Media;
-import mikhail.shell.gleamy.utils.MediaUtils;
-import mikhail.shell.gleamy.viewmodels.MediaViewModel;
-import mikhail.shell.gleamy.viewmodels.TheUserViewModel;
+import mikhail.shell.gleamy.utils.ImageUtils;
 
 public class UserImagesFragment extends GridMediaFragment<ImageView>{
     private UserImagesFragmentBinding B;
@@ -45,14 +39,10 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
         return B.getRoot();
     }
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        //B.userImagesContainer.measure(0,0);
-    }
-
-    @Override
-    protected void initLayoutSettings() {
+    protected final void initLayoutSettings() {
         super.initLayoutSettings();
+
+        gridAdapter = new GridAdapter(getActivity(), IMAGE);
 
         B.userImagesContainer.setLayoutManager(layoutManager);
         B.userImagesContainer.setAdapter(gridAdapter);
@@ -61,15 +51,15 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
         if (isPrivileged)
             addUploadButton();
     }
-
     @Override
     public void onDestroy()
     {
         super.onDestroy();
     }
-    private ImageView createImageViewFromBytes(byte[] bytes)
+    @Override
+    protected final ImageView createItemContentFromBytes(byte[] bytes)
     {
-        ImageView img = new ImageView(getContext());
+        final ImageView img = new ImageView(getContext());
         squareUpView(img);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         img.setImageBitmap(bitmap);
@@ -77,22 +67,14 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     }
     @Override
     protected void displayMedia(Media media, byte[] bytes) {
-        ImageView imageView = createImageViewFromBytes(bytes);
-        gridAdapter.addView(media.uuid, imageView);
+        final ImageView imageView = createItemContentFromBytes(bytes);
+        gridAdapter.addView(media, ImageUtils.getBitmap(bytes));
         initListeners(imageView, media);
     }
-
     @Override
     protected void openMedia(Media media) {
         // TODO: open media
     }
-
-    @Override
-    protected void removeOneMedia(String uuid) {
-        super.removeOneMedia(uuid);
-        // TODO: API call, observe to check if actually removed
-    }
-
     @Override
     protected void addUploadButton() {
         final ViewGroup root = (ViewGroup) B.getRoot();
@@ -105,29 +87,5 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     protected RecyclerView getContainer()
     {
         return B.userImagesContainer;
-    }
-    @Override
-    protected void initMediaPicker()
-    {
-        mediaPicker = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null)
-                    {
-                        ContentResolver contentResolver = getActivity().getContentResolver();
-                        Media media = new Media.Builder()
-                                .extension(MediaUtils.getExtension(contentResolver, uri))
-                                .type(MEDIA_TYPE)
-                                .userid(userid)
-                                .build();
-                        try {
-                            byte[] mediaBytes = MediaUtils.getFileContent(contentResolver, uri);
-                            postMedia(media, mediaBytes);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-        );
     }
 }

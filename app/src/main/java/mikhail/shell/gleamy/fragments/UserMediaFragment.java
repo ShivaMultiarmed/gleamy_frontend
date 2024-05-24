@@ -1,20 +1,24 @@
 package mikhail.shell.gleamy.fragments;
 
+import android.content.ContentResolver;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.utils.MediaUtils;
 import mikhail.shell.gleamy.viewmodels.MediaViewModel;
 
 public abstract class UserMediaFragment<T extends View> extends Fragment {
@@ -33,7 +37,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected abstract void initLayoutSettings();
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initMediaViewModel();
         initLayoutSettings();
@@ -45,7 +49,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
         MediaViewModel.Factory mediaViewModelFactory = new MediaViewModel.Factory(this, userid);
         mediaViewModel = new ViewModelProvider(getActivity(), mediaViewModelFactory).get(MediaViewModel.class);
     }
-    protected void fetchMediaPortion(Long portion_num)
+    protected final void fetchMediaPortion(Long portion_num)
     {
         mediaViewModel.fetchMediaPortion(MEDIA_TYPE, portion_num, mediaList -> {
             final Map<String, Media> mediaPortion = new HashMap<>();
@@ -79,14 +83,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     }
     protected abstract void removeOneMedia(String uuid);
     protected abstract void openMedia(Media media);
-    protected void addUploadButton()
-    {
-
-    }
-    protected void initMediaPicker()
-    {
-
-    }
+    protected abstract void addUploadButton();
     protected final void initListeners(T view, Media media)
     {
         view.setOnClickListener(v -> openMedia(media));
@@ -95,4 +92,28 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
             return false;
         });
     }
+    private void initMediaPicker()
+    {
+        mediaPicker = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null)
+                    {
+                        ContentResolver contentResolver = getActivity().getContentResolver();
+                        Media media = new Media.Builder()
+                                .extension(MediaUtils.getExtension(contentResolver, uri))
+                                .type(MEDIA_TYPE)
+                                .userid(userid)
+                                .build();
+                        try {
+                            byte[] mediaBytes = MediaUtils.getFileContent(contentResolver, uri);
+                            postMedia(media, mediaBytes);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
+    }
+    protected abstract T createItemContentFromBytes(byte[] bytes);
 }

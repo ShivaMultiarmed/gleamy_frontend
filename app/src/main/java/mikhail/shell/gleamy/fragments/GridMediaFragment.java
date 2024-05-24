@@ -13,7 +13,7 @@ import mikhail.shell.gleamy.fragments.decorators.GridDecorator;
 
 public abstract class GridMediaFragment<T extends View> extends UserMediaFragment<T>{
     protected final static int COL_NUM = 3, SPACING = 10;
-    protected GridAdapter<T> gridAdapter;
+    protected GridAdapter gridAdapter;
     protected GridLayoutManager layoutManager;
     protected GridDecorator gridDecorator;
 
@@ -24,7 +24,6 @@ public abstract class GridMediaFragment<T extends View> extends UserMediaFragmen
     @Override
     protected void initLayoutSettings()
     {
-        gridAdapter = new GridAdapter<>(getActivity(), new HashMap<>());
         layoutManager = new GridLayoutManager(getActivity(), COL_NUM);
         gridDecorator = new GridDecorator(COL_NUM, SPACING, false);
     }
@@ -44,4 +43,5 @@ public abstract class GridMediaFragment<T extends View> extends UserMediaFragmen
     protected void removeOneMedia(String uuid) {
         gridAdapter.removeView(uuid);
     }
+
 }

@@ -11,9 +11,7 @@ import java.io.InputStream;
 
 public final class ImageUtils {
     public static Bitmap getCircleBitmap(byte[] imageBytes) {
-
-        InputStream inputStream = new ByteArrayInputStream(imageBytes);
-        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        Bitmap bitmap = getBitmap(imageBytes);
 
         Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(circleBitmap);
@@ -32,5 +30,10 @@ public final class ImageUtils {
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
         return circleBitmap;
+    }
+    public static Bitmap getBitmap(byte[] imageBytes)
+    {
+        InputStream inputStream = new ByteArrayInputStream(imageBytes);
+        return BitmapFactory.decodeStream(inputStream);
     }
 }
