@@ -1,6 +1,7 @@
 package mikhail.shell.gleamy.viewmodels;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
@@ -56,6 +57,10 @@ public class MediaViewModel extends ViewModel {
         MutableLiveData<Boolean> removeData = new MutableLiveData<>();
         removeData.observe(lifecycleOwner, observer);
         mediaRepository.removeMedia(uuid, removeData);
+    }
+    public LiveData<Long> getTotalMediaNumber(Media.Type type)
+    {
+        return mediaRepository.getTotalMediaNumber(userid, type);
     }
     public static class Factory implements ViewModelProvider.Factory
     {

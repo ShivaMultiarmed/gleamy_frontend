@@ -3,6 +3,7 @@ package mikhail.shell.gleamy.repositories;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.io.IOException;
@@ -123,5 +124,25 @@ public class MediaRepository extends AbstractRepository {
                 removeData.postValue(false);
             }
         });
+    }
+    public LiveData<Long> getTotalMediaNumber(long userid, Media.Type type)
+    {
+        final MutableLiveData<Long> numberData = new MutableLiveData<>();
+         // TODO remove this block of code
+        if (true)
+            numberData.postValue(11L);
+        // TODO end of block
+        final Call<Long> request = mediaApi.getTotalMediaNumber(userid, type);
+        request.enqueue(new Callback<>() {
+            @Override
+            public void onResponse(Call<Long> call, Response<Long> response) {
+                numberData.postValue(response.body());
+            }
+            @Override
+            public void onFailure(Call<Long> call, Throwable t) {
+                numberData.postValue(null);
+            }
+        });
+        return numberData;
     }
 }

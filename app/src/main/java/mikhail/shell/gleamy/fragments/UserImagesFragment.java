@@ -42,6 +42,8 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     protected final void initLayoutSettings() {
         super.initLayoutSettings();
 
+        container = B.userImagesContainer;
+
         gridAdapter = new GridAdapter(getActivity(), IMAGE);
 
         B.userImagesContainer.setLayoutManager(layoutManager);
@@ -60,7 +62,6 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     protected final ImageView createItemContentFromBytes(byte[] bytes)
     {
         final ImageView img = new ImageView(getContext());
-        squareUpView(img);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         img.setImageBitmap(bitmap);
         return img;

@@ -26,4 +26,6 @@ public interface MediaApi {
     Call<Media> postMedia(@Part("media") RequestBody media, @Part MultipartBody.Part file);
     @DELETE("users/media/{mediaid}")
     Call<Boolean> removeMedia(@Path("mediaid") String uuid);
+    @GET("users/{userid}/media/{media_type}")
+    Call<Long> getTotalMediaNumber(@Path("userid") long userid, @Path("media_type") Media.Type media_type);
 }

@@ -186,10 +186,10 @@ public class UserActivity extends AppCompatActivity {
                 B.userPageAvatar.setImageBitmap(null);
                 B.userPageAvatar.setBackgroundResource(R.drawable.default_user_icon_42);
             }
-
             dialog.dismiss();
         }));
 
         dialog.show();
     }
+
 }

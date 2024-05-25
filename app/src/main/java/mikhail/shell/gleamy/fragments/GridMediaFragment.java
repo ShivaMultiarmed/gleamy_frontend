@@ -31,7 +31,7 @@ public abstract class GridMediaFragment<T extends View> extends UserMediaFragmen
     {
         int sideLength = (getContainer().getLayoutManager().getWidth() - (COL_NUM-1)*SPACING) / COL_NUM;
         ViewGroup.LayoutParams layoutParams =
-                new ViewGroup.LayoutParams(sideLength,sideLength+500);
+                new ViewGroup.LayoutParams(sideLength,sideLength);
         view.setLayoutParams(layoutParams);
     }
     protected RecyclerView getContainer()
@@ -43,5 +43,9 @@ public abstract class GridMediaFragment<T extends View> extends UserMediaFragmen
     protected void removeOneMedia(String uuid) {
         gridAdapter.removeView(uuid);
     }
-
+    @Override
+    protected long getLastMediaPortionNumber()
+    {
+        return (long) Math.ceil(gridAdapter.getLoadedMediaCount() * 1.0 / MEDIA_PORTION) + 1L;
+    }
 }

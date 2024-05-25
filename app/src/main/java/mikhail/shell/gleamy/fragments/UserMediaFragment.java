@@ -10,7 +10,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,25 +25,26 @@ import mikhail.shell.gleamy.viewmodels.MediaViewModel;
 
 public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected Media.Type MEDIA_TYPE;
-    protected final Map<String, Media> media;
+    protected final int MEDIA_PORTION = 12;
     protected MediaViewModel mediaViewModel;
     protected final Long userid;
     protected final boolean isPrivileged;
+    protected RecyclerView container;
+    protected boolean isAllMediaLoaded;
     protected ActivityResultLauncher<String> mediaPicker;
     public UserMediaFragment(Long userid, boolean isPreviliged)
     {
         this.userid = userid;
         this.isPrivileged = isPreviliged;
-        media = new LinkedHashMap<>();
     }
     protected abstract void initLayoutSettings();
-
     @Override
     public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initMediaViewModel();
         initLayoutSettings();
         initMediaPicker();
+        setOnContainerScroll();
         fetchMediaPortion(1L);
     }
     private void initMediaViewModel()
@@ -57,6 +60,8 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
                 mediaPortion.put(media.uuid, media);
                 fetchOneMedia(media);
             });
+            if (mediaList.size() < MEDIA_PORTION)
+                isAllMediaLoaded  = true;
         });
     }
     protected final void fetchOneMedia(Media media)
@@ -116,4 +121,22 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
         );
     }
     protected abstract T createItemContentFromBytes(byte[] bytes);
+    private void setOnContainerScroll()
+    {
+        container.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (container.canScrollVertically(1))
+                    if (!isAllMediaLoaded)
+                    {
+                        final long portionNumber = getLastMediaPortionNumber();
+                        fetchMediaPortion(portionNumber);
+                    }
+            }
+        });
+    }
+    protected abstract long getLastMediaPortionNumber();
+
 }

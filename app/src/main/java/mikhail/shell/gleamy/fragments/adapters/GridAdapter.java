@@ -92,4 +92,8 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
         data.remove(uuid);
         notifyItemRemoved(position);
     }
+    public long getLoadedMediaCount()
+    {
+        return data.size();
+    }
 }

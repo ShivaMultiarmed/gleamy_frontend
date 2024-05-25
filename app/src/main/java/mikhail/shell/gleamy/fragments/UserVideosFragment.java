@@ -77,7 +77,6 @@ public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
     @Override
     protected FrameLayout createItemContentFromBytes(byte[] bytes) {
         final ImageView videoPreview = new ImageView(getContext());
-        squareUpView(videoPreview);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         videoPreview.setImageBitmap(bitmap);
 
