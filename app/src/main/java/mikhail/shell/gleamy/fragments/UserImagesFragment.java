@@ -14,13 +14,13 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
-
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.UserImagesFragmentBinding;
+import mikhail.shell.gleamy.fragments.adapters.FragmentAdapter;
 import mikhail.shell.gleamy.fragments.adapters.GridAdapter;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.utils.ImageUtils;
+import mikhail.shell.gleamy.views.ImageCellView;
 
 public class UserImagesFragment extends GridMediaFragment<ImageView>{
     private UserImagesFragmentBinding B;
@@ -44,10 +44,10 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
 
         container = B.userImagesContainer;
 
-        gridAdapter = new GridAdapter(getActivity(), IMAGE);
+        fragmentAdapter = new GridAdapter<ImageCellView>(getActivity(), IMAGE);
 
         B.userImagesContainer.setLayoutManager(layoutManager);
-        B.userImagesContainer.setAdapter(gridAdapter);
+        B.userImagesContainer.setAdapter(fragmentAdapter);
         B.userImagesContainer.addItemDecoration(gridDecorator);
 
         if (isPrivileged)
@@ -69,7 +69,7 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     @Override
     protected void displayMedia(Media media, byte[] bytes) {
         final ImageView imageView = createItemContentFromBytes(bytes);
-        gridAdapter.addView(media, ImageUtils.getBitmap(bytes));
+        fragmentAdapter.addView(media, ImageUtils.getBitmap(bytes));
         initListeners(imageView, media);
     }
     @Override

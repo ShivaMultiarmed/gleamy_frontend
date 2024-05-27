@@ -68,7 +68,6 @@ public class MediaRepository extends AbstractRepository {
                     }
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 mediaData.postValue(null);

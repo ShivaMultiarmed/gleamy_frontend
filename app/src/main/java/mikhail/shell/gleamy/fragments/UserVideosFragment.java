@@ -11,16 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.VideoView;
-
-import java.util.HashMap;
 
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.FragmentUserVideosBinding;
+import mikhail.shell.gleamy.fragments.adapters.FragmentAdapter;
 import mikhail.shell.gleamy.fragments.adapters.GridAdapter;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.utils.ImageUtils;
-import mikhail.shell.gleamy.views.Tab;
 
 public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
     private FragmentUserVideosBinding B;
@@ -47,10 +44,10 @@ public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
     protected final void initLayoutSettings() {
         super.initLayoutSettings();
 
-        gridAdapter = new GridAdapter(getActivity(), VIDEO);
+        fragmentAdapter = new GridAdapter(getActivity(), VIDEO);
 
         B.userVideosContainer.setLayoutManager(layoutManager);
-        B.userVideosContainer.setAdapter(gridAdapter);
+        B.userVideosContainer.setAdapter(fragmentAdapter);
         B.userVideosContainer.addItemDecoration(gridDecorator);
 
         if (isPrivileged)
@@ -59,7 +56,7 @@ public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
     @Override
     protected void displayMedia(Media media, byte[] bytes) {
         final FrameLayout frameLayout = createItemContentFromBytes(bytes);
-        gridAdapter.addView(media, ImageUtils.getBitmap(bytes));
+        fragmentAdapter.addView(media, ImageUtils.getBitmap(bytes));
         initListeners(frameLayout, media);
     }
     @Override

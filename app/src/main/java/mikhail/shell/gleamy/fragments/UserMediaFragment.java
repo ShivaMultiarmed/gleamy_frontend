@@ -10,13 +10,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import mikhail.shell.gleamy.models.Media;
@@ -39,12 +37,10 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     }
     protected abstract void initLayoutSettings();
     @Override
-    public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initMediaViewModel();
         initLayoutSettings();
-        initMediaPicker();
-        setOnContainerScroll();
         fetchMediaPortion(1L);
     }
     private void initMediaViewModel()
@@ -66,7 +62,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     }
     protected final void fetchOneMedia(Media media)
     {
-        mediaViewModel.fetchMediaById(media.uuid, bytes -> displayMedia(media, bytes));
+        mediaViewModel.fetchMediaById(media.uuid, bytes -> {if (bytes !=null) displayMedia(media, bytes);});
     }
     private void observeMedia()
     {
@@ -77,66 +73,8 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
         });
     }
     protected abstract void displayMedia(Media media, byte[] bytes);
-    protected final void postMedia(Media media, byte[] bytes)
-    {
-        mediaViewModel.postMedia(media, bytes, responseMedia -> {
-            if (responseMedia != null)
-                displayMedia(responseMedia, bytes);
-            else
-                Toast.makeText(requireActivity(), "Ошибка при публикации", Toast.LENGTH_SHORT).show();
-        });
-    }
     protected abstract void removeOneMedia(String uuid);
-    protected abstract void openMedia(Media media);
-    protected abstract void addUploadButton();
-    protected final void initListeners(T view, Media media)
-    {
-        view.setOnClickListener(v -> openMedia(media));
-        view.setOnLongClickListener(v -> {
-            removeOneMedia(null);
-            return false;
-        });
-    }
-    private void initMediaPicker()
-    {
-        mediaPicker = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null)
-                    {
-                        ContentResolver contentResolver = getActivity().getContentResolver();
-                        Media media = new Media.Builder()
-                                .extension(MediaUtils.getExtension(contentResolver, uri))
-                                .type(MEDIA_TYPE)
-                                .userid(userid)
-                                .build();
-                        try {
-                            byte[] mediaBytes = MediaUtils.getFileContent(contentResolver, uri);
-                            postMedia(media, mediaBytes);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-        );
-    }
     protected abstract T createItemContentFromBytes(byte[] bytes);
-    private void setOnContainerScroll()
-    {
-        container.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                if (container.canScrollVertically(1))
-                    if (!isAllMediaLoaded)
-                    {
-                        final long portionNumber = getLastMediaPortionNumber();
-                        fetchMediaPortion(portionNumber);
-                    }
-            }
-        });
-    }
-    protected abstract long getLastMediaPortionNumber();
+    protected abstract long getNextMediaPortionNumber();
 
 }

@@ -112,7 +112,6 @@ public class UserActivity extends AppCompatActivity {
     private void changeTab(View tab)
     {
         final int containerid = R.id.userContent;
-        int anotherid =  B.userContent.getId();
         getSupportFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)

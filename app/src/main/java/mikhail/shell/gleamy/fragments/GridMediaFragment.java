@@ -1,19 +1,16 @@
 package mikhail.shell.gleamy.fragments;
 
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
-
-import mikhail.shell.gleamy.fragments.adapters.GridAdapter;
+import mikhail.shell.gleamy.fragments.adapters.FragmentAdapter;
 import mikhail.shell.gleamy.fragments.decorators.GridDecorator;
 
-public abstract class GridMediaFragment<T extends View> extends UserMediaFragment<T>{
+public abstract class GridMediaFragment<T extends View> extends MediaOverviewFragment<T>{
     protected final static int COL_NUM = 3, SPACING = 10;
-    protected GridAdapter gridAdapter;
+    protected FragmentAdapter fragmentAdapter;
     protected GridLayoutManager layoutManager;
     protected GridDecorator gridDecorator;
 
@@ -27,25 +24,17 @@ public abstract class GridMediaFragment<T extends View> extends UserMediaFragmen
         layoutManager = new GridLayoutManager(getActivity(), COL_NUM);
         gridDecorator = new GridDecorator(COL_NUM, SPACING, false);
     }
-    protected <T extends View> void squareUpView(T view)
-    {
-        int sideLength = (getContainer().getLayoutManager().getWidth() - (COL_NUM-1)*SPACING) / COL_NUM;
-        ViewGroup.LayoutParams layoutParams =
-                new ViewGroup.LayoutParams(sideLength,sideLength);
-        view.setLayoutParams(layoutParams);
-    }
     protected RecyclerView getContainer()
     {
         return null;
     }
-
     @Override
     protected void removeOneMedia(String uuid) {
-        gridAdapter.removeView(uuid);
+        fragmentAdapter.removeView(uuid);
     }
     @Override
-    protected long getLastMediaPortionNumber()
+    protected long getNextMediaPortionNumber()
     {
-        return (long) Math.ceil(gridAdapter.getLoadedMediaCount() * 1.0 / MEDIA_PORTION) + 1L;
+        return (long) Math.ceil(fragmentAdapter.getLoadedMediaCount() * 1.0 / MEDIA_PORTION) + 1L;
     }
 }
