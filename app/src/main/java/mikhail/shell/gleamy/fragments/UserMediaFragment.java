@@ -18,11 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.models.Media.Type;
 import mikhail.shell.gleamy.utils.MediaUtils;
 import mikhail.shell.gleamy.viewmodels.MediaViewModel;
 
 public abstract class UserMediaFragment<T extends View> extends Fragment {
-    protected Media.Type MEDIA_TYPE;
+    protected Type MEDIA_TYPE;
     protected final int MEDIA_PORTION = 12;
     protected MediaViewModel mediaViewModel;
     protected final Long userid;
@@ -51,11 +52,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected final void fetchMediaPortion(Long portion_num)
     {
         mediaViewModel.fetchMediaPortion(MEDIA_TYPE, portion_num, mediaList -> {
-            final Map<String, Media> mediaPortion = new HashMap<>();
-            mediaList.forEach(media -> {
-                mediaPortion.put(media.uuid, media);
-                fetchOneMedia(media);
-            });
+            mediaList.forEach(this::fetchOneMedia);
             if (mediaList.size() < MEDIA_PORTION)
                 isAllMediaLoaded  = true;
         });

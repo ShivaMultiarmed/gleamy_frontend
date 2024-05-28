@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,16 +22,16 @@ import mikhail.shell.gleamy.views.MediaCellView;
 import mikhail.shell.gleamy.views.VideoCellView;
 
 public abstract class FragmentAdapter<T extends View, K extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<K> {
-    protected final Map<String, Media> data;
+    protected final List<Media> data;
     protected final Type MEDIA_TYPE;
     protected final Context context;
-    protected final Map<String, Bitmap> pending;
+    protected final List<Bitmap> pending;
     public FragmentAdapter(Context context, Type type)
     {
         MEDIA_TYPE = type;
         this.context = context;
-        this.data = new LinkedHashMap<>();
-        this.pending = new LinkedHashMap<>();
+        this.data = new LinkedList<>();
+        this.pending = new LinkedList<>();
         notifyDataSetChanged();  // ? to remove or not to remove
     }
     protected abstract T createMediaItemView();
@@ -38,20 +39,34 @@ public abstract class FragmentAdapter<T extends View, K extends RecyclerView.Vie
     public int getItemCount() {
         return data.size();
     }
-    public void addView(Media media, Bitmap bitmap)
+    public void addView(final Media media, final Bitmap bitmap)
     {
-        data.put(media.uuid,  media);
-        pending.put(media.uuid, bitmap);
-        notifyItemInserted(data.size() - 1);
+        final Media earlierMedia;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            earlierMedia = data.stream()
+                    .filter(media1 -> media1.date_time.compareTo(media.date_time) < 0)
+                    .findFirst().orElse(null);
+        }
+        else
+            earlierMedia = null;
+        final int position = (earlierMedia == null) ? data.size() : data.indexOf(earlierMedia);
+        data.add(position, media);
+        pending.add(position, bitmap);
+        notifyItemInserted(position);
     }
-    public void removeView(String uuid)
+    public void removeView(final String uuid)
     {
-        final int position = data.values().stream().collect(Collectors.toList()).indexOf(data.get(uuid));
-        data.remove(uuid);
+        final Media m = data.stream().filter(media -> media.uuid.equals(uuid)).findFirst().orElse(null);
+        final int position = data.indexOf(m);
+        data.remove(position);
         notifyItemRemoved(position);
     }
     public long getLoadedMediaCount()
     {
         return data.size();
+    }
+    public boolean hasItemWithId(final String uuid)
+    {
+        return data.stream().filter(media -> media.uuid.equals(uuid)).findFirst().orElse(null) != null;
     }
 }

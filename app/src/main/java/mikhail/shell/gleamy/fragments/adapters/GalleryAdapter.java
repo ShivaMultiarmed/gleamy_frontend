@@ -1,9 +1,13 @@
 package mikhail.shell.gleamy.fragments.adapters;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.widget.ImageView.ScaleType.CENTER_CROP;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,13 +23,24 @@ public class GalleryAdapter<T extends View> extends FragmentAdapter<T, GalleryAd
 
     @Override
     protected T createMediaItemView() {
-        return null;
+        switch (MEDIA_TYPE)
+        {
+            case AUDIO -> { return null; }
+            case IMAGE -> {
+                final ImageView imageView = new ImageView(context);
+                imageView.setLayoutParams(new RecyclerView.LayoutParams(MATCH_PARENT, 0));
+                imageView.setScaleType(CENTER_CROP);
+                return (T) imageView;
+            }
+            case VIDEO -> { return null; }
+            default -> { return null; }
+        }
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+        return new ViewHolder(createMediaItemView());
     }
 
     @Override

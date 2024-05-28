@@ -1,6 +1,8 @@
 package mikhail.shell.gleamy.fragments;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -12,8 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 
+import mikhail.shell.gleamy.activities.MainActivity;
+import mikhail.shell.gleamy.activities.MediaGalleryActivity;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.utils.MediaUtils;
+import mikhail.shell.gleamy.views.MediaCellView;
 
 public abstract class MediaOverviewFragment<T extends View> extends UserMediaFragment<T> {
     public MediaOverviewFragment(Long userid, boolean isPreviliged) {
@@ -42,14 +47,14 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
                 uri -> {
                     if (uri != null)
                     {
-                        ContentResolver contentResolver = getActivity().getContentResolver();
-                        Media media = new Media.Builder()
+                        final ContentResolver contentResolver = getActivity().getContentResolver();
+                        final Media media = new Media.Builder()
                                 .extension(MediaUtils.getExtension(contentResolver, uri))
                                 .type(MEDIA_TYPE)
                                 .userid(userid)
                                 .build();
                         try {
-                            byte[] mediaBytes = MediaUtils.getFileContent(contentResolver, uri);
+                            final byte[] mediaBytes = MediaUtils.getFileContent(contentResolver, uri);
                             postMedia(media, mediaBytes);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -84,4 +89,14 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
         });
     }
     protected abstract void addUploadButton();
+    private void onClick(MediaCellView cell)
+    {
+        final Intent intent = new Intent(requireActivity(), MediaGalleryActivity.class);
+        final Bundle bundle = new Bundle();
+        bundle.putString("currentMediaId", cell.getMedia().uuid);
+        bundle.putLong("userid", userid);
+        bundle.putSerializable("MEDIA_TYPE", MEDIA_TYPE);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
 }

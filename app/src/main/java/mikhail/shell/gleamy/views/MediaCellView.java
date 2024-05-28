@@ -30,4 +30,5 @@ public abstract class MediaCellView extends FrameLayout {
     }
     protected abstract void initBinding(Context context);
     public abstract void setMedia(Media media, Bitmap bitmap);
+    public abstract Media getMedia();
 }

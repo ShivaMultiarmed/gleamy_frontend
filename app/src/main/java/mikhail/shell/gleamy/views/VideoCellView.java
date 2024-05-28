@@ -42,4 +42,8 @@ public final class VideoCellView extends MediaCellView {
         B.setMedia(media);
         B.preview.setImageBitmap(bitmap);
     }
+    @Override
+    public Media getMedia() {
+        return B.getMedia();
+    }
 }

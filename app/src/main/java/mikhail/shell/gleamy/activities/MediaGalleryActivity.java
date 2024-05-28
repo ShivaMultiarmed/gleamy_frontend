@@ -54,5 +54,4 @@ public class MediaGalleryActivity extends AppCompatActivity {
                 .attach(fragment)
                 .commit();
     }
-
 }

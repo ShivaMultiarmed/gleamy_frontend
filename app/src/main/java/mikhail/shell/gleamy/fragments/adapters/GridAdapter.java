@@ -35,9 +35,8 @@ public class GridAdapter<T extends MediaCellView> extends FragmentAdapter<T, Gri
     }
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final List<Media> list = new ArrayList<>(data.values());
-        final Media media = list.get(position);
-        final Bitmap currentBitmap = (Bitmap) pending.remove(pending.keySet().stream().findFirst().get());
+        final Media media = data.get(position);
+        final Bitmap currentBitmap = (Bitmap) pending.get(position);
         ((ViewHolder) holder).setContentView(media,currentBitmap); // TODO: change bitmap to byte[]
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {

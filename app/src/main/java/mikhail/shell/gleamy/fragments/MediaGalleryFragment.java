@@ -13,7 +13,7 @@ import mikhail.shell.gleamy.fragments.adapters.GalleryAdapter;
 
 public abstract class MediaGalleryFragment<T extends View> extends UserMediaFragment<T> {
     protected MediaGalleryFragmentBinding B;
-    protected GalleryAdapter galleryAdapter;
+    protected GalleryAdapter<T> galleryAdapter;
     protected final String currentMediaId;
     public MediaGalleryFragment(Long userid, boolean isPreviliged, String currentMediaId) {
         super(userid, isPreviliged);
