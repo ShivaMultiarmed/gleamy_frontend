@@ -13,7 +13,6 @@ import mikhail.shell.gleamy.fragments.adapters.GalleryAdapter;
 
 public abstract class MediaGalleryFragment<T extends View> extends UserMediaFragment<T> {
     protected MediaGalleryFragmentBinding B;
-    protected GalleryAdapter<T> galleryAdapter;
     protected final String currentMediaId;
     public MediaGalleryFragment(Long userid, boolean isPreviliged, String currentMediaId) {
         super(userid, isPreviliged);
@@ -25,9 +24,5 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         B = MediaGalleryFragmentBinding.inflate(LayoutInflater.from(getContext()), container, false);
         return B.getRoot();
-    }
-    @Override
-    protected long getNextMediaPortionNumber() {
-        return (long) Math.ceil(galleryAdapter.getLoadedMediaCount() * 1.0 / MEDIA_PORTION) + 1L;
     }
 }

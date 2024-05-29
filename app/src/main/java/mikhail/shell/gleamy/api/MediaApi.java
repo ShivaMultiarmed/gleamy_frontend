@@ -3,6 +3,7 @@ package mikhail.shell.gleamy.api;
 import java.util.List;
 
 import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.models.Media.Type;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -20,12 +21,12 @@ public interface MediaApi {
     Call<ResponseBody> getMediaById(@Query("uuid") String uuid);
     @GET("users/{userid}/media")
     Call<List<Media>> getMediaPortionByUserId(@Path("userid") Long userid, @Query("portion_num") Long portion_num,
-            @Query("type") Media.Type type);
+            @Query("type") Type type);
     @Multipart
     @POST("users/media/post")
     Call<Media> postMedia(@Part("media") RequestBody media, @Part MultipartBody.Part file);
     @DELETE("users/media/{mediaid}")
     Call<Boolean> removeMedia(@Path("mediaid") String uuid);
     @GET("users/{userid}/media/{media_type}")
-    Call<Long> getTotalMediaNumber(@Path("userid") long userid, @Path("media_type") Media.Type media_type);
+    Call<Long> getTotalMediaNumber(@Path("userid") long userid, @Path("media_type") Type media_type);
 }

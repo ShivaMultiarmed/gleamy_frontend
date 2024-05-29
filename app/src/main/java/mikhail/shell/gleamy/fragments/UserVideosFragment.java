@@ -14,10 +14,10 @@ import android.widget.ImageView;
 
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.FragmentUserVideosBinding;
-import mikhail.shell.gleamy.fragments.adapters.FragmentAdapter;
 import mikhail.shell.gleamy.fragments.adapters.GridAdapter;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.utils.ImageUtils;
+import mikhail.shell.gleamy.views.VideoCellView;
 
 public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
     private FragmentUserVideosBinding B;
@@ -26,40 +26,17 @@ public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
         MEDIA_TYPE = VIDEO;
     }
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         B = FragmentUserVideosBinding.inflate(LayoutInflater.from(getContext()),container, false);
         return B.getRoot();
     }
     @Override
-    public void onDestroy()
-    {
-        super.onDestroy();
-    }
-    @Override
     protected final void initLayoutSettings() {
+        container = B.userVideosContainer;
+        fragmentAdapter = new GridAdapter<VideoCellView>(getActivity(), VIDEO);
         super.initLayoutSettings();
-
-        fragmentAdapter = new GridAdapter(getActivity(), VIDEO);
-
-        B.userVideosContainer.setLayoutManager(layoutManager);
-        B.userVideosContainer.setAdapter(fragmentAdapter);
-        B.userVideosContainer.addItemDecoration(gridDecorator);
-
-        if (isPrivileged)
-            addUploadButton();
     }
-    @Override
-    protected void displayMedia(Media media, byte[] bytes) {
-        final FrameLayout frameLayout = createItemContentFromBytes(bytes);
-        fragmentAdapter.addItemContent(media, ImageUtils.getBitmap(bytes));
-        initListeners(frameLayout, media);
-    }
-
     @Override
     protected void openMedia(Media media) {
         // TODO
@@ -71,19 +48,5 @@ public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
                 .inflate(R.layout.video_upload_button, root, false);
         root.addView(uploadBtn);
         uploadBtn.setOnClickListener(btn -> mediaPicker.launch("video/*"));
-    }
-    @Override
-    protected FrameLayout createItemContentFromBytes(byte[] bytes) {
-        final ImageView videoPreview = new ImageView(getContext());
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        videoPreview.setImageBitmap(bitmap);
-
-        final ImageView playButton = new ImageView(getContext());
-        playButton.setImageResource(R.drawable.play_button_transparent);
-
-        final FrameLayout itemContent = new FrameLayout(getContext());
-        itemContent.addView(videoPreview);
-        itemContent.addView(playButton);
-        return itemContent;
     }
 }

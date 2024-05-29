@@ -36,18 +36,13 @@ public class GridAdapter<T extends MediaCellView> extends FragmentAdapter<T, Gri
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Media media = data.get(position);
-        final Bitmap currentBitmap = (Bitmap) pending.get(position);
-        ((ViewHolder) holder).setContentView(media,currentBitmap); // TODO: change bitmap to byte[]
+        holder.cell.setMedia(media);
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final MediaCellView cell;
         public ViewHolder(MediaCellView cell) {
             super(cell);
             this.cell = cell;
-        }
-        public void setContentView(Media media, Bitmap bitmap)
-        {
-            cell.setMedia(media, bitmap);
         }
     }
 }

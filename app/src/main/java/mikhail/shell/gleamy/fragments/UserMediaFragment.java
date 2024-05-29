@@ -25,12 +25,18 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected boolean isAllMediaLoaded;
     protected ActivityResultLauncher<String> mediaPicker;
     protected FragmentAdapter fragmentAdapter;
+    protected RecyclerView.LayoutManager layoutManager;
+    protected RecyclerView.ItemDecoration decorator;
     public UserMediaFragment(Long userid, boolean isPreviliged)
     {
         this.userid = userid;
         this.isPrivileged = isPreviliged;
     }
-    protected abstract void initLayoutSettings();
+    protected void initLayoutSettings(){
+        container.setLayoutManager(layoutManager);
+        container.setAdapter(fragmentAdapter);
+        container.addItemDecoration(decorator);
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -46,30 +52,27 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected final void fetchMediaPortion(Long portion_num)
     {
         mediaViewModel.fetchMediaPortion(MEDIA_TYPE, portion_num, mediaList -> {
-            mediaList.forEach(this::createMedia);
+            mediaList.forEach(this::addMedia);
             if (mediaList.size() < MEDIA_PORTION)
                 isAllMediaLoaded  = true;
         });
-    }
-    protected final void createMedia(Media media)
-    {
-        addMedia(media);
-        mediaViewModel.fetchMediaById(media.uuid, bytes -> {if (bytes !=null) displayMedia(media, bytes);});
     }
     private void observeMedia()
     {
         mediaViewModel.observeIncomingMedia(mediaActionModel -> {
             Media media = mediaActionModel.getModel();
             if (media.type.equals(MEDIA_TYPE))
-                createMedia(media);
+                addMedia(media);
         });
     }
     protected final void addMedia(Media media) {
         fragmentAdapter.addView(media);
     }
-    protected abstract void displayMedia(Media media, byte[] bytes);
-    protected abstract void removeMedia(String uuid);
-    protected abstract T createItemContentFromBytes(byte[] bytes);
-    protected abstract long getNextMediaPortionNumber();
-
+    protected final void removeMedia(String uuid) {
+        fragmentAdapter.removeView(uuid);
+    }
+    protected final long getNextMediaPortionNumber()
+    {
+        return (long) Math.ceil(fragmentAdapter.getLoadedMediaCount() * 1.0 / MEDIA_PORTION) + 1L;
+    }
 }

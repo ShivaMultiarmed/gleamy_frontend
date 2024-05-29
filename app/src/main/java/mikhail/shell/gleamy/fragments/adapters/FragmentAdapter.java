@@ -25,21 +25,18 @@ public abstract class FragmentAdapter<T extends View, K extends RecyclerView.Vie
     protected final List<Media> data;
     protected final Type MEDIA_TYPE;
     protected final Context context;
-    protected final List<Bitmap> pending;
     public FragmentAdapter(Context context, Type type)
     {
         MEDIA_TYPE = type;
         this.context = context;
-        this.data = new LinkedList<>();
-        this.pending = new LinkedList<>();
-        notifyDataSetChanged();  // ? to remove or not to remove
+        data = new LinkedList<>();
     }
     protected abstract T createMediaItemView();
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return data.size();
     }
-    public void addView(final Media media)
+    public final void addView(final Media media)
     {
         final Media earlierMedia;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -51,21 +48,13 @@ public abstract class FragmentAdapter<T extends View, K extends RecyclerView.Vie
             earlierMedia = null;
         final int position = (earlierMedia == null) ? data.size() : data.indexOf(earlierMedia);
         data.add(position, media);
-        pending.add(position, null);
         notifyItemInserted(position);
     }
-    public void addItemContent(final Media media, final Bitmap bitmap)
-    {
-        final int position = data.indexOf(media);
-        pending.set(position, bitmap);
-        notifyItemChanged(position);
-    }
-    public void removeView(final String uuid)
+    public final void removeView(final String uuid)
     {
         final Media m = data.stream().filter(media -> media.uuid.equals(uuid)).findFirst().orElse(null);
         final int position = data.indexOf(m);
         data.remove(position);
-        pending.remove(position);
         notifyItemRemoved(position);
     }
     public long getLoadedMediaCount()

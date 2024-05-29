@@ -81,7 +81,7 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
     {
         mediaViewModel.postMedia(media, bytes, responseMedia -> {
             if (responseMedia != null)
-                createMedia(responseMedia);
+                addMedia(responseMedia);
             else
                 Toast.makeText(requireActivity(), "Ошибка при публикации", Toast.LENGTH_SHORT).show();
         });

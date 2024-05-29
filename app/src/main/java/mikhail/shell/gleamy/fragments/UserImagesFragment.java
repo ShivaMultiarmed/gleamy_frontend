@@ -12,14 +12,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.databinding.UserImagesFragmentBinding;
-import mikhail.shell.gleamy.fragments.adapters.FragmentAdapter;
 import mikhail.shell.gleamy.fragments.adapters.GridAdapter;
 import mikhail.shell.gleamy.models.Media;
-import mikhail.shell.gleamy.utils.ImageUtils;
 import mikhail.shell.gleamy.views.ImageCellView;
 
 public class UserImagesFragment extends GridMediaFragment<ImageView>{
@@ -29,10 +26,6 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
         MEDIA_TYPE = IMAGE;
     }
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         B = UserImagesFragmentBinding.inflate(inflater, container, false);
@@ -40,41 +33,10 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     }
     @Override
     protected final void initLayoutSettings() {
-        super.initLayoutSettings();
-
         container = B.userImagesContainer;
-
         fragmentAdapter = new GridAdapter<ImageCellView>(getActivity(), IMAGE);
-
-        B.userImagesContainer.setLayoutManager(layoutManager);
-        B.userImagesContainer.setAdapter(fragmentAdapter);
-        B.userImagesContainer.addItemDecoration(gridDecorator);
-
-        if (isPrivileged)
-            addUploadButton();
+        super.initLayoutSettings();
     }
-    @Override
-    public void onDestroy()
-    {
-        super.onDestroy();
-    }
-    @Override
-    protected final ImageView createItemContentFromBytes(byte[] bytes)
-    {
-        final ImageView img = new ImageView(getContext());
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        img.setImageBitmap(bitmap);
-        return img;
-    }
-
-
-    @Override
-    protected void displayMedia(Media media, byte[] bytes) {
-        final ImageView imageView = createItemContentFromBytes(bytes);
-        fragmentAdapter.addItemContent(media, ImageUtils.getBitmap(bytes));
-        initListeners(imageView, media);
-    }
-
     @Override
     protected void openMedia(Media media) {
         // TODO: open media
@@ -86,10 +48,5 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
                 .inflate(R.layout.image_upload_button, root, false);
         root.addView(uploadBtn);
         uploadBtn.setOnClickListener(btn -> mediaPicker.launch("image/*"));
-    }
-    @Override
-    protected RecyclerView getContainer()
-    {
-        return B.userImagesContainer;
     }
 }

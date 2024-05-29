@@ -2,11 +2,14 @@ package mikhail.shell.gleamy.views;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.squareup.picasso.Picasso;
 
 import mikhail.shell.gleamy.databinding.ImageCellViewBinding;
 import mikhail.shell.gleamy.databinding.VideoCellViewBinding;
@@ -38,12 +41,13 @@ public final class VideoCellView extends MediaCellView {
     }
 
     @Override
-    public void setMedia(Media media, Bitmap bitmap) {
+    public void setMedia(Media media) {
         B.setMedia(media);
-        B.preview.setImageBitmap(bitmap);
+        Picasso.get().load(buildUri(media.uuid)).into(B.preview);
     }
     @Override
     public Media getMedia() {
         return B.getMedia();
     }
+
 }

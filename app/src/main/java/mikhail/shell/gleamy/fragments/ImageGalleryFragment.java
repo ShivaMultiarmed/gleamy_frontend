@@ -12,18 +12,4 @@ public class ImageGalleryFragment extends MediaGalleryFragment<ImageView> {
     protected void initLayoutSettings() {
         // TODO
     }
-
-    @Override
-    protected void displayMedia(Media media, byte[] bytes) {
-
-    }
-
-    @Override
-    protected void removeMedia(String uuid) {
-        // TODO
-    }
-    @Override
-    protected ImageView createItemContentFromBytes(byte[] bytes) {
-        return null;  // TODO
-    }
 }
