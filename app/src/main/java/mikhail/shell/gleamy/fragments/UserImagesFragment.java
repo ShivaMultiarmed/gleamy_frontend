@@ -66,12 +66,15 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
         img.setImageBitmap(bitmap);
         return img;
     }
+
+
     @Override
     protected void displayMedia(Media media, byte[] bytes) {
         final ImageView imageView = createItemContentFromBytes(bytes);
-        fragmentAdapter.addView(media, ImageUtils.getBitmap(bytes));
+        fragmentAdapter.addItemContent(media, ImageUtils.getBitmap(bytes));
         initListeners(imageView, media);
     }
+
     @Override
     protected void openMedia(Media media) {
         // TODO: open media

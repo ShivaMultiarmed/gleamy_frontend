@@ -39,7 +39,7 @@ public abstract class FragmentAdapter<T extends View, K extends RecyclerView.Vie
     public int getItemCount() {
         return data.size();
     }
-    public void addView(final Media media, final Bitmap bitmap)
+    public void addView(final Media media)
     {
         final Media earlierMedia;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -51,14 +51,21 @@ public abstract class FragmentAdapter<T extends View, K extends RecyclerView.Vie
             earlierMedia = null;
         final int position = (earlierMedia == null) ? data.size() : data.indexOf(earlierMedia);
         data.add(position, media);
-        pending.add(position, bitmap);
+        pending.add(position, null);
         notifyItemInserted(position);
+    }
+    public void addItemContent(final Media media, final Bitmap bitmap)
+    {
+        final int position = data.indexOf(media);
+        pending.set(position, bitmap);
+        notifyItemChanged(position);
     }
     public void removeView(final String uuid)
     {
         final Media m = data.stream().filter(media -> media.uuid.equals(uuid)).findFirst().orElse(null);
         final int position = data.indexOf(m);
         data.remove(position);
+        pending.remove(position);
         notifyItemRemoved(position);
     }
     public long getLoadedMediaCount()

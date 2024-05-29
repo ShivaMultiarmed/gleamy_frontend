@@ -56,9 +56,10 @@ public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
     @Override
     protected void displayMedia(Media media, byte[] bytes) {
         final FrameLayout frameLayout = createItemContentFromBytes(bytes);
-        fragmentAdapter.addView(media, ImageUtils.getBitmap(bytes));
+        fragmentAdapter.addItemContent(media, ImageUtils.getBitmap(bytes));
         initListeners(frameLayout, media);
     }
+
     @Override
     protected void openMedia(Media media) {
         // TODO

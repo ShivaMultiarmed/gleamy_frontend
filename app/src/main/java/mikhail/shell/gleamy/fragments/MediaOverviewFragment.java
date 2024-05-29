@@ -1,7 +1,6 @@
 package mikhail.shell.gleamy.fragments;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 
-import mikhail.shell.gleamy.activities.MainActivity;
 import mikhail.shell.gleamy.activities.MediaGalleryActivity;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.utils.MediaUtils;
@@ -29,7 +27,7 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
     {
         view.setOnClickListener(v -> openMedia(media));
         view.setOnLongClickListener(v -> {
-            removeOneMedia(null);
+            removeMedia(null);
             return false;
         });
     }
@@ -83,7 +81,7 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
     {
         mediaViewModel.postMedia(media, bytes, responseMedia -> {
             if (responseMedia != null)
-                displayMedia(responseMedia, bytes);
+                createMedia(responseMedia);
             else
                 Toast.makeText(requireActivity(), "Ошибка при публикации", Toast.LENGTH_SHORT).show();
         });

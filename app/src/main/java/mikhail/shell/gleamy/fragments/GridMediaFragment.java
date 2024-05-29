@@ -10,7 +10,7 @@ import mikhail.shell.gleamy.fragments.decorators.GridDecorator;
 
 public abstract class GridMediaFragment<T extends View> extends MediaOverviewFragment<T>{
     protected final static int COL_NUM = 3, SPACING = 10;
-    protected FragmentAdapter fragmentAdapter;
+
     protected GridLayoutManager layoutManager;
     protected GridDecorator gridDecorator;
 
@@ -29,7 +29,7 @@ public abstract class GridMediaFragment<T extends View> extends MediaOverviewFra
         return null;
     }
     @Override
-    protected void removeOneMedia(String uuid) {
+    protected void removeMedia(String uuid) {
         fragmentAdapter.removeView(uuid);
     }
     @Override

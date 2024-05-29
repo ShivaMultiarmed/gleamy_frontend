@@ -1,25 +1,18 @@
 package mikhail.shell.gleamy.fragments;
 
-import android.content.ContentResolver;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import mikhail.shell.gleamy.fragments.adapters.FragmentAdapter;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.models.Media.Type;
-import mikhail.shell.gleamy.utils.MediaUtils;
 import mikhail.shell.gleamy.viewmodels.MediaViewModel;
 
 public abstract class UserMediaFragment<T extends View> extends Fragment {
@@ -31,6 +24,7 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected RecyclerView container;
     protected boolean isAllMediaLoaded;
     protected ActivityResultLauncher<String> mediaPicker;
+    protected FragmentAdapter fragmentAdapter;
     public UserMediaFragment(Long userid, boolean isPreviliged)
     {
         this.userid = userid;
@@ -52,13 +46,14 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
     protected final void fetchMediaPortion(Long portion_num)
     {
         mediaViewModel.fetchMediaPortion(MEDIA_TYPE, portion_num, mediaList -> {
-            mediaList.forEach(this::fetchOneMedia);
+            mediaList.forEach(this::createMedia);
             if (mediaList.size() < MEDIA_PORTION)
                 isAllMediaLoaded  = true;
         });
     }
-    protected final void fetchOneMedia(Media media)
+    protected final void createMedia(Media media)
     {
+        addMedia(media);
         mediaViewModel.fetchMediaById(media.uuid, bytes -> {if (bytes !=null) displayMedia(media, bytes);});
     }
     private void observeMedia()
@@ -66,11 +61,14 @@ public abstract class UserMediaFragment<T extends View> extends Fragment {
         mediaViewModel.observeIncomingMedia(mediaActionModel -> {
             Media media = mediaActionModel.getModel();
             if (media.type.equals(MEDIA_TYPE))
-                fetchOneMedia(media);
+                createMedia(media);
         });
     }
+    protected final void addMedia(Media media) {
+        fragmentAdapter.addView(media);
+    }
     protected abstract void displayMedia(Media media, byte[] bytes);
-    protected abstract void removeOneMedia(String uuid);
+    protected abstract void removeMedia(String uuid);
     protected abstract T createItemContentFromBytes(byte[] bytes);
     protected abstract long getNextMediaPortionNumber();
 
