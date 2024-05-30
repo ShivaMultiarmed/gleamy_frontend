@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.squareup.picasso.Picasso;
 
+import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.api.WebClient;
 import mikhail.shell.gleamy.databinding.ImageCellViewBinding;
 import mikhail.shell.gleamy.models.Media;
@@ -37,7 +39,18 @@ public final class ImageCellView extends MediaCellView {
     @Override
     public void setMedia(Media media) {
         B.setMedia(media);
-        Picasso.get().load(buildUri(media.uuid)).into(B.image);
+        try {
+            Picasso.get()
+                    .load(buildUri(media.uuid))
+                    .error(R.drawable.baseline_image_not_supported_24)
+                    .resize(500,500)
+                    .centerCrop()
+                    .into(B.image);
+        } catch (Exception e)
+        {
+            Log.e("ImageCellView "+ media.uuid, "Image is not loaded");
+            B.image.setImageResource(R.drawable.baseline_image_not_supported_24);
+        }
     }
     @Override
     public Media getMedia() {
