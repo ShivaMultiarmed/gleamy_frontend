@@ -42,12 +42,14 @@ public class Chat implements Serializable {
         if (users != null)
             users.add(user);
     }
-    public void removeMember(long userid)
+    public void removeMember(Long userid)
     {
         if (users != null)
-            users.remove(userid);
+        {
+            User u = users.stream().filter(user -> user.getId() == userid).findFirst().orElse(null);
+            if (u != null) users.remove(u);
+        }
     }
-
     public String getTitle() {
         return title;
     }
@@ -63,7 +65,7 @@ public class Chat implements Serializable {
     public void setLast(Message last) {
         this.last = last;
     }
-    public boolean hasMember(long userid)
+    public boolean hasMember(Long userid)
     {
         for (User user : users)
             if (user.getId() == userid)

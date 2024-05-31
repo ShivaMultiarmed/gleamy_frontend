@@ -92,22 +92,22 @@ public class CreateChatActivity extends AppCompatActivity {
     }
     private UserView createUser(User user)
     {
-        UserView userView = (UserView)  LayoutInflater.from(this).inflate(R.layout.user_view, null);
-        userView.init();
-        userView.setUser(user);
+        UserView userView = new UserView(this, user);
         setActive(userView);
         return userView;
     }
     private void displayUser(UserView userView)
     {
-        B.addUsersToChat.addView(userView);
+        final long userid = getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
+        if (userView.getUser().getId() != userid)
+            B.addUsersToChat.addView(userView);
     }
     private void setActive(UserView userView)
     {
-        Chat chat = viewModel.getChat();
-        long userid = userView.getUser().getId();
-        int color = chat.hasMember(userid) ? R.color.input_background : R.color.white;
-        userView.setBackgroundColor(getResources().getColor(color));
+        final Chat chat = viewModel.getChat();
+        final Long userid = userView.getUser().getId();
+        final boolean isActive = chat.hasMember(userid);
+        userView.setActive(isActive);
     }
     private void clear()
     {

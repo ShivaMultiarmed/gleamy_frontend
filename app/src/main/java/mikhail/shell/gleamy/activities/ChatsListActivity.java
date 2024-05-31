@@ -1,7 +1,6 @@
 package mikhail.shell.gleamy.activities;
 
 import static android.widget.ImageView.ScaleType.CENTER_CROP;
-import static android.widget.ImageView.ScaleType.FIT_XY;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -9,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -22,13 +20,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -49,6 +44,7 @@ public class ChatsListActivity extends AppCompatActivity {
     private UserViewModel userViewModel;
     private TheUserViewModel theUserViewModel;
     private ActivityResultLauncher createChatLauncher;
+    private boolean isFirstPortionFetched;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +55,7 @@ public class ChatsListActivity extends AppCompatActivity {
         retrieveBundle();
         initViewModels();
         chats = new LinkedHashMap<>();
+        isFirstPortionFetched = false;
         initViews();
 
         chatsListViewModel.fetchAllChatsFromREST();
@@ -96,8 +93,8 @@ public class ChatsListActivity extends AppCompatActivity {
         chatsListViewModel.getChatsLiveData().observe(this,
                 chatMap ->
                 {
-                    /*if (!chats.isEmpty())
-                        removeEmptyMessage();*/
+                    if (!chats.isEmpty())
+                        clear();
 
                     addAllChats(chatMap);
 
@@ -109,7 +106,10 @@ public class ChatsListActivity extends AppCompatActivity {
                         {
                             if (!chats.containsKey(lastChat.getId()))
                                 addChat(lastChat);
-                            elevateChat(lastChat);
+                            if (isFirstPortionFetched)
+                                elevateChat(lastChat);
+                            else
+                                isFirstPortionFetched = true;
                         }
                     });
                 }
@@ -134,12 +134,6 @@ public class ChatsListActivity extends AppCompatActivity {
     {
         if (!chats.isEmpty())
             chats.values().forEach(this::addChat);
-
-        ChatView chatView = this.chats.values().stream()
-                .skip(this.chats.size()-1)
-                .findFirst().orElse(null); // first chatview that should be at the bottom
-        if (chatView != null)
-            lowerChat(chatView.getChat());
     }
     private ChatView createChatView(Chat chat)
     {
@@ -153,6 +147,8 @@ public class ChatsListActivity extends AppCompatActivity {
     }
     public void addChat(Chat chat)
     {
+        if (chats.isEmpty())
+            clear();
         ChatView chatView = createChatView(chat);
         chats.put(chat.getId(), chatView);
         displayChat(chatView);
@@ -189,7 +185,7 @@ public class ChatsListActivity extends AppCompatActivity {
         startActivity(openChat);
     }
 
-    public void removeEmptyMessage()
+    public void clear()
     {
         B.chatsListContent.removeAllViews();
     }

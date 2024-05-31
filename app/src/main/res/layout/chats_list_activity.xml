@@ -57,10 +57,23 @@
             <LinearLayout
                 android:id="@+id/chatsListContent"
                 android:layout_width="match_parent"
+
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
 
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="600dp">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:text="Создайте первый чат" />
+                </FrameLayout>
             </LinearLayout>
 
         </ScrollView>

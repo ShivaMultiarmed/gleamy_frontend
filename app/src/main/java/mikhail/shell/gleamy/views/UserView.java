@@ -2,38 +2,40 @@ package mikhail.shell.gleamy.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.databinding.UserViewBinding;
 import mikhail.shell.gleamy.models.User;
 
 
 public class UserView extends LinearLayout {
-    private User user;
-    private TextView login;
-
-    public UserView(Context context) {
-        super(context);
+    private UserViewBinding B;
+    public UserView(Context context, User user) {
+        this(context, null, user);
     }
-    public UserView(Context context, AttributeSet attrs) {
+    public UserView(Context context, AttributeSet attrs, User user) {
         super(context, attrs);
+        init(user);
     }
 
-    public void init ()
+    private void init (@NonNull User user)
     {
-        login = findViewById(R.id.userLogin);
-    }
+        B = UserViewBinding.inflate(LayoutInflater.from(getContext()), this, true);
 
+        B.setUser(user);
+        B.userLogin.setText(user.getLogin());
+    }
     public User getUser() {
-        return user;
+        return B.getUser();
     }
-
-    public void setUser(@NonNull User user) {
-        this.user = user;
-        login.setText(user.getLogin());
+    public void setActive(boolean isActive)
+    {
+        final int color = isActive ? R.color.input_background : R.color.white;
+        B.getRoot().setBackgroundColor(getResources().getColor(color));
     }
-
 }

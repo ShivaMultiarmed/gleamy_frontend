@@ -1,34 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:background="@drawable/bordertop">
+<layout>
+    <data>
+        <variable name="user" type="mikhail.shell.gleamy.models.User" />
+    </data>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bordertop"
+        android:orientation="horizontal"
+        android:padding="10dp">
 
-    <ImageView
-        android:id="@+id/userAva"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="left"
-        android:background="@drawable/img_bg"
-        app:srcCompat="@drawable/default_user_icon_24" />
-
+        <ImageView
+            android:id="@+id/userAva"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left"
+            android:background="@drawable/img_bg"
+            app:srcCompat="@drawable/default_user_icon_24" />
 
 
         <TextView
+            android:id="@+id/userLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Пользователь"
             android:layout_gravity="center_vertical"
-            android:textColor="@color/primary"
-            android:padding='10dp'
             android:layout_marginLeft="10dp"
-            android:id="@+id/userLogin"
-            />
-
-
-
-</LinearLayout>
+            android:padding='10dp'
+            android:text="@{user.login}"
+            android:textColor="@color/primary" />
+    </LinearLayout>
+</layout>

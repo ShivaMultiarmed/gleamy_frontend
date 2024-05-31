@@ -50,12 +50,9 @@ public class ChatInfoActivity extends AppCompatActivity {
     {
         users.put(user.getId(), createUser(user));
     }
-    private UserView createUser(User info)
+    private UserView createUser(User user)
     {
-        UserView userView = (UserView)  LayoutInflater.from(this).inflate(R.layout.user_view, null);
-        userView.init();
-        userView.setUser(info);
-        return userView;
+        return new UserView(this, user);
     }
     public void displayAllUsers(Map<Long, UserView> users)
     {
