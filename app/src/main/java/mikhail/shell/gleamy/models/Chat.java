@@ -1,8 +1,10 @@
 package mikhail.shell.gleamy.models;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +16,10 @@ public class Chat implements Serializable {
     private List<User> users;
     private String title;
     private Message last;
+    private LocalDateTime datetime;
     public Chat()
     {
-        users = new ArrayList<>();
+        users = new LinkedList<>();
     }
     public Chat(long id, String title, Message last)
     {
