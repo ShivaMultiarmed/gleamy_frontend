@@ -1,22 +1,21 @@
 package mikhail.shell.gleamy.fragments.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import mikhail.shell.gleamy.activities.MediaGalleryActivity;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.views.ImageCellView;
 import mikhail.shell.gleamy.views.MediaCellView;
 import mikhail.shell.gleamy.views.VideoCellView;
 
-public class GridAdapter<T extends MediaCellView> extends FragmentAdapter<T, GridAdapter.ViewHolder>{ // TODO generify
-    public GridAdapter(Context context, Media.Type type) {
+public class OverviewAdapter<T extends MediaCellView> extends FragmentAdapter<T, OverviewAdapter.ViewHolder>{ // TODO generify
+    public OverviewAdapter(Context context, Media.Type type) {
         super(context, type);
     }
     protected T createMediaItemView()
@@ -37,6 +36,18 @@ public class GridAdapter<T extends MediaCellView> extends FragmentAdapter<T, Gri
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Media media = data.get(position);
         holder.cell.setMedia(media);
+        holder.cell.setOnClickListener(item -> onClick((MediaCellView) item));
+    }
+    private void onClick(MediaCellView cell)
+    {
+        final Intent intent = new Intent(context, MediaGalleryActivity.class);
+        final Bundle bundle = new Bundle();
+        bundle.putString("currentMediaId", cell.getMedia().uuid);
+        bundle.putLong("userid", cell.getMedia().userid);
+        bundle.putLong("mediaNumber", data.indexOf(cell.getMedia()));
+        bundle.putSerializable("MEDIA_TYPE", MEDIA_TYPE);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final MediaCellView cell;

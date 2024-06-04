@@ -8,22 +8,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
 import mikhail.shell.gleamy.fragments.decorators.GridDecorator;
+import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.models.Media.Type;
 
 public abstract class GridMediaFragment<T extends View> extends MediaOverviewFragment<T>{
     protected final static int COL_NUM = 3, SPACING = 10;
 
-    public GridMediaFragment(Long userid, boolean isPrivileged) {
-        super(userid, isPrivileged);
+    public GridMediaFragment(Long userid, Type mediaType, boolean isPrivileged) {
+        super(userid, mediaType, isPrivileged);
     }
 
     @Override
     protected void initLayoutSettings()
     {
         layoutManager = new GridLayoutManager(getActivity(), COL_NUM);
-        decorator = new GridDecorator(COL_NUM, SPACING, false);
-        if (isPrivileged)
-            addUploadButton();
-
         super.initLayoutSettings();
+        final ItemDecoration decorator = new GridDecorator(COL_NUM, SPACING, false);
+        container.addItemDecoration(decorator);
     }
 }

@@ -3,7 +3,10 @@ package mikhail.shell.gleamy.fragments;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -15,14 +18,19 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import java.io.IOException;
 
+import mikhail.shell.gleamy.R;
 import mikhail.shell.gleamy.activities.MediaGalleryActivity;
+import mikhail.shell.gleamy.databinding.MediaOverviewFragmentBinding;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.utils.MediaUtils;
 import mikhail.shell.gleamy.views.MediaCellView;
 
-public abstract class MediaOverviewFragment<T extends View> extends UserMediaFragment<T> {
-    public MediaOverviewFragment(Long userid, boolean isPreviliged) {
-        super(userid, isPreviliged);
+public abstract class MediaOverviewFragment<T extends View> extends UserMediaFragment<RecyclerView, T> {
+    protected MediaOverviewFragmentBinding B;
+    protected int btnId;
+    protected RecyclerView.LayoutManager layoutManager;
+    public MediaOverviewFragment(Long userid, Media.Type mediaType, boolean isPreviliged) {
+        super(userid, mediaType, isPreviliged);
     }
     protected abstract void openMedia(Media media);
     protected final void initListeners(T view, Media media)
@@ -33,12 +41,18 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
             return false;
         });
     }
-
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public final View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        wrapper = (FrameLayout) container;
+        B = MediaOverviewFragmentBinding.inflate(LayoutInflater.from(getContext()),container, false);
+        return B.getRoot();
+    }
+    @Override
+    public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initMediaPicker();
         setOnContainerScroll();
+        fetchMediaPortion(1L);
     }
     private void initMediaPicker()
     {
@@ -79,7 +93,7 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
             }
         });
     }
-    protected final void postMedia(Media media, byte[] bytes)
+    private void postMedia(Media media, byte[] bytes)
     {
         mediaViewModel.postMedia(media, bytes, responseMedia -> {
             if (responseMedia != null)
@@ -88,15 +102,18 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
                 Toast.makeText(requireActivity(), "Ошибка при публикации", Toast.LENGTH_SHORT).show();
         });
     }
-    protected abstract void addUploadButton();
-    private void onClick(MediaCellView cell)
-    {
-        final Intent intent = new Intent(requireActivity(), MediaGalleryActivity.class);
-        final Bundle bundle = new Bundle();
-        bundle.putString("currentMediaId", cell.getMedia().uuid);
-        bundle.putLong("userid", userid);
-        bundle.putSerializable("MEDIA_TYPE", MEDIA_TYPE);
-        intent.putExtras(bundle);
-        startActivity(intent);
+    private void addUploadButton() {
+        final FrameLayout uploadBtn = (FrameLayout) LayoutInflater.from(getContext())
+                .inflate(btnId, wrapper, false);
+        wrapper.addView(uploadBtn);
+        uploadBtn.setOnClickListener(btn -> mediaPicker.launch(MEDIA_TYPE.mime));
+    }
+    @Override
+    protected void initLayoutSettings() {
+        container = B.mediaContainer;
+        container.setAdapter(fragmentAdapter);
+        container.setLayoutManager(layoutManager);
+        if (isPrivileged)
+            addUploadButton();
     }
 }

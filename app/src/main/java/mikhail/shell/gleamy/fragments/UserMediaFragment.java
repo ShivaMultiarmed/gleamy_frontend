@@ -2,6 +2,8 @@ package mikhail.shell.gleamy.fragments;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -15,34 +17,30 @@ import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.models.Media.Type;
 import mikhail.shell.gleamy.viewmodels.MediaViewModel;
 
-public abstract class UserMediaFragment<T extends View> extends Fragment {
-    protected Type MEDIA_TYPE;
+public abstract class UserMediaFragment<K extends ViewGroup, T extends View> extends Fragment {
+    protected final Type MEDIA_TYPE;
     protected final int MEDIA_PORTION = 12;
     protected MediaViewModel mediaViewModel;
     protected final Long userid;
     protected final boolean isPrivileged;
-    protected RecyclerView container;
+    protected K container;
     protected boolean isAllMediaLoaded;
     protected ActivityResultLauncher<String> mediaPicker;
     protected FragmentAdapter fragmentAdapter;
-    protected RecyclerView.LayoutManager layoutManager;
-    protected RecyclerView.ItemDecoration decorator;
-    public UserMediaFragment(Long userid, boolean isPreviliged)
+    protected FrameLayout wrapper;
+    public UserMediaFragment(Long userid, Type mediaType, boolean isPreviliged)
     {
         this.userid = userid;
         this.isPrivileged = isPreviliged;
+        MEDIA_TYPE = mediaType;
     }
-    protected void initLayoutSettings(){
-        container.setLayoutManager(layoutManager);
-        container.setAdapter(fragmentAdapter);
-        container.addItemDecoration(decorator);
-    }
+    protected abstract void initLayoutSettings();
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initMediaViewModel();
         initLayoutSettings();
-        fetchMediaPortion(1L);
+        // TODO: add fetchMediaPortion(currentNumber)
     }
     private void initMediaViewModel()
     {

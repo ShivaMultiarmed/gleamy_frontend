@@ -4,7 +4,14 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Media implements Serializable {
-    public enum Type implements Serializable { IMAGE, VIDEO, AUDIO }
+    public enum Type implements Serializable {
+        IMAGE("image/*"), VIDEO("video/*"), AUDIO("audio/*");
+        public final String mime;
+        Type(String mime)
+        {
+            this.mime = mime;
+        }
+    }
     public String uuid, extension;
     public Type type;
     public Long userid;

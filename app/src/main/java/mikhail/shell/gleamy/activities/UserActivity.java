@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -118,7 +119,7 @@ public class UserActivity extends AppCompatActivity {
                 .add(containerid, getFragment(tab.getId()), null)
                 .commit();
     }
-    private UserMediaFragment<?> getFragment(int containerid)
+    private UserMediaFragment<RecyclerView, ?> getFragment(int containerid)
     {
         final boolean isPrivileged =
                 userid == getSharedPreferences("authdetails", MODE_PRIVATE).getLong("userid", 0);
