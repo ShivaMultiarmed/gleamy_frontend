@@ -5,6 +5,7 @@ import static mikhail.shell.gleamy.models.Media.Type.VIDEO;
 import android.widget.FrameLayout;
 
 import mikhail.shell.gleamy.fragments.adapters.OverviewAdapter;
+import mikhail.shell.gleamy.fragments.adapters.VideoOverviewAdapter;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.views.VideoCellView;
 
@@ -14,7 +15,7 @@ public class UserVideosFragment extends GridMediaFragment<FrameLayout> {
     }
     @Override
     protected final void initLayoutSettings() {
-        fragmentAdapter = new OverviewAdapter<VideoCellView>(getActivity(), VIDEO);
+        fragmentAdapter = new VideoOverviewAdapter(getActivity());
         super.initLayoutSettings();
     }
     @Override

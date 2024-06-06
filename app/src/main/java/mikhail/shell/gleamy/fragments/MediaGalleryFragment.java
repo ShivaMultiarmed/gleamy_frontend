@@ -12,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import mikhail.shell.gleamy.databinding.MediaGalleryFragmentBinding;
 import mikhail.shell.gleamy.fragments.adapters.GalleryAdapter;
+import mikhail.shell.gleamy.fragments.adapters.ImageGalleryAdapter;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.models.Media.Type;
 
@@ -40,10 +41,10 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
     @Override
     protected void initLayoutSettings() {
         container = B.mediaContainer;
-        container.setAdapter(null); // TODO: create an adapter
+        container.setAdapter(fragmentAdapter);
     }
     private Long getCurrentPortionNumber()
     {
-        return (long) Math.ceil(mediaNumber * 1.0 / MEDIA_PORTION);
+        return (long) Math.ceil(mediaNumber * 1.0 / MEDIA_PORTION) + 1;
     }
 }

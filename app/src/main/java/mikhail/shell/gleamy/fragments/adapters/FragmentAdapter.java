@@ -1,28 +1,24 @@
 package mikhail.shell.gleamy.fragments.adapters;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.VideoView;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.models.Media.Type;
-import mikhail.shell.gleamy.views.ImageCellView;
 import mikhail.shell.gleamy.views.MediaCellView;
-import mikhail.shell.gleamy.views.VideoCellView;
+import mikhail.shell.gleamy.views.MediaItemView;
 
-public abstract class FragmentAdapter<T extends View, K extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<K> {
+public abstract class FragmentAdapter<T extends MediaItemView>
+        extends RecyclerView.Adapter<FragmentAdapter.MediaViewHolder> {
     protected final List<Media> data;
     protected final Type MEDIA_TYPE;
     protected final Context context;
@@ -33,6 +29,16 @@ public abstract class FragmentAdapter<T extends View, K extends RecyclerView.Vie
         data = new LinkedList<>();
     }
     protected abstract T createMediaItemView();
+    @NonNull
+    @Override
+    public final MediaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new MediaViewHolder(createMediaItemView());
+    }
+    @Override
+    public void onBindViewHolder(@NonNull MediaViewHolder holder, int position) {
+        final Media media = data.get(position);
+        holder.cell.setMedia(media);
+    }
     @Override
     public final int getItemCount() {
         return data.size();
@@ -65,5 +71,12 @@ public abstract class FragmentAdapter<T extends View, K extends RecyclerView.Vie
     public boolean hasItemWithId(final String uuid)
     {
         return data.stream().filter(media -> media.uuid.equals(uuid)).findFirst().orElse(null) != null;
+    }
+    public final static class MediaViewHolder extends RecyclerView.ViewHolder {
+        public final MediaItemView cell;
+        public MediaViewHolder(MediaItemView cell) {
+            super(cell);
+            this.cell = cell;
+        }
     }
 }

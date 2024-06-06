@@ -5,6 +5,7 @@ import static mikhail.shell.gleamy.models.Media.Type.IMAGE;
 import android.widget.ImageView;
 
 import mikhail.shell.gleamy.R;
+import mikhail.shell.gleamy.fragments.adapters.ImageOverviewAdapter;
 import mikhail.shell.gleamy.fragments.adapters.OverviewAdapter;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.views.ImageCellView;
@@ -17,7 +18,7 @@ public class UserImagesFragment extends GridMediaFragment<ImageView>{
     }
     @Override
     protected final void initLayoutSettings() {
-        fragmentAdapter = new OverviewAdapter<ImageCellView>(getActivity(), IMAGE);
+        fragmentAdapter = new ImageOverviewAdapter(getActivity());
         super.initLayoutSettings();
     }
     @Override
