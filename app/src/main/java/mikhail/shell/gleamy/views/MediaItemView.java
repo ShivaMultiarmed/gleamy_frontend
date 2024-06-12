@@ -1,5 +1,7 @@
 package mikhail.shell.gleamy.views;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.content.Context;
 import android.net.Uri;
 import android.util.AttributeSet;

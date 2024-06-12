@@ -1,5 +1,9 @@
 package mikhail.shell.gleamy.fragments;
 
+import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
+import static androidx.viewpager.widget.ViewPager.SCROLL_STATE_DRAGGING;
+import static androidx.viewpager.widget.ViewPager.SCROLL_STATE_SETTLING;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +13,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback;
 
 import mikhail.shell.gleamy.databinding.MediaGalleryFragmentBinding;
 import mikhail.shell.gleamy.fragments.adapters.GalleryAdapter;
@@ -20,6 +25,7 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
     protected MediaGalleryFragmentBinding B;
     protected final String currentMediaId;
     protected Long mediaNumber;
+    protected boolean isPrimaryPortionLoaded = false;
     public MediaGalleryFragment(Long userid, Type mediaType, boolean isPreviliged, String currentMediaId, Long mediaNumber) {
         super(userid, mediaType, isPreviliged);
         this.currentMediaId = currentMediaId;
@@ -36,15 +42,61 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final Long currentPortionNumber = getCurrentPortionNumber();
+        setOnChangeListener();
         fetchMediaPortion(currentPortionNumber);
     }
     @Override
     protected void initLayoutSettings() {
         container = B.mediaContainer;
         container.setAdapter(fragmentAdapter);
+        /*final int initialPos = mediaNumber.intValue() % MEDIA_PORTION;
+        container.setCurrentItem(initialPos);*/
     }
-    private Long getCurrentPortionNumber()
+    protected final Long getCurrentPortionNumber()
     {
-        return (long) Math.ceil(mediaNumber * 1.0 / MEDIA_PORTION) + 1;
+        return (long) Math.floor(mediaNumber * 1.0 / MEDIA_PORTION) + 1L;
+    }
+
+    @Override
+    protected final void setOnChangeListener() {
+        container.registerOnPageChangeCallback(new OnPageChangeCallback() {
+            private int oldPos = mediaNumber.intValue() % MEDIA_PORTION;
+            @Override
+            public void onPageSelected(int newPos) {
+                /*if (!isPrimaryPortionLoaded)
+                {
+                    newPos = oldPos;
+                }
+                else
+                {
+
+                }
+                */
+                super.onPageScrollStateChanged(newPos);
+
+                if (newPos > oldPos)
+                    mediaNumber++;
+                else if (newPos < oldPos)
+                    mediaNumber--;
+
+                final Long currentPortionNumber = getCurrentPortionNumber();
+                if (newPos == 0 && currentPortionNumber != 1 && !isFirstMediaLoaded){
+                    fetchMediaPortion(currentPortionNumber - 1);
+                }
+                else if (newPos == fragmentAdapter.getItemCount()-1 && !isLastMediaLoaded)
+                {
+                    fetchMediaPortion(currentPortionNumber + 1);
+                }
+
+                B.setCurrentMediaNumber(mediaNumber + 1);
+                oldPos = newPos;
+                /*
+                if (!isPrimaryPortionLoaded)
+                {
+                    isPrimaryPortionLoaded = true;
+                    container.setCurrentItem(newPos, false);
+                }*/
+            }
+        });
     }
 }

@@ -1,7 +1,6 @@
 package mikhail.shell.gleamy.fragments;
 
 import android.content.ContentResolver;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,17 +12,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import java.io.IOException;
 
-import mikhail.shell.gleamy.R;
-import mikhail.shell.gleamy.activities.MediaGalleryActivity;
 import mikhail.shell.gleamy.databinding.MediaOverviewFragmentBinding;
 import mikhail.shell.gleamy.models.Media;
 import mikhail.shell.gleamy.utils.MediaUtils;
-import mikhail.shell.gleamy.views.MediaCellView;
 
 public abstract class MediaOverviewFragment<T extends View> extends UserMediaFragment<RecyclerView, T> {
     protected MediaOverviewFragmentBinding B;
@@ -51,7 +45,7 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
     public final void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initMediaPicker();
-        setOnContainerScroll();
+        setOnChangeListener();
         fetchMediaPortion(1L);
     }
     private void initMediaPicker()
@@ -77,7 +71,7 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
                 }
         );
     }
-    private void setOnContainerScroll()
+    protected final void setOnChangeListener()
     {
         container.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -85,9 +79,9 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
                 super.onScrollStateChanged(recyclerView, newState);
 
                 if (container.canScrollVertically(1))
-                    if (!isAllMediaLoaded)
+                    if (!isLastMediaLoaded)
                     {
-                        final long portionNumber = getNextMediaPortionNumber();
+                        final long portionNumber = getCurrentPortionNumber() + 1;
                         fetchMediaPortion(portionNumber);
                     }
             }
@@ -115,5 +109,10 @@ public abstract class MediaOverviewFragment<T extends View> extends UserMediaFra
         container.setLayoutManager(layoutManager);
         if (isPrivileged)
             addUploadButton();
+    }
+
+    @Override
+    protected Long getCurrentPortionNumber() {
+        return (long) Math.ceil(fragmentAdapter.getLoadedMediaCount() * 1.0 / MEDIA_PORTION);
     }
 }

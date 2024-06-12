@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import mikhail.shell.gleamy.fragments.adapters.FragmentAdapter;
 import mikhail.shell.gleamy.models.Media;
@@ -24,7 +23,7 @@ public abstract class UserMediaFragment<K extends ViewGroup, T extends View> ext
     protected final Long userid;
     protected final boolean isPrivileged;
     protected K container;
-    protected boolean isAllMediaLoaded;
+    protected boolean isLastMediaLoaded = false, isFirstMediaLoaded = false;
     protected ActivityResultLauncher<String> mediaPicker;
     protected FragmentAdapter fragmentAdapter;
     protected FrameLayout wrapper;
@@ -52,7 +51,9 @@ public abstract class UserMediaFragment<K extends ViewGroup, T extends View> ext
         mediaViewModel.fetchMediaPortion(MEDIA_TYPE, portion_num, mediaList -> {
             mediaList.forEach(this::addMedia);
             if (mediaList.size() < MEDIA_PORTION)
-                isAllMediaLoaded  = true;
+                isLastMediaLoaded = true;
+            if (portion_num == 1)
+                isFirstMediaLoaded = true;
         });
     }
     private void observeMedia()
@@ -69,8 +70,6 @@ public abstract class UserMediaFragment<K extends ViewGroup, T extends View> ext
     protected final void removeMedia(String uuid) {
         fragmentAdapter.removeView(uuid);
     }
-    protected final long getNextMediaPortionNumber()
-    {
-        return (long) Math.ceil(fragmentAdapter.getLoadedMediaCount() * 1.0 / MEDIA_PORTION) + 1L;
-    }
+    protected abstract Long getCurrentPortionNumber();
+    protected abstract void setOnChangeListener();
 }

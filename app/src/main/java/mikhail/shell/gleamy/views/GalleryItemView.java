@@ -1,8 +1,11 @@
 package mikhail.shell.gleamy.views;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.content.Context;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +26,7 @@ public abstract class GalleryItemView extends MediaItemView {
     }
     public GalleryItemView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, Media media) {
         super(context, attrs, defStyleAttr, media);
+        setLayoutParams(new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
     }
     @Override
     protected final Uri buildUri(String uuid) {

@@ -24,6 +24,6 @@ public abstract class GalleryAdapter<T extends MediaItemView> extends FragmentAd
     @Override
     public void onBindViewHolder(@NonNull MediaViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        holder.cell.setLayoutParams(new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        //holder.cell.setLayoutParams(new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
     }
 }
