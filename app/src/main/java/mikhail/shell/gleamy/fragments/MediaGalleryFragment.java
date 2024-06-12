@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback;
 
+import java.util.List;
+
 import mikhail.shell.gleamy.databinding.MediaGalleryFragmentBinding;
 import mikhail.shell.gleamy.fragments.adapters.GalleryAdapter;
 import mikhail.shell.gleamy.fragments.adapters.ImageGalleryAdapter;
@@ -25,7 +27,7 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
     protected MediaGalleryFragmentBinding B;
     protected final String currentMediaId;
     protected Long mediaNumber;
-    protected boolean isPrimaryPortionLoaded = false;
+
     public MediaGalleryFragment(Long userid, Type mediaType, boolean isPreviliged, String currentMediaId, Long mediaNumber) {
         super(userid, mediaType, isPreviliged);
         this.currentMediaId = currentMediaId;
@@ -98,5 +100,15 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
                 }*/
             }
         });
+    }
+    @Override
+    protected final void processMediaPortion(Long portion_num, List<Media> mediaList) {
+        super.processMediaPortion(portion_num, mediaList);
+        if (!isPrimaryPortionLoaded)
+        {
+            isPrimaryPortionLoaded = true;
+            final int primaryPos = mediaNumber.intValue() % MEDIA_PORTION;
+            container.setCurrentItem(primaryPos, false);
+        }
     }
 }

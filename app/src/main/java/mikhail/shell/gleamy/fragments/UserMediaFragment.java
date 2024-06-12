@@ -9,7 +9,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
+import java.util.List;
 
 import mikhail.shell.gleamy.fragments.adapters.FragmentAdapter;
 import mikhail.shell.gleamy.models.Media;
@@ -23,7 +26,7 @@ public abstract class UserMediaFragment<K extends ViewGroup, T extends View> ext
     protected final Long userid;
     protected final boolean isPrivileged;
     protected K container;
-    protected boolean isLastMediaLoaded = false, isFirstMediaLoaded = false;
+    protected boolean isLastMediaLoaded = false, isFirstMediaLoaded = false, isPrimaryPortionLoaded = false;
     protected ActivityResultLauncher<String> mediaPicker;
     protected FragmentAdapter fragmentAdapter;
     protected FrameLayout wrapper;
@@ -48,13 +51,15 @@ public abstract class UserMediaFragment<K extends ViewGroup, T extends View> ext
     }
     protected final void fetchMediaPortion(Long portion_num)
     {
-        mediaViewModel.fetchMediaPortion(MEDIA_TYPE, portion_num, mediaList -> {
-            mediaList.forEach(this::addMedia);
-            if (mediaList.size() < MEDIA_PORTION)
-                isLastMediaLoaded = true;
-            if (portion_num == 1)
-                isFirstMediaLoaded = true;
-        });
+        mediaViewModel.fetchMediaPortion(MEDIA_TYPE, portion_num, mediaList -> processMediaPortion(portion_num, mediaList));
+    }
+    protected void processMediaPortion(Long portion_num, List<Media> mediaList)
+    {
+        mediaList.forEach(this::addMedia);
+        if (mediaList.size() < MEDIA_PORTION)
+            isLastMediaLoaded = true;
+        if (portion_num == 1)
+            isFirstMediaLoaded = true;
     }
     private void observeMedia()
     {
