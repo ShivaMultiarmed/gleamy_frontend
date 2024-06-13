@@ -122,9 +122,9 @@ public class ChatActivity extends AppCompatActivity {
     private void displayMessage(MessageView msg)
     {
         LocalDateTime newDateTime = msg.getMsgInfo().getDateTime();
-        manageNewDateTime(newDateTime);
         if (msgs.isEmpty())
             clear();
+        manageNewDateTime(newDateTime);
         B.chatContent.addView(msg);
     }
     private void setSendListener()
@@ -142,9 +142,9 @@ public class ChatActivity extends AppCompatActivity {
     {
         B.chatContent.removeAllViews();
     }
-    private void addDateView(LocalDate date, boolean withYear)
+    private void addDateView(final LocalDate date, final boolean withYear)
     {
-        DateView dateView = new DateView(this,date, withYear);
+        final DateView dateView = new DateView(this,date, withYear);
         B.chatContent.addView(dateView);
     }
     private boolean needsNewDate(LocalDate date)
@@ -162,7 +162,7 @@ public class ChatActivity extends AppCompatActivity {
     private void manageNewDateTime(LocalDateTime dateTime)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && dateTime != null) {
-            LocalDate date = dateTime.toLocalDate();
+            final LocalDate date = dateTime.toLocalDate();
             if (needsNewDate(date)) {
                 boolean withYear = true;
                 if (lastMessage != null)

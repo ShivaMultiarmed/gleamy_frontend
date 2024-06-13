@@ -42,8 +42,6 @@ public final class ImageGalleryView extends GalleryItemView {
             Picasso.get()
                     .load(buildUri(media.uuid))
                     .error(R.drawable.baseline_image_not_supported_24)
-                    .resize(500, 1000)
-                    .centerCrop()
                     .into(B.image);
         } catch (Exception e)
         {

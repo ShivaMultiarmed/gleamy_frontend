@@ -69,7 +69,7 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
         container.registerOnPageChangeCallback(new OnPageChangeCallback() {
             private int oldPos = mediaNumber.intValue() % MEDIA_PORTION;
             @Override
-            public void onPageSelected(int newPos) {
+            public void onPageSelected(final int newPos) {
                 super.onPageScrollStateChanged(newPos);
 
                 if (newPos > oldPos)

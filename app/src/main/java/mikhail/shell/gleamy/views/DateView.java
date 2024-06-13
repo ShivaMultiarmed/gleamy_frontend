@@ -37,7 +37,7 @@ public class DateView extends LinearLayout {
     }
     private String createDateString(LocalDate date, boolean withYear)
     {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.append(date.getDayOfMonth());
             builder.append(" " +months[date.getMonthValue()-1]);
