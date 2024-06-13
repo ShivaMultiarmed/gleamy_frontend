@@ -14,6 +14,7 @@ import java.util.Queue;
 import mikhail.shell.gleamy.GleamyApp;
 import mikhail.shell.gleamy.models.ActionModel;
 import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.models.Media.Type;
 import mikhail.shell.gleamy.repositories.MediaRepository;
 
 public class MediaViewModel extends ViewModel {
@@ -30,7 +31,7 @@ public class MediaViewModel extends ViewModel {
         mediaData = new MutableLiveData<>();
         pendingMedia = new LinkedList<>();
     }
-    public void fetchMediaPortion(Media.Type type, Long portion_num, Observer<List<Media>> observer)
+    public void fetchMediaPortion(Type type, Long portion_num, Observer<List<Media>> observer)
     {
         MutableLiveData<List<Media>> mediaListData = new MutableLiveData<>();
         mediaRepository.fetchMediaPortionByUserId(userid, type, portion_num, mediaListData);
@@ -58,9 +59,11 @@ public class MediaViewModel extends ViewModel {
         removeData.observe(lifecycleOwner, observer);
         mediaRepository.removeMedia(uuid, removeData);
     }
-    public LiveData<Long> getTotalMediaNumber(Media.Type type)
+    public void getTotalMediaNumber(Type type, Observer<Long> observer)
     {
-        return mediaRepository.getTotalMediaNumber(userid, type);
+        final MutableLiveData<Long> quantityData = new MutableLiveData<>();
+        quantityData.observe(lifecycleOwner, observer);
+        mediaRepository.getTotalMediaNumber(userid, type, quantityData);
     }
     public static class Factory implements ViewModelProvider.Factory
     {

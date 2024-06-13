@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginVertical="20dp"
-                android:text='@{currentMediaNumber + " из " + totalMediaNumber}'
+                android:text='@{(currentMediaNumber == null ? "" : currentMediaNumber) + " из " + (totalMediaNumber == null ? "" : totalMediaNumber)}'
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />

@@ -30,6 +30,7 @@ public abstract class UserMediaFragment<K extends ViewGroup, T extends View> ext
     protected ActivityResultLauncher<String> mediaPicker;
     protected FragmentAdapter fragmentAdapter;
     protected FrameLayout wrapper;
+    protected Long MEDIA_QUANTITY;
     public UserMediaFragment(Long userid, Type mediaType, boolean isPreviliged)
     {
         this.userid = userid;
@@ -41,13 +42,21 @@ public abstract class UserMediaFragment<K extends ViewGroup, T extends View> ext
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initMediaViewModel();
+        getMediaQuantity();
         initLayoutSettings();
-        // TODO: add fetchMediaPortion(currentNumber)
     }
     private void initMediaViewModel()
     {
         MediaViewModel.Factory mediaViewModelFactory = new MediaViewModel.Factory(this, userid);
         mediaViewModel = new ViewModelProvider(getActivity(), mediaViewModelFactory).get(MediaViewModel.class);
+    }
+    private void getMediaQuantity()
+    {
+        mediaViewModel.getTotalMediaNumber(MEDIA_TYPE, this::setMediaQuantity);
+    }
+    protected void setMediaQuantity(Long quantity)
+    {
+        MEDIA_QUANTITY = quantity;
     }
     protected final void fetchMediaPortion(Long portion_num)
     {

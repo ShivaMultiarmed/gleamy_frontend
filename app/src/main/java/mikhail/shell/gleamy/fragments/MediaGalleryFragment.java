@@ -47,12 +47,17 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
         setOnChangeListener();
         fetchMediaPortion(currentPortionNumber);
     }
+
+    @Override
+    protected void setMediaQuantity(Long quantity) {
+        super.setMediaQuantity(quantity);
+        B.setTotalMediaNumber(MEDIA_QUANTITY);
+    }
+
     @Override
     protected void initLayoutSettings() {
         container = B.mediaContainer;
         container.setAdapter(fragmentAdapter);
-        /*final int initialPos = mediaNumber.intValue() % MEDIA_PORTION;
-        container.setCurrentItem(initialPos);*/
     }
     protected final Long getCurrentPortionNumber()
     {
@@ -65,15 +70,6 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
             private int oldPos = mediaNumber.intValue() % MEDIA_PORTION;
             @Override
             public void onPageSelected(int newPos) {
-                /*if (!isPrimaryPortionLoaded)
-                {
-                    newPos = oldPos;
-                }
-                else
-                {
-
-                }
-                */
                 super.onPageScrollStateChanged(newPos);
 
                 if (newPos > oldPos)
@@ -92,12 +88,6 @@ public abstract class MediaGalleryFragment<T extends View> extends UserMediaFrag
 
                 B.setCurrentMediaNumber(mediaNumber + 1);
                 oldPos = newPos;
-                /*
-                if (!isPrimaryPortionLoaded)
-                {
-                    isPrimaryPortionLoaded = true;
-                    container.setCurrentItem(newPos, false);
-                }*/
             }
         });
     }

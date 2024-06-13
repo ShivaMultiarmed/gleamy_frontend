@@ -12,6 +12,7 @@ import java.util.List;
 import io.reactivex.Observer;
 import mikhail.shell.gleamy.api.MediaApi;
 import mikhail.shell.gleamy.models.Media;
+import mikhail.shell.gleamy.models.Media.Type;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -37,7 +38,7 @@ public class MediaRepository extends AbstractRepository {
             repository = new MediaRepository(context);
         return repository;
     }
-    public void fetchMediaPortionByUserId(Long userid, Media.Type type, Long portion_num, MutableLiveData<List<Media>> mediaData)
+    public void fetchMediaPortionByUserId(Long userid, Type type, Long portion_num, MutableLiveData<List<Media>> mediaData)
     {
         Call<List<Media>> request = mediaApi.getMediaPortionByUserId(userid, portion_num, type);
         request.enqueue(new Callback<>() {
@@ -124,24 +125,18 @@ public class MediaRepository extends AbstractRepository {
             }
         });
     }
-    public LiveData<Long> getTotalMediaNumber(long userid, Media.Type type)
+    public void getTotalMediaNumber(long userid, Type type, MutableLiveData<Long> quantityData)
     {
-        final MutableLiveData<Long> numberData = new MutableLiveData<>();
-         // TODO remove this block of code
-        if (true)
-            numberData.postValue(11L);
-        // TODO end of block
         final Call<Long> request = mediaApi.getTotalMediaNumber(userid, type);
         request.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<Long> call, Response<Long> response) {
-                numberData.postValue(response.body());
+                quantityData.postValue(response.body());
             }
             @Override
             public void onFailure(Call<Long> call, Throwable t) {
-                numberData.postValue(null);
+                quantityData.postValue(null);
             }
         });
-        return numberData;
     }
 }
