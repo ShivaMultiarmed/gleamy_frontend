@@ -80,7 +80,8 @@
                 android:hint="Сообщение"
                 android:inputType="textMultiLine"
                 android:padding="10dp"
-                android:textColor="#FF171616"
+                android:textColorHint="@color/input_hint"
+                android:textColor="@color/input_text"
                 android:textSize="16dp"
                 android:maxHeight="150dp">
 

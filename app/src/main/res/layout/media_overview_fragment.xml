@@ -3,13 +3,15 @@
         <data></data>
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/gray_200">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/mediaContainer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="visible">
+                    android:visibility="visible"
+                    android:background="@color/gray_200">
 
 
                 </androidx.recyclerview.widget.RecyclerView>

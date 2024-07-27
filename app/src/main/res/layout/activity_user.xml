@@ -62,7 +62,8 @@
                     android:text="@{user.login}"
                     android:textAlignment="center"
                     android:textSize="21dp"
-                    android:textStyle="normal" />
+                    android:textStyle="normal"
+                    android:textColor="@color/black"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -70,7 +71,8 @@
                     android:text='@{user.email}'
                     android:textAlignment="center"
                     android:textSize="16dp"
-                    android:textStyle="normal" />
+                    android:textStyle="normal"
+                    android:textColor="@color/black"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -87,7 +89,8 @@
             android:id="@+id/tabsBar"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:background="@drawable/bordertop">
+            android:background="@drawable/bordertop"
+            android:visibility="gone">
 
             <FrameLayout
                 android:id="@+id/userImgsTab"
@@ -102,9 +105,8 @@
                 <ImageView
                     android:layout_width="45dp"
                     android:layout_height="45dp"
-                    app:srcCompat="@drawable/image_tab_36"
                     android:layout_gravity="center"
-                    />
+                    app:srcCompat="@drawable/image_tab_36" />
             </FrameLayout>
 
             <FrameLayout
@@ -120,9 +122,8 @@
                 <ImageView
                     android:layout_width="45dp"
                     android:layout_height="45dp"
-                    app:srcCompat="@drawable/video_tab_36"
                     android:layout_gravity="center"
-                    />
+                    app:srcCompat="@drawable/video_tab_36" />
             </FrameLayout>
 
             <FrameLayout
@@ -140,9 +141,8 @@
                 <ImageView
                     android:layout_width="45dp"
                     android:layout_height="45dp"
-                    app:srcCompat="@drawable/audio_tab_36"
                     android:layout_gravity="center"
-                    />
+                    app:srcCompat="@drawable/audio_tab_36" />
             </FrameLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

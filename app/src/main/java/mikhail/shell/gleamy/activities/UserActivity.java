@@ -49,7 +49,7 @@ public class UserActivity extends AppCompatActivity {
         observeUser();
 
         B.userPageAvatar.setOnClickListener( avatarView -> {
-            Toast.makeText(this, "Openning an avatar", Toast.LENGTH_SHORT).show();
+            // TODO show an avatar
         });
 
         B.userPageAvatar.setOnLongClickListener(avatarView -> {
